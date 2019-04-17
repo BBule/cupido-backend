@@ -1,1 +1,1 @@
-db.createCollection('sessions');
+db.createCollection("sessions");

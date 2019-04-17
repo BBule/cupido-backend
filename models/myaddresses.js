@@ -1,25 +1,25 @@
-'use strict';
+"use strict";
 
-const mongoose  = require('mongoose');
+const mongoose = require("mongoose");
 
-let Schema  = mongoose.Schema;
+let Schema = mongoose.Schema;
 
 let addressesSchema = new Schema({
-    User : {
-        id:{
-            type:mongoose.Schema.Types.ObjectId,
-            ref:"User"
+    User: {
+        id: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User"
         },
-        username : String,
-        useremail : String,
-        contact : String,
-        address : String,
-        landmark :  String,
-        city : String,
-        state : String,
-        country : String,
+        username: String,
+        useremail: String,
+        contact: String,
+        address: String,
+        landmark: String,
+        city: String,
+        state: String,
+        country: String
     },
-    timecreated:  {type: Date, default: Date.now},
+    timecreated: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model('myaddresses', addressesSchema);
+module.exports = mongoose.model("myaddresses", addressesSchema);
