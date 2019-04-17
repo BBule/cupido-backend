@@ -35,6 +35,43 @@ app.use(cronjobs);
 // app.use(editdeleteroutesadmin);
 app.use(editdeleteroutesuser);
 app.use(userauthroutes);
+
+/**
+ * Handle errors wisely
+ *  to be able to catch error in here and processed
+ * send like this: next({head:Optional,message:Error Message,status:status code})
+ * this can send by default internal server error with status 500
+ */
+app.use((err, req, res, next) => {
+    const errorObj = {
+        service: "cupido_main_backend"
+    };
+    if (err.status === 400) {
+        if (err.validationErrors) {
+            errorObj.validationErrors = err.validationErrors;
+        }
+        errorObj.message = err.message || "Invalid Values Supplied";
+        errorObj.head = err.head || null;
+    } else if (err.status === 401 || err.status === 403) {
+        errorObj.head = err.head || null;
+        errorObj.message = err.message || "Unauthorized User";
+    } else if (err.status === 500) {
+        errorObj.head = err.head || null;
+
+        errorObj.message = err.message;
+
+        errorObj.message = "Internal Server Error";
+    } else if (err.status === 404) {
+        errorObj.head = err.head || null;
+        errorObj.message = err.message;
+    } else {
+        errorObj.head = err.head || null;
+        errorObj.message = err.message || "Unknown Error Occurred";
+    }
+    next();
+    return res.status(err.status || 500).json(errorObj);
+});
+
 process.on("SIGTERM", () => {
     console.log("Stopping Wroker safely");
     agenda.stop();
