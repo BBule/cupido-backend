@@ -35,12 +35,13 @@ app.use(cronjobs);
 // app.use(editdeleteroutesadmin);
 app.use(editdeleteroutesuser);
 app.use(userauthroutes);
-
-process.on("SIGTERM", function() {
+process.on("SIGTERM", () => {
+    console.log("Stopping Wroker safely");
     agenda.stop();
     process.exit(0);
 });
-process.on("SIGINT", function() {
+process.on("SIGINT", () => {
+    console.log("Stopping wroker safely");
     agenda.stop();
     process.exit(0);
 });
