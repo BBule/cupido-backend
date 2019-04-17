@@ -11,6 +11,7 @@ const userpostroutes = require("./routes/user_post_routes");
 const cronjobs = require("./routes/cron_jobs");
 const editdeleteroutesuser = require("./routes/edit_delete_routes_user");
 //const editdeleteroutesadmin =  require("./routes/edit_delete_routes_admin");
+const agenda = require("./agenda");
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -34,5 +35,14 @@ app.use(cronjobs);
 // app.use(editdeleteroutesadmin);
 app.use(editdeleteroutesuser);
 app.use(userauthroutes);
+
+process.on("SIGTERM", function() {
+    agenda.stop();
+    process.exit(0);
+});
+process.on("SIGINT", function() {
+    agenda.stop();
+    process.exit(0);
+});
 
 module.exports = app;

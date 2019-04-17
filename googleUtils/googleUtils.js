@@ -6,9 +6,9 @@ const config = require(".././config/config");
 /*******************/
 
 const googleConfig = {
-    clientId: process.env.GOOGLE_CLIENT_ID, // e.g. asdfghjkljhgfdsghjk.apps.googleusercontent.com
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET, // e.g. _ASDFA%DFASDFASDFASD#FAD-
-    redirect: process.env.GOOGLE_REDIRECT_URL, // this must match your google api settings
+    clientId: config.GOOGLE_CLIENT_ID, // e.g. asdfghjkljhgfdsghjk.apps.googleusercontent.com
+    clientSecret: config.GOOGLE_CLIENT_SECRET, // e.g. _ASDFA%DFASDFASDFASD#FAD-
+    redirect: config.GOOGLE_REDIRECT_URL, // this must match your google api settings
     grant_type: "authorization_code"
 };
 

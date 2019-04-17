@@ -2,6 +2,7 @@ const express = require("express");
 const googleUtils = require(".././googleUtils/googleUtils");
 const otpUtils = require(".././msg91utils/otputils");
 const request = require("request");
+const config = require("../config/config");
 const router = express.Router();
 
 // Helper Functions
@@ -18,7 +19,7 @@ router.route("/api/auth/sendotp").post(async function(req, res) {
     var phone = req.body.phone; //along with country code
     request.post(
         "https://control.msg91.com/api/sendotp.php?authkey=" +
-            process.env.msg91_AUTH_KEY +
+            config.msg91_AUTH_KEY +
             "&message=Your%20verification%20code%20is%20%23%23OTP%23%23&sender=LeCupido&mobile=" +
             phone,
         { json: true },
@@ -37,7 +38,7 @@ router.route("/api/verifyotp").post(async function(req, res) {
     var otp = req.body.otp;
     request.post(
         "https://control.msg91.com/api/verifyRequestOTP.php?authkey=" +
-            process.env.msg91_AUTH_KEY +
+            config.msg91_AUTH_KEY +
             "&mobile=" +
             phone +
             "&otp=" +
@@ -70,7 +71,7 @@ router.route("/api/auth/verifyotp").post(async function(req, res) {
     var otp = req.body.otp;
     request.post(
         "https://control.msg91.com/api/verifyRequestOTP.php?authkey=" +
-            process.env.msg91_AUTH_KEY +
+            config.msg91_AUTH_KEY +
             "&mobile=" +
             phone +
             "&otp=" +
