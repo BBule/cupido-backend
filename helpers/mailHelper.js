@@ -17,7 +17,7 @@ var transporter = nodemailer.createTransport({
 /**
  *
  * @param {Object} message
- * {fromMail:String,to:Array/String,subject:String,body:String}
+ * {to:Array/String,subject:String,body:String}
  */
 const SendMail = message => {
     return new Promise((resolve, reject) => {
