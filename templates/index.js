@@ -11,6 +11,6 @@ const transationals = {
     "pay_full_sellBuffer_start.ejs": require("./transational/pay_full_sellBuffer_start"),
     "pay_full_sellBuffer_end.ejs": require("./transational/pay_full_sellBuffer_end"),
     "payment_success.ejs": require("./transational/payment_success"),
-    "thanks_commitinge.ejs": require("./transational/thanks_commiting")
+    "thanks_committing.ejs": require("./transational/thanks_commiting")
 };
 module.exports = { promotionals, transationals };
