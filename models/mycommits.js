@@ -48,7 +48,12 @@ let mycommitsSchema = new Schema({
     coupon_code: [Schema.Types.Mixed], // List of strings of coupon_codes applied
     amount_paid: Number, // 10% of market price*quantity - coupons // What if coupon value is more than the price to be paid
     final_expected_price: Number, // Multiplication of commit_amount*commit_quantity
-    estimated_delivery: [Schema.Types.Mixed] // No idea what it will have, probably just a date value
+    estimated_delivery: [Schema.Types.Mixed], // No idea what it will have, probably just a date value
+    notification_level: {
+        type: Number,
+        default: 0,
+        max: 3
+    }
 });
 
 module.exports = mongoose.model("mycommits", mycommitsSchema);

@@ -48,7 +48,12 @@ let SalesListSchema = new Schema({
     notif_buy_3tover4_sbt: { type: Boolean, default: false },
     notif_buy_lasthour_sbt: { type: Boolean, default: false },
     // Store user's timestamp of view along with email if it is logged in, also _id
-    userviewdata: [Schema.Types.Mixed]
+    userviewdata: [Schema.Types.Mixed],
+    notification_level: {
+        type: Number,
+        default: 0,
+        max: 2
+    }
 });
 
 module.exports = mongoose.model("Saleslist", SalesListSchema);
