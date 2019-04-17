@@ -13,6 +13,14 @@ const configs = {
     JWT_SECRET:
         process.env.JWT_SECRET ||
         "ckhkfnksnfjodjf98iehfnoic4ued8rif4398eoiurjf948iednfidns0-495-",
+    MAIL: {
+        fromMail: process.env.FROM_MAIL || "info@lecupido.com",
+        SMTP_HOST: process.env.SMTP_HOST || "smtp.gmail.com",
+        SMTP_PORT: process.env.SMTP_PORT || 465,
+        SECURE: process.env.SECURE || true, //in case port value is 465
+        SMTP_USER: process.env.SMTP_USER || "startsetteam",
+        SMTP_PASS: process.env.SMTP_PASS || "saikat95"
+    },
     ENV: process.env.NODE_ENV || "development"
 };
 
