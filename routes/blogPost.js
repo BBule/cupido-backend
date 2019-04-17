@@ -4,7 +4,7 @@ const authenticate = require(".././middleware/authenticate");
 
 const BlogPostCont = require("../controller/blogPost.cont");
 
-router.get("/api/blogposts", (req, res, next) => {
+router.get("/api/blogposts", authenticate, (req, res, next) => {
     const { page = 1, limit = 10, popularity = false } = req.query;
     return BlogPostCont.getBlogPosts(page, limit, popularity)
         .then(data => {
