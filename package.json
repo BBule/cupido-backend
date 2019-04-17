@@ -18,7 +18,8 @@
         "googleapis": "^39.2.0",
         "jsonwebtoken": "^8.5.1",
         "mongoose": "^5.5.0",
-        "request": "^2.87.0"
+        "request": "^2.87.0",
+        "request-promise": "^4.2.4"
     },
     "devDependencies": {
         "mocha": "^6.1.2"
