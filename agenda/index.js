@@ -191,11 +191,10 @@ var start = async () => {
                 });
                 const finalHTML = ejsTemplate({
                     time: moment().format("lll"),
-                    username: commitDoc.User.name,
                     commitDetails: commitDoc //may be format properly before passing it
                 });
                 const message = {
-                    to: user.email,
+                    to: commitDoc.User.email,
                     subject:
                         "[REMINDER] Sale has ended! pay the rest amount before it goes.",
                     body: finalHTML
@@ -244,11 +243,10 @@ var start = async () => {
                 });
                 const finalHTML = ejsTemplate({
                     time: moment().format("lll"),
-                    username: commitDoc.User.name,
                     commitDetails: commitDoc //may be format properly before passing it
                 });
                 const message = {
-                    to: user.email,
+                    to: commitDoc.User.email,
                     subject:
                         "Sale has ended! pay the rest amount before it goes.",
                     body: finalHTML
