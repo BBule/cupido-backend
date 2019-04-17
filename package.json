@@ -1,0 +1,35 @@
+{
+    "name": "cupido-backend",
+    "version": "1.0.0",
+    "description": "cupido main backend channel",
+    "main": "app.js",
+    "directories": {
+        "lib": "lib",
+        "test": "test"
+    },
+    "scripts": {
+        "test": "mocha",
+        "start": "node server.js"
+    },
+    "dependencies": {
+        "body-parser": "^1.13.2",
+        "express": "^4.16.3",
+        "googleapis": "^39.2.0",
+        "jsonwebtoken": "^8.5.1",
+        "mongoose": "^5.5.0",
+        "request": "^2.87.0"
+    },
+    "devDependencies": {
+        "mocha": "^6.1.2"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/BBule/cupido-backend.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/BBule/cupido-backend/issues"
+    },
+    "homepage": "https://github.com/BBule/cupido-backend#readme"
+}
