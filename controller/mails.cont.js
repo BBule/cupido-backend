@@ -85,9 +85,30 @@ const thanksForCommit = (user,commitDetails) => {
     return await SendMail(message);
 };
 
+/**
+ * Invoke only on Order
+ */
+const onOrder = (user,orderDetails) => {
+    const ejsTemplate = await getEJSTemplate({
+        fileName: "order_place.ejs"
+    });
+    const finalHTML = ejsTemplate({
+        time: moment().format("lll"),
+        username: user.name,
+        orderDetails: orderDetails //may be format properly before passing it
+    });
+    const message = {
+        to: user.email,
+        subject: "Your Cupido order.",
+        body: finalHTML
+    };
+    return await SendMail(message);
+};
+
 module.exports = {
     sendMailOnDelivery,
     sendMailOnShipped,
     paymentSuccess,
-    thanksForCommit
+    thanksForCommit,
+    onOrder
 };
