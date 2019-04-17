@@ -32,8 +32,7 @@ let ProductsSchema = new Schema(
         // Relevent Details
         timecreated: { type: Date, default: Date.now },
         title: String, // Primary Key
-        likedlist: [String], // array of user ids, emails if possible
-        linkedcomments: [Schema.Types.Mixed]
+        likedlist: [Schema.Types.ObjectId], // array of user ids, emails if possible
     },
     { collection: "products" }
 );

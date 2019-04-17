@@ -1,5 +1,7 @@
 const express = require("express");
+const authenticate=require('.././middleware/authenticate');
 const router = express.Router();
+var jwt = require("jsonwebtoken");
 
 // Helper Functions
 function newIndDate() {
@@ -9,12 +11,6 @@ function newIndDate() {
     return nDate;
 }
 
-function isLoggedIn(req, res, next) {
-    if (req.isAuthenticated()) {
-        return next();
-    }
-    res.send("Login required");
-}
 
 // Models
 const User = require("../models/user");
@@ -28,6 +24,7 @@ const myaddresses = require("../models/myaddresses");
 // const allinventory = require('../models/allinventory');
 const myorders = require("../models/myorders");
 const categorylist = require("../models/categorylist");
+const EmailToken = require("../models/emailtoken");
 
 router.get("/pug", function(req, res) {
     res.send("Hi");
@@ -36,7 +33,7 @@ router.get("/pug", function(req, res) {
 // POST Route to edit address of an individual to the DB
 // Edit existing address by changing the address as well as the user collection
 // User cansend this route
-router.post("/editaddress", isLoggedIn, (req, res) => {
+router.post("/editaddress", authenticate, (req, res) => {
     console.log("Editing address of the user");
     let curruserid = req.user._id;
     let addressid = req.body.addressid;
@@ -125,6 +122,33 @@ router.post("/editaddress", isLoggedIn, (req, res) => {
             res.status(200).send("No address match found");
         }
     });
+});
+
+router.put('/api/user/update',authenticate,async function(req,res){
+
+    if(req.body.hasOwnProperty('phone') && req.body.phone.verified==false){
+        return res.status(400).send({type:'Phone',message:'Phone no. not verified'});
+    }
+    if(req.body.hasOwnProperty('email')){
+        
+         var email_token = jwt
+        .sign({ _id: user._id.toHexString(), email:req.body.email.email }, config.JWT_SECRET)
+        .toString();
+        var verification_link='https://cupido.netlify.com/verifyemail/'+email_token;
+        var emailtoken=new EmailToken({token:email_token,used:false});
+        emailtoken.save();
+        //send verification mail
+    }
+    try{
+        await User.findOneAndUpdate(req.user._id,req.body);
+        var user=User.findOne(req.user._id);
+        res.send(user);
+    }
+    catch(e){
+        console.log(e);
+        res.status(500).send({message:'Server Error'});
+    }
+
 });
 
 module.exports = router;

@@ -1,4 +1,5 @@
 const express = require("express");
+const authenticate=require('.././middleware/authenticate');
 const router = express.Router();
 
 // Helper Functions
@@ -9,12 +10,6 @@ function newIndDate() {
   return nDate;
 }
 
-function isLoggedIn(req, res, next) {
-  if (req.isAuthenticated()) {
-    return next();
-  }
-  res.send("Login required");
-}
 
 // Models
 const User = require("../models/user");
@@ -27,11 +22,34 @@ const mycommits = require("../models/mycommits");
 // const allinventory = require('../models/allinventory');
 const myorders = require("../models/myorders");
 const categorylist = require("../models/categorylist");
-
+const myreplies = require("../models/myreplies");
 // Temp check route
-router.get("/pug", function(req, res) {
-  res.send("Hi");
+router.get("/users", function(req, res) {
+  User.find().then(function(users){
+    res.send(users);
+  });
 });
+router.get("/products", function(req, res) {
+    Products.find().then(function(users){
+      res.send(users);
+    });
+});
+router.get("/sales", function(req, res) {
+    Saleslist.find().then(function(users){
+      res.send(users);
+    });
+});
+router.get("/comments", function(req, res) {
+    mycomments.find().then(function(users){
+      res.send(users);
+    });
+});
+router.get("/replies", function(req, res) {
+    myreplies.find().then(function(users){
+      res.send(users);
+    });
+});
+
 
 // API end point to route the category page
 // /api/sales/category=watches&gender=m&status=live&limit=10&offset=15
@@ -134,7 +152,7 @@ router.get("/api/products/:prodname", (req, res) => {
 });
 
 // API end point to route traffic of my addresses page
-// To check isLoggedIn function, currently disabled.
+// To check authenticate function, currently disabled.
 // Also after login the route takes him to the exact same page
 router.get(
   "/api/userid=:curruser/myaddresses/limit=:lvalue&offset=:ovalue",
@@ -168,7 +186,7 @@ router.get(
 );
 
 // API end point to route traffic of mygifts page
-// To check isLoggedIn function, currently disabled.
+// To check authenticate function, currently disabled.
 // Also after login the route takes him to the exact same page
 router.get(
   "/api/userid=:curruser/mygifts/limit=:lvalue&offset=:ovalue",
@@ -203,7 +221,7 @@ router.get(
 );
 
 // API end point to route traffic of myorders page
-// To check isLoggedIn function, currently disabled.
+// To check authenticate function, currently disabled.
 // Also after login the route takes him to the exact same page
 router.get(
   "/api/userid=:curruser/myorders/limit=:lvalue&offset=:ovalue",
@@ -238,7 +256,7 @@ router.get(
 );
 
 // API end point to route traffic of mycarts page, split into commit and buy now
-// To check isLoggedIn function, currently disabled.
+// To check authenticate function, currently disabled.
 // Also after login the route takes him to the exact same page
 router.get(
   "/api/userid=:curruser/mycarts/limit=:lvalue&offset=:ovalue&type=:type",
@@ -300,7 +318,7 @@ router.get(
 );
 
 // API end point to route traffic of mycommits page, split into active and missed
-// To check isLoggedIn function, currently disabled.
+// To check authenticate function, currently disabled.
 // Also after login the route takes him to the exact same page
 // Remember the commits are refrenced
 router.get(

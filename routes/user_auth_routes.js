@@ -1,4 +1,5 @@
 const express = require("express");
+var jwt = require("jsonwebtoken");
 const googleUtils = require(".././googleUtils/googleUtils");
 const otpUtils = require(".././msg91utils/otputils");
 const request = require("request");
@@ -15,6 +16,8 @@ function newIndDate() {
 
 // Models
 const User = require("../models/user");
+const EmailToken = require("../models/emailtoken");
+
 router.route("/api/auth/sendotp").post(async function(req, res) {
     var phone = req.body.phone; //along with country code
     request.post(
@@ -47,15 +50,7 @@ router.route("/api/verifyotp").post(async function(req, res) {
         async function(error, response, body) {
             if (!error) {
                 if (body.type === "success") {
-                    var user = await User.findOne({ "contact.contact": phone });
-                    if (user) {
-                        user.contact.verified = true;
-                        res.send(body);
-                    } else {
-                        res.status(400).send({
-                            message: "Phone no. not registered"
-                        });
-                    }
+                    res.send(body);
                 } else {
                     res.status(400).send(body);
                 }
@@ -64,6 +59,36 @@ router.route("/api/verifyotp").post(async function(req, res) {
             }
         }
     );
+});
+router.route("/api/verifyemail/:token").post(async function(req, res) {
+
+    var token=req.params.token;
+    try{
+        var emailtoken=await EmailToken.findOne({token});
+        if(emailtoken.used){
+
+        }
+        else{
+            var decoded;
+
+            try{
+
+                decoded= jwt.verify(token,config.JWT_SECRET);
+                var user=await User.findOne({_id:decoded._id,'email.email':decoded.email});
+                user.email.verified=true;
+                await user.save();
+                res.send({type:'auth',message:'Email verified successfully'});
+
+            }catch(e){
+
+                res.status(400).send({message:'Invalid Link'});
+            }        
+        }
+    }
+    catch(e){
+        res.status(500).send({message:'Server Error'});
+    }
+    
 });
 
 router.route("/api/auth/verifyotp").post(async function(req, res) {
