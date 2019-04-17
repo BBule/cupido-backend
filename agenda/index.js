@@ -32,7 +32,7 @@ var start = async () => {
          * notification_level represents how many times it sent notiifcation.
          */
         const salesQuery = {
-            notification_level: { $eq: 0 },
+            notification_level: 0,
             starttime: {
                 $lte: moment()
                     .utcOffset(330)
@@ -95,7 +95,7 @@ var start = async () => {
          * notification_level represents how many times it sent notiifcation.
          */
         const salesQuery = {
-            notification_level: { $eq: 1 },
+            notification_level: 1,
             starttime: {
                 $lte: moment()
                     .utcOffset(330)
@@ -153,6 +153,116 @@ var start = async () => {
             })
             .catch(error => {
                 done(error);
+            });
+    });
+
+    agenda.define("pay_full_sellBuffer_end", (job, done) => {
+        /**
+         * This should be invoked to ask committers to pay the full amount now.
+         * and only be invoked when buffer time started and not yet ended.
+         */
+        Commits.find({
+            is_active: true,
+            notification_level: 1,
+            "sale.endtime": {
+                $lte: moment()
+                    .utcOffset(330)
+                    .toDate()
+            }
+        })
+            .cursor()
+            .on("data", async commitDoc => {
+                const bufferTriggerable =
+                    moment()
+                        .utcOffset(330)
+                        .diff(
+                            moment(commitDoc.sale.endtime)
+                                .utcOffset(330)
+                                .add(commitDoc.sale.sale_buffer_time, "h"),
+                            "h"
+                        ) < 3.1;
+                if (bufferTriggerable) {
+                    return done();
+                }
+                //send mail here
+
+                const ejsTemplate = await getEJSTemplate({
+                    fileName: "pay_full_sellBuffer_end.ejs"
+                });
+                const finalHTML = ejsTemplate({
+                    time: moment().format("lll"),
+                    username: commitDoc.User.name,
+                    commitDetails: commitDoc //may be format properly before passing it
+                });
+                const message = {
+                    to: user.email,
+                    subject:
+                        "[REMINDER] Sale has ended! pay the rest amount before it goes.",
+                    body: finalHTML
+                };
+                await SendMail(message);
+                commitDoc.notification_level = 2;
+                commitDoc.save();
+                return true;
+            })
+            .on("error", error => {
+                done(error);
+            })
+            .on("end", () => {
+                return done();
+            });
+    });
+
+    agenda.define("pay_full_sellBuffer_start", (job, done) => {
+        /**
+         * This should be invoked to ask committers to pay the full amount now.
+         * and only be invoked when buffer time started and not yet ended.
+         */
+        Commits.find({
+            is_active: true,
+            notification_level: 0,
+            "sale.endtime": {
+                $lte: moment()
+                    .utcOffset(330)
+                    .toDate()
+            }
+        })
+            .cursor()
+            .on("data", async commitDoc => {
+                const bufferTimeExpired =
+                    moment().utcOffset(330) <
+                    moment(commitDoc.sale.endtime)
+                        .utcOffset(330)
+                        .add(commitDoc.sale.sale_buffer_time, "h");
+                if (bufferTimeExpired) {
+                    return done();
+                }
+                //send mail here
+
+                const ejsTemplate = await getEJSTemplate({
+                    fileName: "pay_full_sellBuffer_start.ejs"
+                });
+                const finalHTML = ejsTemplate({
+                    time: moment().format("lll"),
+                    username: commitDoc.User.name,
+                    commitDetails: commitDoc //may be format properly before passing it
+                });
+                const message = {
+                    to: user.email,
+                    subject:
+                        "Sale has ended! pay the rest amount before it goes.",
+                    body: finalHTML
+                };
+                await SendMail(message);
+                commitDoc.notification_level = 1;
+                commitDoc.save();
+                return true;
+            })
+            .on("error", error => {
+                done(error);
+            })
+            .on("end", () => {
+                return done();
             });
     });
 };
