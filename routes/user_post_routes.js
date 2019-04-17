@@ -1,5 +1,5 @@
 const express = require("express");
-const authenticate=require('.././middleware/authenticate');
+const authenticate = require(".././middleware/authenticate");
 const router = express.Router();
 
 // Helper Functions
@@ -9,7 +9,6 @@ function newIndDate() {
     });
     return nDate;
 }
-
 
 // Models
 const User = require("../models/user");
@@ -94,115 +93,137 @@ router.post("/addcomment", authenticate, (req, res) => {
     });
     newcomment
         .save()
-        .then(() =>res.send({message:'Comment sent for review'}))
+        .then(() => res.send({ message: "Comment sent for review" }))
         .catch(err => {
             res.status(400).send("Bad request 2");
         });
 });
 
-router.post('/comment/upvote',authenticate,async function(req,res){
-    let curruser=req.user;
-    try{
-        var comment=await mycomments.findOne({_id:req.body.commentid});
-        var upvotes=comment.upvotes;
-        var downvotes=comment.downvotes;
-        if(upvotes.indexOf(curruser._id)>=0){
-            let index=upvotes.indexOf(curruser._id);
-            upvotes.splice(index,1);
-            comment.upvotes=upvotes;
-            comment.downvotes=downvotes;
+router.post("/comment/upvote", authenticate, async function(req, res) {
+    let curruser = req.user;
+    //change the complete thing as asked in slack.
+    try {
+        var comment = await mycomments.findOne({ _id: req.body.commentid });
+        var upvotes = comment.upvotes;
+        var downvotes = comment.downvotes;
+        if (upvotes.indexOf(curruser._id) >= 0) {
+            let index = upvotes.indexOf(curruser._id);
+            upvotes.splice(index, 1);
+            comment.upvotes = upvotes;
+            comment.downvotes = downvotes;
             comment.save();
-            let json={upvotes:upvotes.length,downvotes:downvotes.length,user_upvoted:false,user_downvoted:false};
+            let json = {
+                upvotes: upvotes.length,
+                downvotes: downvotes.length,
+                user_upvoted: false,
+                user_downvoted: false
+            };
+            res.send(json);
+        } else if (downvotes.indexOf(curruser._id) >= 0) {
+            let index = downvotes.indexOf(curruser._id);
+            downvotes.splice(index, 1);
+            upvotes.push(curruser._id);
+            comment.upvotes = upvotes;
+            comment.downvotes = downvotes;
+            comment.save();
+            let json = {
+                upvotes: upvotes.length,
+                downvotes: downvotes.length,
+                user_upvoted: true,
+                user_downvoted: false
+            };
+            res.send(json);
+        } else {
+            upvotes.push(curruser._id);
+            comment.upvotes = upvotes;
+            comment.downvotes = downvotes;
+            comment.save();
+            let json = {
+                upvotes: upvotes.length,
+                downvotes: downvotes.length,
+                user_upvoted: true,
+                user_downvoted: false
+            };
             res.send(json);
         }
-        else if(downvotes.indexOf(curruser._id)>=0){
-            let index=downvotes.indexOf(curruser._id);
-            downvotes.splice(index,1);
-            upvotes.push(curruser._id);
-            comment.upvotes=upvotes;
-            comment.downvotes=downvotes;
-            comment.save();
-            let json={upvotes:upvotes.length,downvotes:downvotes.length,user_upvoted:true,user_downvoted:false};
-            res.send(json);   
-        }
-        else{
-            upvotes.push(curruser._id);
-            comment.upvotes=upvotes;
-            comment.downvotes=downvotes;
-            comment.save();      
-            let json={upvotes:upvotes.length,downvotes:downvotes.length,user_upvoted:true,user_downvoted:false};
-            res.send(json);
-        }
-    }
-    catch(e){
+    } catch (e) {
         console.log(e);
         res.status(400).send();
     }
 });
 
-router.post('/product/like',authenticate,async function(req,res){
-    let curruser=req.user;
-    try{
-        var product=await Product.findOne({_id:req.body.productid});
-        var likes=product.likedlist;
-        if(likes.indexOf(curruser._id)>=0){
-            let index=likes.indexOf(curruser._id);
-            likes.splice(index,1);
-            product.likedlist=likes;
+router.post("/product/like", authenticate, async function(req, res) {
+    let curruser = req.user;
+    try {
+        var product = await Product.findOne({ _id: req.body.productid });
+        var likes = product.likedlist;
+        if (likes.indexOf(curruser._id) >= 0) {
+            let index = likes.indexOf(curruser._id);
+            likes.splice(index, 1);
+            product.likedlist = likes;
             product.save();
-            let json={likes:likes.length,user_liked:false};
+            let json = { likes: likes.length, user_liked: false };
             res.send(json);
-        }
-        else{
-            
+        } else {
             likes.push(curruser._id);
-            product.likedlist=likes;
+            product.likedlist = likes;
             product.save();
-            let json={likes:likes.length,user_liked:true};
+            let json = { likes: likes.length, user_liked: true };
             res.send(json);
         }
-    }
-    catch(e){
+    } catch (e) {
         console.log(e);
         res.status(400).send();
     }
 });
 
-router.post('/comment/downvote',authenticate,async function(req,res){
-    let curruser=req.user;
-    try{
-        var comment=await mycomments.findOne({_id:req.body.commentid});
-        var upvotes=comment.upvotes;
-        var downvotes=comment.downvotes;
-        if(downvotes.indexOf(curruser._id)>=0){
-            let index=downvotes.indexOf(curruser._id);
-            downvotes.splice(index,1);
-            comment.upvotes=upvotes;
-            comment.downvotes=downvotes;
+router.post("/comment/downvote", authenticate, async function(req, res) {
+    let curruser = req.user;
+    try {
+        var comment = await mycomments.findOne({ _id: req.body.commentid });
+        var upvotes = comment.upvotes;
+        var downvotes = comment.downvotes;
+        if (downvotes.indexOf(curruser._id) >= 0) {
+            let index = downvotes.indexOf(curruser._id);
+            downvotes.splice(index, 1);
+            comment.upvotes = upvotes;
+            comment.downvotes = downvotes;
             comment.save();
-            let json={upvotes:upvotes.length,downvotes:downvotes.length,user_upvoted:false,user_downvoted:false};
+            let json = {
+                upvotes: upvotes.length,
+                downvotes: downvotes.length,
+                user_upvoted: false,
+                user_downvoted: false
+            };
+            res.send(json);
+        } else if (upvotes.indexOf(curruser._id) >= 0) {
+            let index = upvotes.indexOf(curruser._id);
+            upvotes.splice(index, 1);
+            downvotes.push(curruser._id);
+            comment.upvotes = upvotes;
+            comment.downvotes = downvotes;
+            comment.save();
+            let json = {
+                upvotes: upvotes.length,
+                downvotes: downvotes.length,
+                user_upvoted: false,
+                user_downvoted: true
+            };
+            res.send(json);
+        } else {
+            downvotes.push(curruser._id);
+            comment.upvotes = upvotes;
+            comment.downvotes = downvotes;
+            comment.save();
+            let json = {
+                upvotes: upvotes.length,
+                downvotes: downvotes.length,
+                user_upvoted: false,
+                user_downvoted: true
+            };
             res.send(json);
         }
-        else if(upvotes.indexOf(curruser._id)>=0){
-            let index=upvotes.indexOf(curruser._id);
-            upvotes.splice(index,1);
-            downvotes.push(curruser._id);
-            comment.upvotes=upvotes;
-            comment.downvotes=downvotes;
-            comment.save();
-            let json={upvotes:upvotes.length,downvotes:downvotes.length,user_upvoted:false,user_downvoted:true};
-            res.send(json);   
-        }
-        else{
-            downvotes.push(curruser._id);
-            comment.upvotes=upvotes;
-            comment.downvotes=downvotes;
-            comment.save();      
-            let json={upvotes:upvotes.length,downvotes:downvotes.length,user_upvoted:false,user_downvoted:true};
-            res.send(json);
-        }
-    }
-    catch(e){
+    } catch (e) {
         console.log(e);
         res.status(400).send();
     }
@@ -213,10 +234,10 @@ router.post("/addreply", authenticate, async (req, res) => {
     let curruser = req.user;
     // All properties to be input from user
     // Nothing except ID of user from tech logics.
-    try{
-        let comment=await mycomments.findOne({_id:req.body.commentid});
-        if(!comment){
-            return res.status(404).send({message:'Comment not found'});
+    try {
+        let comment = await mycomments.findOne({ _id: req.body.commentid });
+        if (!comment) {
+            return res.status(404).send({ message: "Comment not found" });
         }
         let checkbuy = false;
         // Will be true if myorders in user will be found.
@@ -226,7 +247,7 @@ router.post("/addreply", authenticate, async (req, res) => {
         if (found) {
             checkbuy = true;
         }
-        
+
         let newreply = new myreplies({
             "User.id": curruser._id,
             "Comment.id": req.body.commentid,
@@ -237,18 +258,14 @@ router.post("/addreply", authenticate, async (req, res) => {
             is_verified_buyer: checkbuy
         });
 
-        var reply=await newreply.save();
+        var reply = await newreply.save();
 
-        res.send({message:'Reply sent for review'});
-    }
-    catch(e){
+        res.send({ message: "Reply sent for review" });
+    } catch (e) {
         console.log(e);
         res.status(400).send();
     }
-
 });
-
-
 
 // POST Route to send cart entry of an individual
 // Create a new object and then embed data into the array
