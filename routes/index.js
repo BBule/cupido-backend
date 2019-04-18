@@ -18,7 +18,8 @@ isAuth = (req, res, next) => {
                 req.user = {
                     _id: decoded._id,
                     email: decoded.email,
-                    username: decoded.username
+                    username: decoded.username,
+                    contact: decoded.contact
                 };
                 next();
             }

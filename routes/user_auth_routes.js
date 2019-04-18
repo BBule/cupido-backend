@@ -109,7 +109,8 @@ router.route("/verifyotp").post(async function(req, res) {
                             {
                                 _id: user._id,
                                 email: user.email,
-                                username: user.username
+                                username: user.username,
+                                contact: user.contact
                             },
                             config.JWT_SECRET,
                             {
@@ -129,7 +130,8 @@ router.route("/verifyotp").post(async function(req, res) {
                             {
                                 _id: user._id,
                                 email: user.email,
-                                username: user.username
+                                username: user.username,
+                                contact: user.contact
                             },
                             config.JWT_SECRET,
                             {
@@ -153,7 +155,12 @@ router.route("/google").post(async function(req, res) {
         var user = await User.findOne({ googleId: data.googleId });
         if (user) {
             const token = jwt.sign(
-                { _id: user._id, email: user.email, username: user.username },
+                {
+                    _id: user._id,
+                    email: user.email,
+                    username: user.username,
+                    contact: user.contact
+                },
                 config.JWT_SECRET,
                 {
                     expiresIn: config.JWT_EXP
@@ -168,7 +175,8 @@ router.route("/google").post(async function(req, res) {
                         {
                             _id: user._id,
                             email: user.email,
-                            username: user.username
+                            username: user.username,
+                            contact: user.contact
                         },
                         config.JWT_SECRET,
                         {
