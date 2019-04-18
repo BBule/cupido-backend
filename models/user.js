@@ -1,6 +1,5 @@
-var mongoose = require("mongoose");
-var jwt = require("jsonwebtoken");
-const config = require(".././config/config");
+const mongoose = require("mongoose");
+
 // var passportLocalMongoose=require("passport-local-mongoose");
 
 let Schema = mongoose.Schema;
@@ -28,55 +27,8 @@ var UserSchema = new mongoose.Schema({
     myaddresses: [Schema.Types.Mixed], //To be embedded
     mynotifications: [Schema.Types.Mixed], //To be embedded
     time_created: { type: Date, default: Date.now },
-    time_activated: { type: Date },
-    tokens: [
-        {
-            access: {
-                type: String,
-                required: true
-            },
-            token: {
-                type: String,
-                required: true
-            }
-        }
-    ]
+    time_activated: { type: Date }
 });
-// UserSchema.plugin(passportLocalMongoose);
-// UserSchema.plugin(passportLocalMongoose);
 
-UserSchema.methods.generateAuthToken = function() {
-    var user = this;
-    var access = "auth";
-    var token = jwt
-        .sign({ _id: user._id.toHexString(), access }, config.JWT_SECRET)
-        .toString();
-    user.tokens.push({ access, token });
-    return user.save().then(function() {
-        return token;
-    });
-};
-
-UserSchema.statics.findByToken = function(token){
-    var User =this;
-    var decoded;
-
-    try{
-
-        decoded= jwt.verify(token,config.JWT_SECRET);
-
-    }catch(e){
-
-        return new Promise(function(resolve,reject){
-            reject();
-        });
-
-    }
-    // console.log(decoded);
-    return User.findOne({
-        _id : decoded._id,
-        'tokens.token' : token,
-        'tokens.access' : 'auth'
-    });
-};
-module.exports = mongoose.model("User", UserSchema);
+const User = mongoose.model("User", UserSchema);
+module.exports = User;

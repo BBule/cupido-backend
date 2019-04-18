@@ -105,16 +105,18 @@ router.route("/verifyotp").post(async function(req, res) {
                 if (body.type === "success") {
                     var user = await User.findOne({ "contact.contact": phone });
                     if (user) {
-                        user.generateAuthToken()
-                            .then(function(token) {
-                                res.header("x-auth", token).send({
-                                    user,
-                                    new: false
-                                });
-                            })
-                            .catch(function(e) {
-                                res.status(400).send(e);
-                            });
+                        const token = jwt.sign(
+                            {
+                                _id: user._id,
+                                email: user.email,
+                                username: user.username
+                            },
+                            config.JWT_SECRET,
+                            {
+                                expiresIn: config.JWT_EXP
+                            }
+                        );
+                        return res.json({ token, user, new: false });
                     } else {
                         user = new User({
                             contact: {
@@ -123,16 +125,18 @@ router.route("/verifyotp").post(async function(req, res) {
                             }
                         });
                         await user.save();
-                        user.generateAuthToken()
-                            .then(function(token) {
-                                res.header("x-auth", token).send({
-                                    user,
-                                    new: true
-                                });
-                            })
-                            .catch(function(e) {
-                                res.status(400).send(e);
-                            });
+                        const token = jwt.sign(
+                            {
+                                _id: user._id,
+                                email: user.email,
+                                username: user.username
+                            },
+                            config.JWT_SECRET,
+                            {
+                                expiresIn: config.JWT_EXP
+                            }
+                        );
+                        return res.json({ token, user, new: true });
                     }
                 } else {
                     res.status(400).send(body);
@@ -148,21 +152,30 @@ router.route("/google").post(async function(req, res) {
     try {
         var user = await User.findOne({ googleId: data.googleId });
         if (user) {
-            user.generateAuthToken()
-                .then(function(token) {
-                    res.header("x-auth", token).send({ user, new: false });
-                })
-                .catch(function(e) {
-                    res.status(400).send(e);
-                });
+            const token = jwt.sign(
+                { _id: user._id, email: user.email, username: user.username },
+                config.JWT_SECRET,
+                {
+                    expiresIn: config.JWT_EXP
+                }
+            );
+            return res.json({ token, user, new: false });
         } else {
             user = new User(data);
             user.save()
                 .then(function() {
-                    return user.generateAuthToken();
-                })
-                .then(function(token) {
-                    res.header("x-auth", token).send({ user, new: true });
+                    const token = jwt.sign(
+                        {
+                            _id: user._id,
+                            email: user.email,
+                            username: user.username
+                        },
+                        config.JWT_SECRET,
+                        {
+                            expiresIn: config.JWT_EXP
+                        }
+                    );
+                    return res.json({ token, user, new: true });
                 })
                 .catch(function(e) {
                     res.status(400).send(e);

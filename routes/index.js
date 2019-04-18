@@ -18,9 +18,7 @@ isAuth = (req, res, next) => {
                 req.user = {
                     _id: decoded._id,
                     email: decoded.email,
-                    username: decoded.username,
-                    wallet: decoded.wallet || null,
-                    admin: decoded.admin || false
+                    username: decoded.username
                 };
                 next();
             }
