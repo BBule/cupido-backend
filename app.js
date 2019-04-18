@@ -10,18 +10,20 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(function(req, res, next) {
     res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader("Access-Control-Expose-Headers", "x-auth");
+    res.setHeader("Access-Control-Expose-Headers", "authorization");
     res.header("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE");
     res.setHeader(
         "Access-Control-Allow-Headers",
-        "Origin, X-Requested-With,content-type, Accept , x-auth"
+        "Origin, X-Requested-With,content-type, Accept , authorization"
     );
 
     next();
 });
 
 apiRoutes.includeRoutes(app);
-
+app.get("*", (req, res, next) => {
+    return next({ message: "I lost!", status: 404 });
+});
 /**
  * Handle errors wisely
  *  to be able to catch error in here and processed
