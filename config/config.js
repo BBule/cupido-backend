@@ -9,7 +9,6 @@ const configs = {
         process.env.GOOGLE_CLIENT_SECRET || "OUUSDpDbBe2C_ehka7hiis4U",
     GOOGLE_REDIRECT_URL:
         process.env.GOOGLE_REDIRECT_URL || "http://127.0.0.1:3000/login",
-    msg91_AUTH_KEY: process.env.msg91_AUTH_KEY || "271701A7FBbvWdD52e5cad80c2",
     JWT_SECRET:
         process.env.JWT_SECRET ||
         "ckhkfnksnfjodjf98iehfnoic4ued8rif4398eoiurjf948iednfidns0-495-",
@@ -25,6 +24,10 @@ const configs = {
     RAZOR_PAY: {
         key_id: process.env.RAZ_KEY || "rzp_test_yB0vsbna19gitB",
         key_secret: process.env.RAZ_SECRET || "qb8WNJrUPbsVWOBrUL4nWAnI"
+    },
+    SMS: {
+        AUTH_KEY: process.env.SMS_AUTH_KEY || "271701A7FBbvWdD52e5cad80c2",
+        SENDER_ID: process.env.SMS_SENDER_ID || "Cupido"
     },
     ENV: process.env.NODE_ENV || "development"
 };

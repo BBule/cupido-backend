@@ -7,7 +7,7 @@ isAuth = (req, res, next) => {
     if (req.headers.authorization) {
         jwt.verify(
             req.headers.authorization,
-            config.JWT.secret,
+            config.JWT_SECRET,
             (error, decoded) => {
                 if (error) {
                     return next({

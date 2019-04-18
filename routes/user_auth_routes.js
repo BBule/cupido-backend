@@ -22,8 +22,10 @@ router.route("/sendotp").post(async function(req, res) {
     var phone = req.body.phone; //along with country code
     request.post(
         "https://control.msg91.com/api/sendotp.php?authkey=" +
-            config.msg91_AUTH_KEY +
-            "&message=Your%20verification%20code%20is%20%23%23OTP%23%23&sender=LeCupido&mobile=" +
+            config.SMS.AUTH_KEY +
+            "&message=Your%20verification%20code%20is%20%23%23OTP%23%23&sender=" +
+            config.SMS.SENDER_ID +
+            "&mobile=" +
             phone,
         { json: true },
         async function(error, response, body) {
@@ -41,7 +43,7 @@ router.route("/verifyotp").post(async function(req, res) {
     var otp = req.body.otp;
     request.post(
         "https://control.msg91.com/api/verifyRequestOTP.php?authkey=" +
-            config.msg91_AUTH_KEY +
+            config.SMS.AUTH_KEY +
             "&mobile=" +
             phone +
             "&otp=" +
@@ -94,7 +96,7 @@ router.route("/verifyotp").post(async function(req, res) {
     var otp = req.body.otp;
     request.post(
         "https://control.msg91.com/api/verifyRequestOTP.php?authkey=" +
-            config.msg91_AUTH_KEY +
+            config.SMS.AUTH_KEY +
             "&mobile=" +
             phone +
             "&otp=" +
