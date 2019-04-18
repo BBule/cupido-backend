@@ -18,7 +18,7 @@ function newIndDate() {
 const User = require("../models/user");
 const EmailToken = require("../models/emailtoken");
 
-router.route("/api/auth/sendotp").post(async function(req, res) {
+router.route("/sendotp").post(async function(req, res) {
     var phone = req.body.phone; //along with country code
     request.post(
         "https://control.msg91.com/api/sendotp.php?authkey=" +
@@ -36,7 +36,7 @@ router.route("/api/auth/sendotp").post(async function(req, res) {
         }
     );
 });
-router.route("/api/verifyotp").post(async function(req, res) {
+router.route("/verifyotp").post(async function(req, res) {
     var phone = req.body.phone;
     var otp = req.body.otp;
     request.post(
@@ -60,38 +60,36 @@ router.route("/api/verifyotp").post(async function(req, res) {
         }
     );
 });
-router.route("/api/verifyemail/:token").post(async function(req, res) {
-
-    var token=req.params.token;
-    try{
-        var emailtoken=await EmailToken.findOne({token});
-        if(emailtoken.used){
-
-        }
-        else{
+router.route("/verifyemail/:token").post(async function(req, res) {
+    var token = req.params.token;
+    try {
+        var emailtoken = await EmailToken.findOne({ token });
+        if (emailtoken.used) {
+        } else {
             var decoded;
 
-            try{
-
-                decoded= jwt.verify(token,config.JWT_SECRET);
-                var user=await User.findOne({_id:decoded._id,'email.email':decoded.email});
-                user.email.verified=true;
+            try {
+                decoded = jwt.verify(token, config.JWT_SECRET);
+                var user = await User.findOne({
+                    _id: decoded._id,
+                    "email.email": decoded.email
+                });
+                user.email.verified = true;
                 await user.save();
-                res.send({type:'auth',message:'Email verified successfully'});
-
-            }catch(e){
-
-                res.status(400).send({message:'Invalid Link'});
-            }        
+                res.send({
+                    type: "auth",
+                    message: "Email verified successfully"
+                });
+            } catch (e) {
+                res.status(400).send({ message: "Invalid Link" });
+            }
         }
+    } catch (e) {
+        res.status(500).send({ message: "Server Error" });
     }
-    catch(e){
-        res.status(500).send({message:'Server Error'});
-    }
-    
 });
 
-router.route("/api/auth/verifyotp").post(async function(req, res) {
+router.route("/verifyotp").post(async function(req, res) {
     var phone = req.body.phone;
     var otp = req.body.otp;
     request.post(
@@ -145,7 +143,7 @@ router.route("/api/auth/verifyotp").post(async function(req, res) {
         }
     );
 });
-router.route("/api/auth/google").post(async function(req, res) {
+router.route("/google").post(async function(req, res) {
     var data = await googleUtils.getGoogleAccountFromCode(req.body.code);
     try {
         var user = await User.findOne({ googleId: data.googleId });

@@ -1,7 +1,7 @@
 const express = require("express");
-const authenticate=require('.././middleware/authenticate');
 const router = express.Router();
-var jwt = require("jsonwebtoken");
+const User = require("../models/user");
+const myaddresses = require("../models/myaddresses");
 
 // Helper Functions
 function newIndDate() {
@@ -11,29 +11,10 @@ function newIndDate() {
     return nDate;
 }
 
-
-// Models
-const User = require("../models/user");
-const Products = require("../models/Products");
-const Saleslist = require("../models/saleslist");
-const mycartingeneral = require("../models/mycartingeneral");
-const mygifts = require("../models/mygifts");
-const mycomments = require("../models/mycomments");
-const mycommits = require("../models/mycommits");
-const myaddresses = require("../models/myaddresses");
-// const allinventory = require('../models/allinventory');
-const myorders = require("../models/myorders");
-const categorylist = require("../models/categorylist");
-const EmailToken = require("../models/emailtoken");
-
-router.get("/pug", function(req, res) {
-    res.send("Hi");
-});
-
 // POST Route to edit address of an individual to the DB
 // Edit existing address by changing the address as well as the user collection
 // User cansend this route
-router.post("/editaddress", authenticate, (req, res) => {
+router.post("/edit", (req, res) => {
     console.log("Editing address of the user");
     let curruserid = req.user._id;
     let addressid = req.body.addressid;
@@ -124,31 +105,78 @@ router.post("/editaddress", authenticate, (req, res) => {
     });
 });
 
-router.put('/api/user/update',authenticate,async function(req,res){
+// API end point to route traffic of my addresses page
+// To check authenticate function, currently disabled.
+// Also after login the route takes him to the exact same page
+//Displays the addresses of a particular user, TODO: Disable remote access of request.
+router.get(
+    "/userid=:curruser/myaddresses/limit=:lvalue&offset=:ovalue",
+    (req, res) => {
+        var addressholder;
+        var curruser = req.params.curruser;
+        User.findOne({ _id: curruser })
+            .then(result => {
+                addressholder = result.myaddresses; // Array of addresses of the current user
+            })
+            .then(() => {
+                if (addressholder == null || addressholder.length == 0) {
+                    console.log("No addresses found");
+                    res.status(200).send({
+                        addressdata: "No addresses found"
+                    });
+                } else {
+                    var startpoint = req.params.ovalue; // zero
+                    var howmany = req.params.lvalue; // ten
+                    console.log("Address is found and it's city: ");
+                    console.log(addressholder[0].city);
+                    res.status(200).send({
+                        addressdata: addressholder.splice(startpoint, howmany)
+                    });
+                }
+            })
+            .catch(err => {
+                res.status(400).send("Bad request");
+            });
+    }
+);
 
-    if(req.body.hasOwnProperty('phone') && req.body.phone.verified==false){
-        return res.status(400).send({type:'Phone',message:'Phone no. not verified'});
-    }
-    if(req.body.hasOwnProperty('email')){
-        
-         var email_token = jwt
-        .sign({ _id: user._id.toHexString(), email:req.body.email.email }, config.JWT_SECRET)
-        .toString();
-        var verification_link='https://cupido.netlify.com/verifyemail/'+email_token;
-        var emailtoken=new EmailToken({token:email_token,used:false});
-        emailtoken.save();
-        //send verification mail
-    }
-    try{
-        await User.findOneAndUpdate(req.user._id,req.body);
-        var user=User.findOne(req.user._id);
-        res.send(user);
-    }
-    catch(e){
-        console.log(e);
-        res.status(500).send({message:'Server Error'});
-    }
-
+// POST Route to add address of an individual to the DB
+// Create a new object and then embed data into the array
+// User can send this route
+router.post("/add", (req, res) => {
+    console.log("Posting address to the user");
+    let curruser = req.user;
+    // All properties to be input from user
+    // Nothing except ID of user from tech logics.
+    let newaddress = new myaddresses({
+        "User.id": curruser._id,
+        "User.username": req.body.username,
+        "User.useremail": req.body.useremail,
+        "User.contact": req.body.contact,
+        "User.address": req.body.address,
+        "User.landmark": req.body.landmark,
+        "User.city": req.body.city,
+        "User.state": req.body.state,
+        "User.country": req.body.country,
+        timecreated: newIndDate()
+    });
+    newaddress
+        .save()
+        .then(() =>
+            User.findOneAndUpdate(
+                { _id: curruser._id },
+                { $push: { myaddresses: newaddress } }
+            )
+                .then(() => {
+                    console.log("Address was pushed");
+                })
+                .catch(err => {
+                    res.status(400).send("Bad request");
+                })
+        )
+        .catch(err => {
+            res.status(400).send("Bad request 2");
+        });
 });
 
 module.exports = router;
