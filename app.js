@@ -10,6 +10,7 @@ const userpostroutes = require("./routes/user_post_routes");
 //const adminpostroutes =  require("./routes/admin_post_routes");
 const cronjobs = require("./routes/cron_jobs");
 const editdeleteroutesuser = require("./routes/edit_delete_routes_user");
+const blogpost = require("./routes/blogPost");
 //const editdeleteroutesadmin =  require("./routes/edit_delete_routes_admin");
 const agenda = require("./agenda");
 
@@ -26,7 +27,6 @@ app.use(function(req, res, next) {
 
     next();
 });
-
 app.use(usergetroutes);
 app.use(userpostroutes);
 //  app.use(admingetroutes);
@@ -35,7 +35,7 @@ app.use(cronjobs);
 // app.use(editdeleteroutesadmin);
 app.use(editdeleteroutesuser);
 app.use(userauthroutes);
-
+app.use(blogpost);
 /**
  * Handle errors wisely
  *  to be able to catch error in here and processed
