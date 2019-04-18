@@ -34,6 +34,7 @@ isAuth = (req, res, next) => {
 };
 
 api.includeRoutes = app => {
+    const unAuthRoutes = require("./unAuthRoutes");
     const userAuth = require("./user_auth_routes");
     const blogPost = require("./blogPost");
     const address = require("./address");
@@ -47,6 +48,7 @@ api.includeRoutes = app => {
     const users = require("./user");
     const payments = require("./payments");
 
+    app.use("/gp", unAuthRoutes);
     app.use("/auth", userAuth);
     app.use("/apis/v1/*", isAuth);
     app.use("/apis/v1/blogposts", blogPost);
