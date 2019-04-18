@@ -101,129 +101,108 @@ router.post("/addcomment", authenticate, (req, res) => {
 
 router.post("/comment/upvote", authenticate, async function(req, res) {
     let curruser = req.user;
-    //change the complete thing as asked in slack.
-    try {
-        var comment = await mycomments.findOne({ _id: req.body.commentid });
-        var upvotes = comment.upvotes;
-        var downvotes = comment.downvotes;
-        if (upvotes.indexOf(curruser._id) >= 0) {
-            let index = upvotes.indexOf(curruser._id);
-            upvotes.splice(index, 1);
-            comment.upvotes = upvotes;
-            comment.downvotes = downvotes;
-            comment.save();
-            let json = {
-                upvotes: upvotes.length,
-                downvotes: downvotes.length,
-                user_upvoted: false,
-                user_downvoted: false
-            };
-            res.send(json);
-        } else if (downvotes.indexOf(curruser._id) >= 0) {
-            let index = downvotes.indexOf(curruser._id);
-            downvotes.splice(index, 1);
-            upvotes.push(curruser._id);
-            comment.upvotes = upvotes;
-            comment.downvotes = downvotes;
-            comment.save();
-            let json = {
-                upvotes: upvotes.length,
-                downvotes: downvotes.length,
-                user_upvoted: true,
-                user_downvoted: false
-            };
-            res.send(json);
-        } else {
-            upvotes.push(curruser._id);
-            comment.upvotes = upvotes;
-            comment.downvotes = downvotes;
-            comment.save();
-            let json = {
-                upvotes: upvotes.length,
-                downvotes: downvotes.length,
-                user_upvoted: true,
-                user_downvoted: false
-            };
-            res.send(json);
+    try{
+        var commentUpvoted= await mycomments.findOne({_id:req.body.commentid,'upvotes.meta':curruser._id});
+        var commentDownvoted= await mycomments.findOne({_id:req.body.commentid,'downvotes.meta':curruser._id});
+        console.log(commentUpvoted);
+        console.log(commentDownvoted);
+        if(commentUpvoted){
+            var comment=await mycomments.findOneAndUpdate(
+                {_id:req.body.commentid},
+                {$pull:{'upvotes.meta':curruser._id},
+                $inc:{'upvotes.count':-1}},
+                {new:true});
+            res.send({upvotes:comment.upvotes.count,downvotes:comment.downvotes.count,user_upvoted:false,user_downvoted:false});
         }
-    } catch (e) {
+        else if(commentDownvoted){
+            var comment=await mycomments.findOneAndUpdate(
+                {_id:req.body.commentid},
+                {$pull:{'downvotes.meta':curruser._id},
+                $push:{'upvotes.meta':curruser._id},
+                $inc:{'upvotes.count':1,'downvotes.count':-1}},
+                {new:true});
+            res.send({upvotes:comment.upvotes.count,downvotes:comment.downvotes.count,user_upvoted:true,user_downvoted:false});
+        }
+        else{
+
+            var comment=await mycomments.findOneAndUpdate(
+                {_id:req.body.commentid},
+                {$push:{'upvotes.meta':curruser._id},
+                    $inc:{'upvotes.count':1}},
+                    {new:true});
+            res.send({upvotes:comment.upvotes.count,downvotes:comment.downvotes.count,user_upvoted:true,user_downvoted:false});
+
+        }
+    }
+    catch (e) {
         console.log(e);
         res.status(400).send();
     }
 });
 
 router.post("/product/like", authenticate, async function(req, res) {
-    let curruser = req.user;
-    try {
-        var product = await Product.findOne({ _id: req.body.productid });
-        var likes = product.likedlist;
-        if (likes.indexOf(curruser._id) >= 0) {
-            let index = likes.indexOf(curruser._id);
-            likes.splice(index, 1);
-            product.likedlist = likes;
-            product.save();
-            let json = { likes: likes.length, user_liked: false };
-            res.send(json);
-        } else {
-            likes.push(curruser._id);
-            product.likedlist = likes;
-            product.save();
-            let json = { likes: likes.length, user_liked: true };
-            res.send(json);
+     let curruser = req.user;
+    try{
+        var ProductLiked= await Products.findOne({_id:req.body.productid,'likedlist.meta':curruser._id});
+        if(ProductLiked){
+            var product=await Products.findOneAndUpdate(
+                {_id:req.body.productid},
+                {$pull:{'likedlist.meta':curruser._id},
+                $inc:{'likedlist.count':-1}},
+                {new:true});
+            res.send({likes:product.likedlist.count,user_liked:false});
         }
-    } catch (e) {
+        else{
+
+            var product=await Products.findOneAndUpdate(
+                {_id:req.body.productid},
+                {$push:{'likedlist.meta':curruser._id},
+                $inc:{'likedlist.count':1}},
+                {new:true});
+            res.send({likes:product.likedlist.count,user_liked:true});
+
+        }
+    }
+    catch (e) {
         console.log(e);
         res.status(400).send();
     }
 });
 
 router.post("/comment/downvote", authenticate, async function(req, res) {
-    let curruser = req.user;
-    try {
-        var comment = await mycomments.findOne({ _id: req.body.commentid });
-        var upvotes = comment.upvotes;
-        var downvotes = comment.downvotes;
-        if (downvotes.indexOf(curruser._id) >= 0) {
-            let index = downvotes.indexOf(curruser._id);
-            downvotes.splice(index, 1);
-            comment.upvotes = upvotes;
-            comment.downvotes = downvotes;
-            comment.save();
-            let json = {
-                upvotes: upvotes.length,
-                downvotes: downvotes.length,
-                user_upvoted: false,
-                user_downvoted: false
-            };
-            res.send(json);
-        } else if (upvotes.indexOf(curruser._id) >= 0) {
-            let index = upvotes.indexOf(curruser._id);
-            upvotes.splice(index, 1);
-            downvotes.push(curruser._id);
-            comment.upvotes = upvotes;
-            comment.downvotes = downvotes;
-            comment.save();
-            let json = {
-                upvotes: upvotes.length,
-                downvotes: downvotes.length,
-                user_upvoted: false,
-                user_downvoted: true
-            };
-            res.send(json);
-        } else {
-            downvotes.push(curruser._id);
-            comment.upvotes = upvotes;
-            comment.downvotes = downvotes;
-            comment.save();
-            let json = {
-                upvotes: upvotes.length,
-                downvotes: downvotes.length,
-                user_upvoted: false,
-                user_downvoted: true
-            };
-            res.send(json);
+     let curruser = req.user;
+    try{
+        var commentUpvoted= await mycomments.findOne({_id:req.body.commentid,'upvotes.meta':curruser._id});
+        var commentDownvoted= await mycomments.findOne({_id:req.body.commentid,'downvotes.meta':curruser._id});
+        if(commentDownvoted){
+            var comment=await mycomments.findOneAndUpdate(
+                {_id:req.body.commentid},
+                {$pull:{'downvotes.meta':curruser._id},
+                $inc:{'downvotes.count':-1}},
+                {new:true});
+            res.send({upvotes:comment.upvotes.count,downvotes:comment.downvotes.count,user_upvoted:false,user_downvoted:false});
         }
-    } catch (e) {
+        else if(commentUpvoted){
+            var comment=await mycomments.findOneAndUpdate(
+                {_id:req.body.commentid},
+                {$pull:{'upvotes.meta':curruser._id},
+                $push:{'downvotes.meta':curruser._id},
+                $inc:{'downvotes.count':1,'upvotes.count':-1}},
+                {new:true});
+            res.send({upvotes:comment.upvotes.count,downvotes:comment.downvotes.count,user_upvoted:false,user_downvoted:true});
+        }
+        else{
+
+            var comment=await mycomments.findOneAndUpdate(
+                {_id:req.body.commentid},
+                {$push:{'downvotes.meta':curruser._id},
+                    $inc:{'downvotes.count':1}},
+                    {new:true});
+            res.send({upvotes:comment.upvotes.count,downvotes:comment.downvotes.count,user_upvoted:false,user_downvoted:true});
+
+        }
+    }
+    catch (e) {
         console.log(e);
         res.status(400).send();
     }

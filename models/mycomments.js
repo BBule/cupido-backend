@@ -19,8 +19,12 @@ let mycommentsSchema = new Schema({
         name: String,
         rating: Number
     },
-    upvotes:[mongoose.Schema.Types.ObjectId],
-    downvotes:[mongoose.Schema.Types.ObjectId],
+    upvotes:{
+        meta:[mongoose.Schema.Types.ObjectId],
+        count:Number},
+    downvotes:{
+        meta:[mongoose.Schema.Types.ObjectId],
+        count:Number},
     timecreated: { type: Date, default: Date.now },
     timeaccepted: Date,
     is_review: Boolean, // Other option being is discussion
