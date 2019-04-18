@@ -45,6 +45,7 @@ api.includeRoutes = app => {
     const products = require("./products");
     const sales = require("./sales");
     const users = require("./user");
+    const payments = require("./payments");
 
     app.use("/auth", userAuth);
     app.use("/apis/v1/*", isAuth);
@@ -58,5 +59,6 @@ api.includeRoutes = app => {
     app.use("/apis/v1/orders", orders);
     app.use("/apis/v1/products", products);
     app.use("/apis/v1/sales", sales);
+    app.use("/api/v1/payments", payments);
 };
 module.exports = api;

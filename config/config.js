@@ -22,6 +22,10 @@ const configs = {
         SMTP_USER: process.env.SMTP_USER || "startsetteam",
         SMTP_PASS: process.env.SMTP_PASS || "saikat95"
     },
+    RAZOR_PAY: {
+        key_id: process.env.RAZ_KEY || "rzp_test_yB0vsbna19gitB",
+        key_secret: process.env.RAZ_SECRET || "qb8WNJrUPbsVWOBrUL4nWAnI"
+    },
     ENV: process.env.NODE_ENV || "development"
 };
 
