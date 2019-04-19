@@ -3,6 +3,10 @@ const router = express.Router();
 
 const productCont = require("../../controller/product.cont");
 
+/**
+ * Get all products pagination and partial filerts
+ * Filter with: category name,brand
+ */
 router.get("/", function(req, res, next) {
     const { page = 1, limit = 20, categry = null, brand = null } = req.query;
     return productCont
@@ -18,7 +22,10 @@ router.get("/", function(req, res, next) {
             });
         });
 });
-// API end point to route traffic of product page
+
+/**
+ * Get Product By Id
+ */
 router.get("/:id", (req, res, next) => {
     return productCont
         .getProductById(req.params.id)
@@ -38,6 +45,11 @@ router.get("/:id", (req, res, next) => {
         });
 });
 
+/**
+ * Using a keyword
+ * Searches in Category names
+ * Searches in Product name
+ */
 router.get("/s", (req, res, next) => {
     const keyword = decodeURIComponent(req.query.keyword);
     return productCont
