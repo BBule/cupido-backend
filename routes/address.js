@@ -14,7 +14,8 @@ function newIndDate() {
 // POST Route to edit address of an individual to the DB
 // Edit existing address by changing the address as well as the user collection
 // User cansend this route
-router.post("/edit", (req, res) => {
+
+router.post("/edit", (req, res, next) => {
     console.log("Editing address of the user");
     let curruserid = req.user._id;
     let addressid = req.body.addressid;
@@ -25,8 +26,12 @@ router.post("/edit", (req, res) => {
             {
                 $set: {
                     "User.id": curruserid,
-                    "User.username": req.body.username,
-                    "User.useremail": req.body.useremail,
+                    "User.username": req.user.username,
+                    "User.useremail": req.body.email
+                        ? req.body.email
+                        : req.user.email
+                        ? req.user.email.email
+                        : "",
                     "User.contact": req.body.contact,
                     "User.address": req.body.address,
                     "User.landmark": req.body.landmark,
@@ -60,8 +65,12 @@ router.post("/edit", (req, res) => {
                 if (addresslist[i]._id == addressid) {
                     console.log("Address found");
                     addresslist[i].User.id = curruserid;
-                    addresslist[i].User.username = req.body.username;
-                    addresslist[i].User.useremail = req.body.useremail;
+                    addresslist[i].User.username = req.user.username;
+                    addresslist[i].User.useremail = req.body.email
+                        ? req.body.email
+                        : req.user.email
+                        ? req.user.email.email
+                        : "";
                     addresslist[i].User.contact = req.body.contact;
                     addresslist[i].User.address = req.body.address;
                     addresslist[i].User.landmark = req.body.landmark;
@@ -109,36 +118,37 @@ router.post("/edit", (req, res) => {
 // To check authenticate function, currently disabled.
 // Also after login the route takes him to the exact same page
 //Displays the addresses of a particular user, TODO: Disable remote access of request.
-router.get(
-    "/userid=:curruser/myaddresses/limit=:lvalue&offset=:ovalue",
-    (req, res) => {
-        var addressholder;
-        var curruser = req.params.curruser;
-        User.findOne({ _id: curruser })
-            .then(result => {
-                addressholder = result.myaddresses; // Array of addresses of the current user
-            })
-            .then(() => {
-                if (addressholder == null || addressholder.length == 0) {
-                    console.log("No addresses found");
-                    res.status(200).send({
-                        addressdata: "No addresses found"
-                    });
-                } else {
-                    var startpoint = req.params.ovalue; // zero
-                    var howmany = req.params.lvalue; // ten
-                    console.log("Address is found and it's city: ");
-                    console.log(addressholder[0].city);
-                    res.status(200).send({
-                        addressdata: addressholder.splice(startpoint, howmany)
-                    });
-                }
-            })
-            .catch(err => {
-                res.status(400).send("Bad request");
+router.get("/limit=:lvalue&offset=:ovalue", (req, res, next) => {
+    var addressholder;
+    User.findOne({ _id: req.user._id })
+        .select("myaddresses")
+        .then(result => {
+            addressholder = result.myaddresses; // Array of addresses of the current user
+        })
+        .then(() => {
+            if (addressholder == null || addressholder.length == 0) {
+                console.log("No addresses found");
+                res.status(200).send({
+                    addressdata: "No addresses found"
+                });
+            } else {
+                var startpoint = req.params.ovalue; // zero
+                var howmany = req.params.lvalue; // ten
+                console.log("Address is found and it's city: ");
+                console.log(addressholder[0].city);
+                return res.json({
+                    addressdata: addressholder.splice(startpoint, howmany)
+                });
+            }
+        })
+        .catch(err => {
+            return next({
+                message: err.message || "unknown error",
+                status: 400,
+                stack: err
             });
-    }
-);
+        });
+});
 
 // POST Route to add address of an individual to the DB
 // Create a new object and then embed data into the array
@@ -150,15 +160,18 @@ router.post("/add", (req, res) => {
     // Nothing except ID of user from tech logics.
     let newaddress = new myaddresses({
         "User.id": curruser._id,
-        "User.username": req.body.username,
-        "User.useremail": req.body.useremail,
+        "User.username": req.user.username,
+        "User.useremail": req.body.email
+            ? req.body.email
+            : req.user.email
+            ? req.user.email.email
+            : "",
         "User.contact": req.body.contact,
         "User.address": req.body.address,
         "User.landmark": req.body.landmark,
         "User.city": req.body.city,
         "User.state": req.body.state,
-        "User.country": req.body.country,
-        timecreated: newIndDate()
+        "User.country": req.body.country
     });
     newaddress
         .save()
@@ -168,14 +181,24 @@ router.post("/add", (req, res) => {
                 { $push: { myaddresses: newaddress } }
             )
                 .then(() => {
-                    console.log("Address was pushed");
+                    return res.json({
+                        newaddress
+                    });
                 })
                 .catch(err => {
-                    res.status(400).send("Bad request");
+                    return next({
+                        message: err.message || "unknown error",
+                        status: 400,
+                        stack: err
+                    });
                 })
         )
         .catch(err => {
-            res.status(400).send("Bad request 2");
+            return next({
+                message: err.message || "unknown error",
+                status: 400,
+                stack: err
+            });
         });
 });
 
