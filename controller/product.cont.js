@@ -29,7 +29,7 @@ const getAllProducts = async (
 ) => {
     let query = {};
     const skip = limit * (page - 1);
-    const limit = skip + limit;
+    limit = skip + limit;
     if (category) {
         query["Category"] = category;
     }
