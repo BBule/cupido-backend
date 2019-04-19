@@ -28,7 +28,10 @@ let SalesListSchema = new Schema({
             }
         }
     ],
-    pricemarkers: [Schema.Types.Mixed], // [{quantity,price}]
+    cupidLove: [{
+        quantity:Number,
+        cupidLove:Number
+    }], // [{quantity,cupidLove}]
     quantity_committed: { type: Number, default: 0 },
     quantity_sold: { type: Number, default: 0 },
     current_inventory: Number,

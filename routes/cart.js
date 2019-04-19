@@ -13,6 +13,7 @@ function newIndDate() {
 const User = require("../models/user");
 
 const mycartingeneral = require("../models/mycartingeneral");
+const SalesList = require("../models/saleslist");
 
 // POST Route to send cart entry of an individual
 // Create a new object and then embed data into the array
@@ -37,7 +38,7 @@ router.post("/add", (req, res) => {
         .then(() =>
             User.findOneAndUpdate(
                 { _id: curruser._id },
-                { $push: { mycartingeneral: newcartitem } }
+                { $push: { mycarts: newcartitem } }
             )
                 .then(() => {
                     console.log("Cart item was pushed.");
@@ -51,14 +52,36 @@ router.post("/add", (req, res) => {
         });
 });
 
+router.post("/remove", async (req, res, next) => {
+    let cartitemId=req.body.cartitemId;
+    try{
+        await mycartingeneral.findByIdAndRemove(cartitemId);
+        await User.findOneAndUpdate(
+            {_id:req.user._id},
+            {$pull:{mycarts:{_id:cartitemId}}});
+        return res.send({message:'Cart item removed successfully'});
+    }
+    catch(error){
+        return next({
+                message:
+                    error.message || "Server Error",
+                status: 500
+            });
+    }
+});
+
+
+
+
+
 // API end point to route traffic of mycarts page, split into commit and buy now
 // To check authenticate function, currently disabled.
 // Also after login the route takes him to the exact same page
 router.get(
-    "/api/userid=:curruser/mycarts/limit=:lvalue&offset=:ovalue&type=:type",
+    "/mycarts/limit=:lvalue&offset=:ovalue&type=:type",
     (req, res) => {
         var cartsholder;
-        var curruser = req.params.curruser;
+        var curruser = req.user._id;
         var typeofcart = req.params.type;
         console.log(req.originalUrl);
         if (typeofcart == "commit") {
@@ -92,7 +115,7 @@ router.get(
                 .then(result => {
                     cartsholder = result.mycarts; // Array of carts of the current user
                 })
-                .then(() => {
+                .then(async () => {
                     if (cartsholder == null || cartsholder.length == 0) {
                         console.log("No carts found");
                         res.status(200).send({
@@ -105,6 +128,7 @@ router.get(
                             "carts is found and it's product marketprice: "
                         );
                         console.log(cartsholder[0].Product.marketPrice);
+                        let cupidLove=await getEstimateCupidLove(cartsholder)
                         res.status(200).send({
                             cartsdata: cartsholder.splice(startpoint, howmany)
                         });
@@ -116,5 +140,21 @@ router.get(
         }
     }
 );
+
+async function getEstimateCupidLove(cart){
+    let totalCupidLove=0;
+    cart.forEach(async function(item){
+        let saleid=cart.Sale.id;
+        let sale=await SalesList.findById(saleid);
+        let quantitySold=sale.quantity_sold+1;
+        for(i=0;i<sale.cupidLove.length;i++){
+            if(quantitySold<=sale.cupidLove[i].quantity){
+                totalCupidLove+=sale.cupidLove[i].cupidLove
+            }
+        }
+    });
+    return totalCupidLove;
+}
+
 
 module.exports = router;

@@ -43,14 +43,14 @@ router.post("/edit", async function(req, res) {
         await SendMail(message);
         return res.json({ success: true });
     }
-    // try {
-    //     await User.findOneAndUpdate(req.user._id, req.body);
-    //     var user = User.findOne(req.user._id);
-    //     res.send(user);
-    // } catch (e) {
-    //     console.log(e);
-    //     res.status(500).send({ message: "Server Error" });
-    // }
+    try {
+        await User.findOneAndUpdate(req.user._id, req.body);
+        var user = User.findOne(req.user._id);
+        res.send(user);
+    } catch (e) {
+        console.log(e);
+        res.status(500).send({ message: "Server Error" });
+    }
 });
 
 module.exports = router;

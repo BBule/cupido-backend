@@ -3,11 +3,11 @@ const router = express.Router();
 
 // Models
 
-const Products = require("../models/Products");
+const Products = require("../../models/Products");
 
 router.get("/", function(req, res) {
-    Products.find().then(function(users) {
-        res.send(users);
+    Products.find().then(function(products) {
+        res.send(products);
     });
 });
 // API end point to route traffic of product page

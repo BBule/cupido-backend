@@ -8,14 +8,12 @@ const config = require(".././config/config");
 const googleConfig = {
     clientId: config.GOOGLE_CLIENT_ID, // e.g. asdfghjkljhgfdsghjk.apps.googleusercontent.com
     clientSecret: config.GOOGLE_CLIENT_SECRET, // e.g. _ASDFA%DFASDFASDFASD#FAD-
-    redirect: config.GOOGLE_REDIRECT_URL, // this must match your google api settings
-    grant_type: "authorization_code"
-};
+    redirect: config.GOOGLE_REDIRECT_URL // this must match your google api settings
+}
 
 const defaultScope = [
     "https://www.googleapis.com/auth/plus.me",
     "https://www.googleapis.com/auth/userinfo.email",
-    ,
     "https://www.googleapis.com/auth/userinfo.profile"
 ];
 
