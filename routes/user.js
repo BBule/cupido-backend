@@ -7,7 +7,8 @@ const EmailToken = require("../models/emailtoken");
 const config = require("../config/config");
 const { SendMail, getEJSTemplate } = require("../helpers/mailHelper");
 
-router.post("/edit", async function(req, res) {
+router.post("/edit", async function(req, res, next) {
+    let query = { $set: {} };
     if (req.body.hasOwnProperty("phone") && req.body.phone.verified == false) {
         return res
             .status(400)
@@ -41,15 +42,22 @@ router.post("/edit", async function(req, res) {
             body: finalHTML
         };
         await SendMail(message);
-        return res.json({ success: true });
+    }
+    if (req.body.hasOwnProperty("name")) {
+        query.$set = { username: req.body.name };
+        await User.findOneAndUpdate(req.user._id, query);
     }
     try {
-        await User.findOneAndUpdate(req.user._id, req.body);
-        var user = User.findOne(req.user._id);
-        res.send(user);
+        // var user = User.findOne(req.user._id);
+        // res.send(user);
+        return res.json({ success: true });
     } catch (e) {
         console.log(e);
-        res.status(500).send({ message: "Server Error" });
+        return next({
+            message: e.message || "unknown error",
+            status: 400,
+            stack: e
+        });
     }
 });
 
