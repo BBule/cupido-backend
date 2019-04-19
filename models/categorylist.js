@@ -2,15 +2,16 @@
 
 const mongoose = require("mongoose");
 
-let Schema = mongoose.Schema;
+const Schema = mongoose.Schema;
 
-let categorySchema = new Schema(
+const categorySchema = new Schema(
     {
         category_name: String,
         category_description: String
     },
     {
-        timestamps: true
+        timestamps: true,
+        collection: "categorylist"
     }
 );
 

@@ -2,16 +2,19 @@ const Products = require("../models/Products");
 const Category = require("../models/categorylist");
 
 const searchWithKeyword = async key => {
+    console.log(key);
     const products = await Products.find({
         title: { $regex: key, $options: "i" }
     })
         .select({ "likedlist.meta": 0 })
         .exec();
+    console.log(1);
     const category = await Category.find({
         category_name: { $regex: key, $options: "i" }
     })
-        .select("category_name")
+        .select({ category_name: 1 })
         .exec();
+    console.log(2);
     return { categories: category, products: products };
 };
 
