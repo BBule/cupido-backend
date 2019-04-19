@@ -11,8 +11,15 @@ router.post("/like", async function(req, res) {
         var ProductLiked = await Products.findOne({
             _id: req.body.productid,
             "likedlist.meta": curruser._id
-        });
-        if (ProductLiked) {
+        })
+            .select({ "likedlist.meta.$": 1 })
+            .exec();
+        if (
+            ProductLiked &&
+            ProductLiked.likedlist &&
+            ProductLiked.likedlist.meta &&
+            ProductLiked.likedlist.meta.length
+        ) {
             var product = await Products.findOneAndUpdate(
                 { _id: req.body.productid },
                 {
@@ -20,7 +27,9 @@ router.post("/like", async function(req, res) {
                     $inc: { "likedlist.count": -1 }
                 },
                 { new: true }
-            );
+            )
+                .select({ "product.likedlist.count": 1 })
+                .exec();
             res.send({ likes: product.likedlist.count, user_liked: false });
         } else {
             var product = await Products.findOneAndUpdate(
@@ -30,12 +39,18 @@ router.post("/like", async function(req, res) {
                     $inc: { "likedlist.count": 1 }
                 },
                 { new: true }
-            );
+            )
+                .select({ "product.likedlist.count": 1 })
+                .exec();
             res.send({ likes: product.likedlist.count, user_liked: true });
         }
     } catch (e) {
         console.log(e);
-        res.status(400).send();
+        return next({
+            message: e.message || "unknown error",
+            status: 400,
+            stack: e
+        });
     }
 });
 
