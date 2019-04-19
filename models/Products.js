@@ -33,8 +33,9 @@ let ProductsSchema = new Schema(
         timecreated: { type: Date, default: Date.now },
         title: String, // Primary Key
         likedlist: {
-        meta:[Schema.Types.ObjectId],
-        count:Number} // array of user ids, emails if possible
+            meta: [Schema.Types.ObjectId],
+            count: Number
+        } // array of user ids, emails if possible
     },
     { collection: "products" }
 );
