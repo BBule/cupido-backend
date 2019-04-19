@@ -1,4 +1,5 @@
 const express = require("express");
+const mongoose = require("mongoose");
 const router = express.Router();
 const User = require("../models/user");
 const myaddresses = require("../models/myaddresses");
@@ -17,8 +18,8 @@ function newIndDate() {
 
 router.post("/edit", (req, res, next) => {
     console.log("Editing address of the user");
-    let curruserid = req.user._id;
-    let addressid = req.body.addressid;
+    let curruserid = mongoose.Types.ObjectId(req.user._id);
+    let addressid = mongoose.Types.ObjectId(req.body.addressid);
     // Edit the address DB
     myaddresses
         .findOneAndUpdate(
@@ -53,41 +54,40 @@ router.post("/edit", (req, res, next) => {
     // Make changes in the USER DB
     let addresslist = [];
     var flag = false;
-    User.findOne({ _id: curruserid }, function(err, docuser) {
-        console.log("User found");
-        if (docuser != null && docuser.length != 0) {
-            addresslist = docuser.myaddresses;
-            for (var i = 0; i < addresslist.length; i++) {
-                console.log("Searching addresses");
-                console.log("Comparing : ");
-                console.log(addressid);
-                console.log(addresslist[i]._id);
-                if (addresslist[i]._id == addressid) {
-                    console.log("Address found");
-                    addresslist[i].User.id = curruserid;
-                    addresslist[i].User.username = req.user.username;
-                    addresslist[i].User.useremail = req.body.email
-                        ? req.body.email
-                        : req.user.email
-                        ? req.user.email.email
-                        : "";
-                    addresslist[i].User.contact = req.body.contact;
-                    addresslist[i].User.address = req.body.address;
-                    addresslist[i].User.landmark = req.body.landmark;
-                    addresslist[i].User.city = req.body.city;
-                    addresslist[i].User.state = req.body.state;
-                    addresslist[i].User.country = req.body.country;
-                    console.log("New address list : ");
-                    console.log(addresslist);
-                    flag = true;
-                    break;
-                }
+    User.findOne(
+        {
+            _id: curruserid,
+            "myaddresses._id": addressid
+        },
+        { "myaddresses._id.$": 1 },
+        function(err, docuser) {
+            console.log("User found");
+            if (docuser && docuser.myaddresses && docuser.myaddresses.length) {
+                addresslist = docuser.myaddresses;
+                const i = 0;
+                console.log("Address found");
+                addresslist[i].User.id = curruserid;
+                addresslist[i].User.username = req.user.username;
+                addresslist[i].User.useremail = req.body.email
+                    ? req.body.email
+                    : req.user.email
+                    ? req.user.email.email
+                    : "";
+                addresslist[i].User.contact = req.body.contact;
+                addresslist[i].User.address = req.body.address;
+                addresslist[i].User.landmark = req.body.landmark;
+                addresslist[i].User.city = req.body.city;
+                addresslist[i].User.state = req.body.state;
+                addresslist[i].User.country = req.body.country;
+                console.log("New address list : ");
+                console.log(addresslist);
+                flag = true;
+            } else {
+                console.log("DOcuser incompat");
+                console.log(docuser);
             }
-        } else {
-            console.log("DOcuser incompat");
-            console.log(docuser);
         }
-    }).then(() => {
+    ).then(() => {
         if (flag == true) {
             console.log("User is being updated");
             User.findOneAndUpdate(
@@ -101,15 +101,22 @@ router.post("/edit", (req, res, next) => {
             )
                 .then(userdoc => {
                     console.log(userdoc);
-                    res.status(200).send("User doc was updated");
+                    res.status(200).json({ message: "User doc was updated" });
                 })
                 .catch(err => {
                     console.log(err);
-                    res.status(400).send("Error occured 2");
+                    return next({
+                        message: err.message || "unknown error occured",
+                        status: 400,
+                        stack: err
+                    });
                 });
         } else {
             console.log("No address match found");
-            res.status(200).send("No address match found");
+            return next({
+                message: "No matching address found",
+                status: 400
+            });
         }
     });
 });
