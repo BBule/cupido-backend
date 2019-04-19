@@ -3,22 +3,6 @@ const router = express.Router();
 
 const productCont = require("../../controller/product.cont");
 
-<<<<<<< HEAD
-const Products = require("../../models/Products");
-
-router.get("/", function(req, res) {
-    Products.find().then(function(products) {
-        res.send(products);
-    });
-});
-// API end point to route traffic of product page
-router.get("/:prodname", (req, res) => {
-    var prodname = req.params.prodname.replace(/_/g, " ");
-    var productholder;
-    Products.findOne({ title: prodname })
-        .then(result => {
-            productholder = result;
-=======
 /**
  * Get all products pagination and partial filerts
  * Filter with: category name,brand
@@ -29,7 +13,6 @@ router.get("/", function(req, res, next) {
         .getAllProducts(page, limit, categry, brand)
         .then(Data => {
             return res.json(Data);
->>>>>>> 3b39e57801adb812b5224edb88a306b131ec3ebc
         })
         .catch(error => {
             return next({
