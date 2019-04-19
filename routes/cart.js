@@ -53,108 +53,79 @@ router.post("/add", (req, res) => {
 });
 
 router.post("/remove", async (req, res, next) => {
-    let cartitemId=req.body.cartitemId;
-    try{
+    let cartitemId = req.body.cartitemId;
+    try {
         await mycartingeneral.findByIdAndRemove(cartitemId);
         await User.findOneAndUpdate(
-            {_id:req.user._id},
-            {$pull:{mycarts:{_id:cartitemId}}});
-        return res.send({message:'Cart item removed successfully'});
-    }
-    catch(error){
+            { _id: req.user._id },
+            { $pull: { mycarts: { _id: cartitemId } } }
+        );
+        return res.send({ message: "Cart item removed successfully" });
+    } catch (error) {
         return next({
-                message:
-                    error.message || "Server Error",
-                status: 500
-            });
+            message: error.message || "Server Error",
+            status: 500
+        });
     }
 });
-
-
-
-
 
 // API end point to route traffic of mycarts page, split into commit and buy now
 // To check authenticate function, currently disabled.
 // Also after login the route takes him to the exact same page
-router.get(
-    "/mycarts/limit=:lvalue&offset=:ovalue&type=:type",
-    (req, res) => {
-        var cartsholder;
-        var curruser = req.user._id;
-        var typeofcart = req.params.type;
-        console.log(req.originalUrl);
-        if (typeofcart == "commit") {
-            User.findOne({ _id: curruser, "mycarts.is_commit": true })
-                .then(result => {
-                    cartsholder = result.mycarts; // Array of carts of the current user
-                })
-                .then(() => {
-                    if (cartsholder == null || cartsholder.length == 0) {
-                        console.log("No carts found");
-                        res.status(200).send({
-                            ordersdata: "No carts found"
-                        });
-                    } else {
-                        var startpoint = req.params.ovalue; // zero
-                        var howmany = req.params.lvalue; // ten
-                        console.log(
-                            "carts is found and it's product marketprice: "
-                        );
-                        console.log(cartsholder[0].Product.marketPrice);
-                        res.status(200).send({
-                            cartsdata: cartsholder.splice(startpoint, howmany)
-                        });
-                    }
-                })
-                .catch(err => {
-                    res.status(400).send("Bad request");
-                });
-        } else {
-            User.findOne({ _id: curruser, "mycarts.is_commit": false })
-                .then(result => {
-                    cartsholder = result.mycarts; // Array of carts of the current user
-                })
-                .then(async () => {
-                    if (cartsholder == null || cartsholder.length == 0) {
-                        console.log("No carts found");
-                        res.status(200).send({
-                            ordersdata: "No carts found"
-                        });
-                    } else {
-                        var startpoint = req.params.ovalue; // zero
-                        var howmany = req.params.lvalue; // ten
-                        console.log(
-                            "carts is found and it's product marketprice: "
-                        );
-                        console.log(cartsholder[0].Product.marketPrice);
-                        let cupidLove=await getEstimateCupidLove(cartsholder)
-                        res.status(200).send({
-                            cartsdata: cartsholder.splice(startpoint, howmany)
-                        });
-                    }
-                })
-                .catch(err => {
-                    res.status(400).send("Bad request");
-                });
+router.get("/", (req, res, next) => {
+    var cartsholder;
+    var curruser = req.user._id;
+    var typeofcart = req.query.type;
+    console.log(req.originalUrl);
+    let query = {
+        _id: curruser,
+        mycarts: {
+            is_commit: false
         }
+    };
+    if (typeofcart == "commit") {
+        query.mycarts.is_commit = true;
     }
-);
+    User.findOne(query)
+        .then(async result => {
+            if (result && result.mycarts && result.mycarts.length) {
+                var startpoint = req.query.offset || 0; // zero
+                var howmany = req.query.limit || 10; // ten
+                console.log("carts is found and it's product marketprice: ");
+                console.log(result.mycarts[0].Product.marketPrice);
+                let cupidLove = null;
+                if (typeofcart == "commit") {
+                    cupidLove = await getEstimateCupidLove(cartsholder);
+                }
+                res.status(200).send({
+                    cartsdata: result.mycarts.splice(startpoint, howmany)
+                });
+            } else {
+                return res.json({ message: "No items found" });
+            }
+        })
+        .catch(err => {
+            return next({
+                message: err.message || "unknown error occured",
+                status: 400,
+                stack: err
+            });
+        });
+});
 
-async function getEstimateCupidLove(cart){
-    let totalCupidLove=0;
-    cart.forEach(async function(item){
-        let saleid=cart.Sale.id;
-        let sale=await SalesList.findById(saleid);
-        let quantitySold=sale.quantity_sold+1;
-        for(i=0;i<sale.cupidLove.length;i++){
-            if(quantitySold<=sale.cupidLove[i].quantity){
-                totalCupidLove+=sale.cupidLove[i].cupidLove
+async function getEstimateCupidLove(cart) {
+    let totalCupidLove = 0;
+    cart.forEach(async function(item) {
+        let saleid = cart.Sale.id;
+        let sale = await SalesList.findById(saleid);
+        let quantitySold = sale.quantity_sold + 1;
+        for (i = 0; i < sale.cupidLove.length; i++) {
+            if (quantitySold <= sale.cupidLove[i].quantity) {
+                totalCupidLove += sale.cupidLove[i].cupidLove;
             }
         }
     });
     return totalCupidLove;
 }
-
 
 module.exports = router;

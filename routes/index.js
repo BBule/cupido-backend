@@ -60,7 +60,7 @@ api.includeRoutes = app => {
     app.use("/apis/v1/gift", gifts);
     app.use("/apis/v1/orders", orders);
     app.use("/apis/v1/products", products);
-    app.use("/apis/v1/sales", sales);
+    // app.use("/apis/v1/sales", sales);
     app.use("/apis/v1/payments", payments);
 };
 module.exports = api;
