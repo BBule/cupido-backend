@@ -151,9 +151,10 @@ router.route("/verifyotp").post(async function(req, res) {
         }
     );
 });
-router.route("/google").post(async function(req, res) {
-    var data = await googleUtils.getGoogleAccountFromCode(req.body.code);
+router.route("/google").post(async function(req, res, next) {
     try {
+        var data = await googleUtils.getGoogleAccountFromCode(req.body.code);
+
         var user = await User.findOne({ googleId: data.googleId });
         if (user) {
             const token = jwt.sign(
@@ -191,8 +192,8 @@ router.route("/google").post(async function(req, res) {
                     res.status(400).send(e);
                 });
         }
-    } catch (e) {
-        console.log(e);
+    } catch (ex) {
+        next({ message: "unable to login", status: 400, stack: ex });
     }
 });
 router.route("/google/url").get(function(req, res) {

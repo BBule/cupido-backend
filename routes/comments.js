@@ -17,7 +17,7 @@ const myreplies = require("../models/myreplies");
 // POST Route to send comment entry of an individual to the admin discretion portal
 // Create a new object and then embed data into the array
 // User can send this route
-router.post("/:productid", (req, res) => {
+router.post("/:productid", (req, res, next) => {
     console.log("Posting comment to the admin discretion portal");
     let curruser = req.user;
     // All properties to be input from user
@@ -47,40 +47,39 @@ router.post("/:productid", (req, res) => {
         .save()
         .then(() => res.send({ message: "Comment sent for review" }))
         .catch(err => {
-            res.status(400).send("Bad request 2");
+            return next({ message: "Bad request", status: 400, stack: err });
         });
 });
 
 router.get("/:productid", async (req, res, next) => {
     let curruser = req.user;
-    try{
-        var comments=await mycomments.find({'Product.id':req.params.productid});
-        comments=comments.map(async function(comment){
-            var user=await User.findById(comment.User.id);
-            comment.User.name=user.username;
-            if(comment.upvotes.meta.indexOf(curruser._id)>=0){
-                comment.user_upvoted=true;
-                comment.down_upvoted=false;
-            }
-            else if(comment.downvotes.meta.indexOf(curruser._id)>=0){
-                comment.user_upvoted=false;
-                comment.down_upvoted=true;   
-            }
-            else{
-                comment.user_upvoted=false;
-                comment.down_upvoted=false;   
+    try {
+        var comments = await mycomments.find({
+            "Product.id": req.params.productid
+        });
+        comments = comments.map(async function(comment) {
+            var user = await User.findById(comment.User.id);
+            comment.User.name = user.username;
+            if (comment.upvotes.meta.indexOf(curruser._id) >= 0) {
+                comment.user_upvoted = true;
+                comment.down_upvoted = false;
+            } else if (comment.downvotes.meta.indexOf(curruser._id) >= 0) {
+                comment.user_upvoted = false;
+                comment.down_upvoted = true;
+            } else {
+                comment.user_upvoted = false;
+                comment.down_upvoted = false;
             }
             return comment;
         });
 
         return res.send(comments);
-    }
-    catch(error){
+    } catch (error) {
         return next({
-                message: error.message || "Unknown error",
-                status: 400,
-                stack: error
-            });
+            message: error.message || "Unknown error",
+            status: 400,
+            stack: error
+        });
     }
 });
 
@@ -243,7 +242,7 @@ router.post("/reply/:commentid", async (req, res) => {
             is_verified_buyer: checkbuy
         });
 
-        var reply = await newreply.save();
+        await newreply.save();
 
         res.send({ message: "Reply sent for review" });
     } catch (e) {
@@ -252,25 +251,29 @@ router.post("/reply/:commentid", async (req, res) => {
     }
 });
 
-
 router.get("/reply/:commentid", async (req, res) => {
-    let curruser=req.user;
-    try{
-        var replies=await myreplies.find({'Comment.id':req.params.commentid});
-        replies=replies.map(async function(reply){
-            var user=await User.findById(reply.User.id);
-            reply.User.name=user.username;
-            return reply;
-        });
+    try {
+        var replies = await myreplies
+            .find({
+                "Comment.id": req.params.commentid
+            })
+            .populate({
+                path: "User.id",
+                select: "username"
+            });
+        // replies = replies.map(async function(reply) {
+        //     var user = await User.findById(reply.User.id);
+        //     reply.User.name = user.username;
+        //     return reply;
+        // });
 
         return res.send(replies);
-    }
-    catch(error){
+    } catch (error) {
         return next({
-                message: error.message || "Unknown error",
-                status: 400,
-                stack: error
-            });
+            message: error.message || "Unknown error",
+            status: 400,
+            stack: error
+        });
     }
 });
 

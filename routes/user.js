@@ -9,10 +9,8 @@ const { SendMail, getEJSTemplate } = require("../helpers/mailHelper");
 
 router.post("/edit", async function(req, res, next) {
     let query = { $set: {} };
-    if (req.body.hasOwnProperty("phone") && req.body.phone.verified == false) {
-        return res
-            .status(400)
-            .send({ type: "Phone", message: "Phone no. not verified" });
+    if (req.body.hasOwnProperty("phone")) {
+        query.$set = { contact: req.body.phone, verified: false };
     }
     if (req.body.hasOwnProperty("email")) {
         var email_token = jwt
@@ -61,4 +59,61 @@ router.post("/edit", async function(req, res, next) {
     }
 });
 
+router.get("/gift", (req, res) => {
+    var giftsholder;
+    var curruser = req.user._id;
+    console.log(req.originalUrl);
+    User.findOne({ _id: curruser })
+        .then(result => {
+            giftsholder = result.mygifts; // Array of gifts of the current user
+        })
+        .then(() => {
+            if (giftsholder == null || giftsholder.length == 0) {
+                console.log("No gifts found");
+                res.status(200).send({
+                    giftsdata: "No gifts found"
+                });
+            } else {
+                var startpoint = req.query.offset; // zero
+                var howmany = req.query.limit; // ten
+                console.log("gift is found and it's code: ");
+                console.log(giftsholder[0].giftcode);
+                res.status(200).send({
+                    giftsdata: giftsholder.splice(startpoint, howmany)
+                });
+            }
+        })
+        .catch(err => {
+            res.status(400).send("Bad request");
+        });
+});
+
+router.get("/orders", (req, res) => {
+    var ordersholder;
+    var curruser = req.user._id;
+    console.log(req.originalUrl);
+    User.findOne({ _id: curruser })
+        .then(result => {
+            ordersholder = result.myorders; // Array of orders of the current user
+        })
+        .then(() => {
+            if (ordersholder == null || ordersholder.length == 0) {
+                console.log("No orders found");
+                res.status(200).send({
+                    ordersdata: "No orders found"
+                });
+            } else {
+                var startpoint = req.query.offset; // zero
+                var howmany = req.query.limit; // ten
+                console.log("order is found and it's amount: ");
+                console.log(ordersholder[0].order_amount);
+                res.status(200).send({
+                    ordersdata: ordersholder.splice(startpoint, howmany)
+                });
+            }
+        })
+        .catch(err => {
+            res.status(400).send("Bad request");
+        });
+});
 module.exports = router;

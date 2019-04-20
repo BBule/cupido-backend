@@ -9,7 +9,7 @@ const googleConfig = {
     clientId: config.GOOGLE_CLIENT_ID, // e.g. asdfghjkljhgfdsghjk.apps.googleusercontent.com
     clientSecret: config.GOOGLE_CLIENT_SECRET, // e.g. _ASDFA%DFASDFASDFASD#FAD-
     redirect: config.GOOGLE_REDIRECT_URL // this must match your google api settings
-}
+};
 
 const defaultScope = [
     "https://www.googleapis.com/auth/plus.me",
@@ -59,28 +59,24 @@ function urlGoogle() {
  * Part 2: Take the "code" parameter which Google gives us once when the user logs in, then get the user's email and id.
  */
 async function getGoogleAccountFromCode(code) {
-    try {
-        const auth = createConnection();
-        const data = await auth.getToken(code);
-        const tokens = data.tokens;
-        auth.setCredentials(tokens);
-        const plus = getGooglePlusApi(auth);
-        const me = await plus.people.get({ userId: "me" });
-        const userGoogleId = me.data.id;
-        const userGoogleName = me.data.displayName;
-        const userGoogleEmail =
-            me.data.emails && me.data.emails.length && me.data.emails[0].value;
-        return {
-            username: userGoogleName,
-            email: {
-                email: userGoogleEmail,
-                verified: true
-            },
-            googleId: userGoogleId
-        };
-    } catch (e) {
-        console.log(e);
-    }
+    const auth = createConnection();
+    const data = await auth.getToken(code);
+    const tokens = data.tokens;
+    auth.setCredentials(tokens);
+    const plus = getGooglePlusApi(auth);
+    const me = await plus.people.get({ userId: "me" });
+    const userGoogleId = me.data.id;
+    const userGoogleName = me.data.displayName;
+    const userGoogleEmail =
+        me.data.emails && me.data.emails.length && me.data.emails[0].value;
+    return {
+        username: userGoogleName,
+        email: {
+            email: userGoogleEmail,
+            verified: true
+        },
+        googleId: userGoogleId
+    };
 }
 
 module.exports = { urlGoogle, getGoogleAccountFromCode };

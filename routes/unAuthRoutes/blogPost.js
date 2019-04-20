@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const BlogPostCont = require("../controller/blogPost.cont");
+const BlogPostCont = require("../../controller/blogPost.cont");
 
 router.get("/", (req, res, next) => {
     const { page = 1, limit = 10, popularity = false } = req.query;

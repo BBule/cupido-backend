@@ -125,7 +125,7 @@ router.post("/edit", (req, res, next) => {
 // To check authenticate function, currently disabled.
 // Also after login the route takes him to the exact same page
 //Displays the addresses of a particular user, TODO: Disable remote access of request.
-router.get("/limit=:lvalue&offset=:ovalue", (req, res, next) => {
+router.get("/", (req, res, next) => {
     var addressholder;
     User.findOne({ _id: req.user._id })
         .select("myaddresses")
@@ -139,8 +139,8 @@ router.get("/limit=:lvalue&offset=:ovalue", (req, res, next) => {
                     addressdata: "No addresses found"
                 });
             } else {
-                var startpoint = req.params.ovalue; // zero
-                var howmany = req.params.lvalue; // ten
+                var startpoint = req.query.offset; // zero
+                var howmany = req.query.limit; // ten
                 console.log("Address is found and it's city: ");
                 console.log(addressholder[0].city);
                 return res.json({
