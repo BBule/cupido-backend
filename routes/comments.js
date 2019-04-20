@@ -257,16 +257,8 @@ router.get("/reply/:commentid", async (req, res) => {
             .find({
                 "Comment.id": req.params.commentid
             })
-            .populate({
-                path: "User.id",
-                select: "username"
-            });
-        // replies = replies.map(async function(reply) {
-        //     var user = await User.findById(reply.User.id);
-        //     reply.User.name = user.username;
-        //     return reply;
-        // });
-
+            .populate("User.id", "username")
+            .exec();
         return res.send(replies);
     } catch (error) {
         return next({
