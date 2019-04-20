@@ -14,7 +14,7 @@ let myrepliesSchema = new Schema({
     Comment: {
         id: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "Comment"
+            ref: "mycomments"
         }
     },
     timecreated: { type: Date, default: Date.now },

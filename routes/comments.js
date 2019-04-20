@@ -54,12 +54,13 @@ router.post("/:productid", (req, res, next) => {
 router.get("/:productid", async (req, res, next) => {
     let curruser = req.user;
     try {
-        var comments = await mycomments.find({
-            "Product.id": req.params.productid
-        });
+        var comments = await mycomments
+            .find({
+                "Product.id": req.params.productid
+            })
+            .populate("User.id", "username")
+            .exec();
         comments = comments.map(async function(comment) {
-            var user = await User.findById(comment.User.id);
-            comment.User.name = user.username;
             if (comment.upvotes.meta.indexOf(curruser._id) >= 0) {
                 comment.user_upvoted = true;
                 comment.down_upvoted = false;
@@ -83,7 +84,7 @@ router.get("/:productid", async (req, res, next) => {
     }
 });
 
-router.post("/upvote", async function(req, res) {
+router.post("/upvote", async function(req, res,next) {
     let curruser = req.user;
     try {
         var commentUpvoted = await mycomments.findOne({
@@ -94,8 +95,6 @@ router.post("/upvote", async function(req, res) {
             _id: req.body.commentid,
             "downvotes.meta": curruser._id
         });
-        console.log(commentUpvoted);
-        console.log(commentDownvoted);
         if (commentUpvoted) {
             var comment = await mycomments.findOneAndUpdate(
                 { _id: req.body.commentid },
@@ -143,13 +142,16 @@ router.post("/upvote", async function(req, res) {
                 user_downvoted: false
             });
         }
-    } catch (e) {
-        console.log(e);
-        res.status(400).send();
+    } catch (error) {
+        return next({
+            message: error.message || "Unknown error",
+            status: 400,
+            stack: error
+        });
     }
 });
 
-router.post("/downvote", async function(req, res) {
+router.post("/downvote", async function(req, res, next) {
     let curruser = req.user;
     try {
         var commentUpvoted = await mycomments.findOne({
@@ -207,13 +209,16 @@ router.post("/downvote", async function(req, res) {
                 user_downvoted: true
             });
         }
-    } catch (e) {
-        console.log(e);
-        res.status(400).send();
+    } catch (error) {
+        return next({
+            message: error.message || "Unknown error",
+            status: 400,
+            stack: error
+        });
     }
 });
 
-router.post("/reply/:commentid", async (req, res) => {
+router.post("/reply/:commentid", async (req, res, next) => {
     console.log("Posting reply to the admin discretion portal");
     let curruser = req.user;
     // All properties to be input from user
@@ -225,12 +230,14 @@ router.post("/reply/:commentid", async (req, res) => {
         }
         let checkbuy = false;
         // Will be true if myorders in user will be found.
-        var found = curruser.myorders.some(function(el) {
-            return el.Product.id === comment.Product.id;
+        User.findOne({ _id: curruser._id }).then(result => {
+            var found = result.myorders.some(function(el) {
+                return el.Product.id === req.params.productid;
+            });
+            if (found) {
+                checkbuy = true;
+            }
         });
-        if (found) {
-            checkbuy = true;
-        }
 
         let newreply = new myreplies({
             "User.id": curruser._id,
@@ -244,10 +251,13 @@ router.post("/reply/:commentid", async (req, res) => {
 
         await newreply.save();
 
-        res.send({ message: "Reply sent for review" });
-    } catch (e) {
-        console.log(e);
-        res.status(400).send();
+        return res.send({ message: "Reply sent for review" });
+    } catch (error) {
+        return next({
+            message: error.message || "Unknown error",
+            status: 400,
+            stack: error
+        });
     }
 });
 

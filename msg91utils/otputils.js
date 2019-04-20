@@ -21,4 +21,24 @@ async function sendSMS(
     );
 }
 
+async function verifyOTP(
+    phone,
+    otp
+) {
+    request.post(
+        `https://control.msg91.com/api/verifyRequestOTP.php?authkey=${
+            config.SMS.AUTH_KEY
+        }&mobile=${phone}&otp=${otp}`,
+        { json: true },
+        async function(error, response, body) {
+            if (!error) {
+                console.log(body);
+                return body;
+            } else {
+                return Promise.reject(error);
+            }
+        }
+    );
+}
+
 module.exports = { sendSMS };
