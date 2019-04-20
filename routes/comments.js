@@ -51,6 +51,39 @@ router.post("/:productid", (req, res) => {
         });
 });
 
+router.get("/:productid", async (req, res, next) => {
+    let curruser = req.user;
+    try{
+        var comments=await mycomments.find({'Product.id':req.params.productid});
+        comments=comments.map(async function(comment){
+            var user=await User.findById(comment.User.id);
+            comment.User.name=user.username;
+            if(comment.upvotes.meta.indexOf(curruser._id)>=0){
+                comment.user_upvoted=true;
+                comment.down_upvoted=false;
+            }
+            else if(comment.downvotes.meta.indexOf(curruser._id)>=0){
+                comment.user_upvoted=false;
+                comment.down_upvoted=true;   
+            }
+            else{
+                comment.user_upvoted=false;
+                comment.down_upvoted=false;   
+            }
+            return comment;
+        });
+
+        return res.send(comments);
+    }
+    catch(error){
+        return next({
+                message: error.message || "Unknown error",
+                status: 400,
+                stack: error
+            });
+    }
+});
+
 router.post("/upvote", async function(req, res) {
     let curruser = req.user;
     try {
@@ -181,13 +214,13 @@ router.post("/downvote", async function(req, res) {
     }
 });
 
-router.post("/reply/", async (req, res) => {
+router.post("/reply/:commentid", async (req, res) => {
     console.log("Posting reply to the admin discretion portal");
     let curruser = req.user;
     // All properties to be input from user
     // Nothing except ID of user from tech logics.
     try {
-        let comment = await mycomments.findOne({ _id: req.body.commentid });
+        let comment = await mycomments.findOne({ _id: req.params.commentid });
         if (!comment) {
             return res.status(404).send({ message: "Comment not found" });
         }
@@ -202,7 +235,7 @@ router.post("/reply/", async (req, res) => {
 
         let newreply = new myreplies({
             "User.id": curruser._id,
-            "Comment.id": req.body.commentid,
+            "Comment.id": req.params.commentid,
             timecreated: newIndDate(),
             is_review: true,
             is_published: false,
@@ -216,6 +249,28 @@ router.post("/reply/", async (req, res) => {
     } catch (e) {
         console.log(e);
         res.status(400).send();
+    }
+});
+
+
+router.get("/reply/:commentid", async (req, res) => {
+    let curruser=req.user;
+    try{
+        var replies=await myreplies.find({'Comment.id':req.params.commentid});
+        replies=replies.map(async function(reply){
+            var user=await User.findById(reply.User.id);
+            reply.User.name=user.username;
+            return reply;
+        });
+
+        return res.send(replies);
+    }
+    catch(error){
+        return next({
+                message: error.message || "Unknown error",
+                status: 400,
+                stack: error
+            });
     }
 });
 
