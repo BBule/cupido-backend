@@ -29,6 +29,18 @@ router.get("/", function(req, res, next) {
         });
 });
 
+router.get("/aggregate", async (req, res, next) => {
+    var results=await Products.aggregate([
+        {$group: {
+            _id: null,
+            title: {$addToSet: '$title'},
+            category: {$addToSet: '$category'},
+            gender: {$addToSet: '$gender'}
+            }}
+        ]);
+    res.send(results);
+});
+
 /**
  * Get Product By Id
  */
@@ -50,6 +62,8 @@ router.get("/:id", (req, res, next) => {
             });
         });
 });
+
+
 
 /**
  * Using a keyword

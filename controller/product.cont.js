@@ -29,18 +29,18 @@ const getAllProducts = async (
     limit = 20,
     req_query
 ) => {
-    let category=req_query.category;
+    let category=(req_query.category?req_query.category:null);
     delete req_query.category;
-    var query=`{"category":"${category}"`;
-    Object.keys(req_query).forEach(function(key){
-        query+=`,"filters.${key}":"${req_query[key]}"`;
-    });
-    query=JSON.parse(query+'}');
+    let query={};
+    if(category){
+        query=`{"category":"${category}"`;
+        Object.keys(req_query).forEach(function(key){
+            query+=`,"filters.${key}":"${req_query[key]}"`;
+        });
+        query=JSON.parse(query+'}');
+    }
     const skip = limit * (page - 1);
     limit = skip + limit;
-    
-    console.log(query)
-
     return await Products.find(query)
         .select({ "likedlist.meta": 0 })
         .limit(limit)
