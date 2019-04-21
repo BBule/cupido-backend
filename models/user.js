@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-
+const shortId = require("shortid");
 // var passportLocalMongoose=require("passport-local-mongoose");
 
 let Schema = mongoose.Schema;
@@ -27,7 +27,18 @@ var UserSchema = new mongoose.Schema(
         mygifts: [Schema.Types.Mixed], //To be embedded
         myaddresses: [Schema.Types.Mixed], //To be embedded
         mynotifications: [Schema.Types.Mixed], //To be embedded
-        time_created: { type: Date, default: Date.now },
+        refer_code: {
+            type: String,
+            default: shortId
+                .generate()
+                .toLocaleUpperCase()
+                .replace(/[_-]/g, "")
+        },
+        referred_by: {
+            user: Schema.Types.ObjectId,
+            code: String
+        },
+        my_referrals: [Schema.Types.ObjectId],
         time_activated: { type: Date }
     },
     {
