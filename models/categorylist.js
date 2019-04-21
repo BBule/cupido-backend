@@ -7,7 +7,13 @@ const Schema = mongoose.Schema;
 const categorySchema = new Schema(
     {
         category_name: String,
-        category_description: String
+        category_description: String,
+        addedBy: {
+	      type: mongoose.Schema.Types.ObjectId,
+	      ref: "Users",
+	      required: true
+	    },
+        filters:[String]
     },
     {
         timestamps: true,

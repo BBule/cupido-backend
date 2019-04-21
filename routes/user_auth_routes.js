@@ -94,70 +94,62 @@ router.route("/verifyemail/:token").post(async function(req, res) {
 router.route("/verifyotp").post(async function(req, res) {
     var phone = req.body.phone;
     var otp = req.body.otp;
-
-    try{
-        var response=otpUtils.verifyOTP(phone,otp);
-        console.log(response);
-    }
-    catch(e){
-        console.log(e);
-    }
-    // request.post(
-    //     "https://control.msg91.com/api/verifyRequestOTP.php?authkey=" +
-    //         config.SMS.AUTH_KEY +
-    //         "&mobile=" +
-    //         phone +
-    //         "&otp=" +
-    //         otp,
-    //     { json: true },
-    //     async function(error, response, body) {
-    //         if (!error) {
-    //             if (body.type === "success") {
-    //                 var user = await User.findOne({ "contact.contact": phone });
-    //                 if (user) {
-    //                     const token = jwt.sign(
-    //                         {
-    //                             _id: user._id,
-    //                             email: user.email,
-    //                             username: user.username,
-    //                             contact: user.contact
-    //                         },
-    //                         config.JWT_SECRET,
-    //                         {
-    //                             expiresIn: config.JWT_EXP
-    //                         }
-    //                     );
-    //                     return res.json({ token, user, new: false });
-    //                 } else {
-    //                     user = new User({
-    //                         contact: {
-    //                             contact: phone,
-    //                             verified: true
-    //                         }
-    //                     });
-    //                     await user.save();
-    //                     const token = jwt.sign(
-    //                         {
-    //                             _id: user._id,
-    //                             email: user.email,
-    //                             username: user.username,
-    //                             contact: user.contact
-    //                         },
-    //                         config.JWT_SECRET,
-    //                         {
-    //                             expiresIn: config.JWT_EXP
-    //                         }
-    //                     );
-    //                     return res.json({ token, user, new: true });
-    //                 }
-    //             } else {
-    //                 res.status(400).send(body);
-    //             }
-    //         } else {
-    //             res.status(400).send(error);
-    //         }
-    //     }
-    // );
+    request.post(
+        "https://control.msg91.com/api/verifyRequestOTP.php?authkey=" +
+            config.SMS.AUTH_KEY +
+            "&mobile=" +
+            phone +
+            "&otp=" +
+            otp,
+        { json: true },
+        async function(error, response, body) {
+            if (!error) {
+                if (body.type === "success") {
+                    var user = await User.findOne({ "contact.contact": phone });
+                    if (user) {
+                        const token = jwt.sign(
+                            {
+                                _id: user._id,
+                                email: user.email,
+                                username: user.username,
+                                contact: user.contact
+                            },
+                            config.JWT_SECRET,
+                            {
+                                expiresIn: config.JWT_EXP
+                            }
+                        );
+                        return res.json({ token, user, new: false });
+                    } else {
+                        user = new User({
+                            contact: {
+                                contact: phone,
+                                verified: true
+                            }
+                        });
+                        await user.save();
+                        const token = jwt.sign(
+                            {
+                                _id: user._id,
+                                email: user.email,
+                                username: user.username,
+                                contact: user.contact
+                            },
+                            config.JWT_SECRET,
+                            {
+                                expiresIn: config.JWT_EXP
+                            }
+                        );
+                        return res.json({ token, user, new: true });
+                    }
+                } else {
+                    res.status(400).send(body);
+                }
+            } else {
+                res.status(400).send(error);
+            }
+        }
+    );
 });
 router.route("/google").post(async function(req, res, next) {
     try {

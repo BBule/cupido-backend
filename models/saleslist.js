@@ -28,6 +28,11 @@ let SalesListSchema = new Schema({
             }
         }
     ],
+    addedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Admins",
+      required: true
+    },
     cupidLove: [{
         quantity:Number,
         cupidLove:Number

@@ -30,6 +30,12 @@ let ProductsSchema = new Schema(
         description: String,
         gender: Boolean, // 0 is Male
         // Relevent Details
+        addedBy: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Admins",
+          required: true
+        },
+        filters:Schema.Types.Mixed,
         timecreated: { type: Date, default: Date.now },
         title: String, // Primary Key
         likedlist: {
