@@ -35,7 +35,7 @@ var UserSchema = new mongoose.Schema(
                 .replace(/[_-]/g, "")
         },
         referred_by: {
-            user: Schema.Types.ObjectId,
+            user: { type: Schema.Types.ObjectId, ref: "Users" },
             code: String
         },
         my_referrals: [Schema.Types.ObjectId],

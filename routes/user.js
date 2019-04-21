@@ -116,4 +116,63 @@ router.get("/orders", (req, res) => {
             res.status(400).send("Bad request");
         });
 });
+
+router.get("/my_refers", (req, res, next) => {
+    return User.findOne({ _id: req.user._id })
+        .populate("my_referrals", "username")
+        .exec()
+        .then(data => {
+            return res.json(data);
+        })
+        .catch(err => {
+            console.log(err);
+            return next({
+                status: 400,
+                message: "unknown error occurred",
+                stack: err
+            });
+        });
+});
+
+router.post("/add_referral_code", (req, res, next) => {
+    return User.findOne({
+        _id: req.user._id,
+        refer_code: { $exists: false }
+    }).exec(async (err, doc) => {
+        if (err) {
+            console.log(err);
+            return next({
+                status: 400,
+                message: "unknown error occured",
+                stack: err
+            });
+        }
+        if (!doc) {
+            return next({ status: 404, message: "Already applied" });
+        }
+        try {
+            const referedBy = await User.findOneAndUpdate(
+                {
+                    refer_code: req.body.referral_code
+                },
+                { $push: { my_referrals: data._id } }
+            )
+                .select("_id")
+                .exec();
+            doc.referred_by = {
+                user: referedBy._id,
+                code: req.body.referral_code
+            };
+            doc.save();
+            return res.json({ success: true });
+        } catch (ex) {
+            console.log(ex);
+            return next({
+                stack: ex,
+                status: 400,
+                message: "unknown error odcured"
+            });
+        }
+    });
+});
 module.exports = router;

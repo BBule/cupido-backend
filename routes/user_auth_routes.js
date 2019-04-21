@@ -226,6 +226,33 @@ router.route("/google").post(async function(req, res, next) {
         next({ message: "unable to login", status: 400, stack: ex });
     }
 });
+router.get("/refer_verify", (req, res, next) => {
+    if (!req.query.code) {
+        return next({
+            status: 400,
+            message: "invalid request"
+        });
+    }
+    return User.findOne({ refer_code: decodeURIComponent(req.query.code) })
+        .exec()
+        .then(data => {
+            if (data) {
+                return res.json({ success: true });
+            } else {
+                return next({
+                    message: "referral code not found",
+                    status: 404
+                });
+            }
+        })
+        .catch(error => {
+            return next({
+                message: "unkown error occured",
+                status: 400,
+                stack: error
+            });
+        });
+});
 router.route("/google/url").get(function(req, res) {
     res.send(googleUtils.urlGoogle());
     console.log(googleUtils.urlGoogle());
