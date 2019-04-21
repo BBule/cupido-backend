@@ -38,7 +38,7 @@ router.route("/sendotp").post(async function(req, res) {
         }
     );
 });
-router.route("/verifyotp").post(async function(req, res) {
+router.route("/phone/verifyotp").post(async function(req, res) {
     var phone = req.body.phone;
     var otp = req.body.otp;
     request.post(
