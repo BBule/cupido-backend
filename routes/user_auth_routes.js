@@ -127,6 +127,21 @@ router.route("/verifyotp").post(async function(req, res) {
                                 verified: true
                             }
                         });
+                        if (req.body.referral_code) {
+                            const referedBy = await User.findOneAndUpdate(
+                                {
+                                    refer_code: req.body.referral_code
+                                },
+                                { $push: { my_referrals: data._id } }
+                            )
+                                .select("_id")
+                                .exec();
+                            user["referred_by"] = {
+                                user: referedBy._id,
+                                code: req.body.referral_code
+                            };
+                        }
+
                         await user.save();
                         const token = jwt.sign(
                             {
@@ -172,6 +187,21 @@ router.route("/google").post(async function(req, res, next) {
             return res.json({ token, user, new: false });
         } else {
             user = new User(data);
+            if (req.body.referral_code) {
+                const referedBy = await User.findOneAndUpdate(
+                    {
+                        refer_code: req.body.referral_code
+                    },
+                    { $push: { my_referrals: data._id } }
+                )
+                    .select("_id")
+                    .exec();
+                user["referred_by"] = {
+                    user: referedBy._id,
+                    code: req.body.referral_code
+                };
+            }
+
             user.save()
                 .then(function() {
                     const token = jwt.sign(
