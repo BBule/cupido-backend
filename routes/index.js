@@ -37,6 +37,7 @@ api.includeRoutes = app => {
     const unAuthRoutes = require("./unAuthRoutes");
     const userAuth = require("./user_auth_routes");
     const blogPost = require("./unAuthRoutes/blogPost");
+    // const unauthproducts = require("./unAuthRoutes/products");
     const address = require("./address");
     const cart = require("./cart");
     const comments = require("./comments");
