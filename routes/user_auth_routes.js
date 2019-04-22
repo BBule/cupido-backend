@@ -254,7 +254,7 @@ router.get("/refer_verify", (req, res, next) => {
         });
 });
 router.route("/google/url").get(function(req, res) {
-    res.send(googleUtils.urlGoogle());
+    res.send({ url: googleUtils.urlGoogle() });
     console.log(googleUtils.urlGoogle());
 });
 
