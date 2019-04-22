@@ -18,7 +18,7 @@ function newIndDate() {
 const User = require("../models/user");
 const EmailToken = require("../models/emailtoken");
 
-router.route("/sendotp").post(async function(req, res) {
+router.route("/sendotp").post(async function(req, res, next) {
     var phone = req.body.phone; //along with country code
     request.post(
         "https://control.msg91.com/api/sendotp.php?authkey=" +
@@ -33,12 +33,12 @@ router.route("/sendotp").post(async function(req, res) {
                 // console.log(body);
                 res.send(body);
             } else {
-                res.send(error);
+                return next({ message: "unknown error occured", status: 400 });
             }
         }
     );
 });
-router.route("/phone/verifyotp").post(async function(req, res) {
+router.route("/phone/verifyotp").post(async function(req, res, next) {
     var phone = req.body.phone;
     var otp = req.body.otp;
     request.post(
@@ -57,7 +57,7 @@ router.route("/phone/verifyotp").post(async function(req, res) {
                     res.status(400).send(body);
                 }
             } else {
-                res.status(400).send(error);
+                return next({ message: "unknown error occured", status: 400 });
             }
         }
     );
