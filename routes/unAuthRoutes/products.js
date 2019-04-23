@@ -47,9 +47,8 @@ router.get("/aggregate", async (req, res, next) => {
 router.get("/getDetails/:id", (req, res, next) => {
     return productCont
         .getProductById(req.params.id)
-        .then(() => {
+        .then(productholder => {
             console.log("Product is found and it's category: ");
-            console.log(productholder.Category);
             res.send({
                 productdata: productholder
             });
