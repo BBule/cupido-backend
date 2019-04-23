@@ -15,10 +15,7 @@ let ProductsSchema = new Schema(
         manufacturerWarranty: Number,
         returnTime: Number,
         ShippingPrice: Number,
-        image_url1: String,
-        image_url2: String,
-        image_url3: String,
-        image_url4: String,
+        images: [String],
         backdrop_title: String,
         backdrop_content: String,
         whyweloveit_title: String,
@@ -31,11 +28,11 @@ let ProductsSchema = new Schema(
         gender: Boolean, // 0 is Male
         // Relevent Details
         addedBy: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Admins",
-          required: true
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Admins",
+            required: true
         },
-        filters:Schema.Types.Mixed,
+        filters: Schema.Types.Mixed,
         timecreated: { type: Date, default: Date.now },
         title: String, // Primary Key
         likedlist: {
