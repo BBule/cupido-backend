@@ -3,16 +3,14 @@ const router = express.Router();
 
 const productCont = require("../../controller/product.cont");
 
-
 const Products = require("../../models/Products");
-
 
 /**
  * Get all products pagination and partial filerts
  * Filter with: category name,brand
  */
 router.get("/", function(req, res, next) {
-    const { page = 1, limit = 20} = req.query;
+    const { page = 1, limit = 20 } = req.query;
     delete req.query.page;
     delete req.query.limit;
     return productCont
@@ -30,21 +28,23 @@ router.get("/", function(req, res, next) {
 });
 
 router.get("/aggregate", async (req, res, next) => {
-    var results=await Products.aggregate([
-        {$group: {
-            _id: null,
-            title: {$addToSet: '$title'},
-            category: {$addToSet: '$category'},
-            gender: {$addToSet: '$gender'}
-            }}
-        ]);
+    var results = await Products.aggregate([
+        {
+            $group: {
+                _id: null,
+                title: { $addToSet: "$title" },
+                category: { $addToSet: "$category" },
+                gender: { $addToSet: "$gender" }
+            }
+        }
+    ]);
     res.send(results);
 });
 
 /**
  * Get Product By Id
  */
-router.get("/:id", (req, res, next) => {
+router.get("/getDetails/:id", (req, res, next) => {
     return productCont
         .getProductById(req.params.id)
         .then(() => {
@@ -62,8 +62,6 @@ router.get("/:id", (req, res, next) => {
             });
         });
 });
-
-
 
 /**
  * Using a keyword
@@ -85,7 +83,5 @@ router.get("/s", (req, res, next) => {
             });
         });
 });
-
-
 
 module.exports = router;
