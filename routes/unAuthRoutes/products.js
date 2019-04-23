@@ -49,9 +49,7 @@ router.get("/getDetails/:id", (req, res, next) => {
         .getProductById(req.params.id)
         .then(productholder => {
             console.log("Product is found and it's category: ");
-            res.send({
-                productdata: productholder
-            });
+            res.json(productholder);
         })
         .catch(err => {
             return next({
