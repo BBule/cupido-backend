@@ -43,11 +43,16 @@ router.post("/edit", async function(req, res, next) {
     }
     if (req.body.hasOwnProperty("name")) {
         query.$set = { username: req.body.name };
-        await User.findOneAndUpdate(req.user._id, query);
+    }
+    if (req.body.hasOwnProperty("gender")) {
+        query.$set = { gender: req.body.gender };
     }
     try {
         // var user = User.findOne(req.user._id);
         // res.send(user);
+        if (Object.keys(query.$set).length) {
+            await User.findOneAndUpdate(req.user._id, query);
+        }
         return res.json({ success: true });
     } catch (e) {
         console.log(e);

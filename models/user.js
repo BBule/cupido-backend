@@ -19,6 +19,10 @@ var UserSchema = new mongoose.Schema(
             type: Boolean,
             default: true
         },
+        gender: {
+            type: String,
+            enum: ["Male", "Female"]
+        },
         googleId: String,
         facebookId: String,
         myorders: [Schema.Types.Mixed], //To be embedded
