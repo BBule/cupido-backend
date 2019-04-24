@@ -7,7 +7,7 @@ let Schema = mongoose.Schema;
 let ProductsSchema = new Schema(
     {
         // Static_Details
-        Category: String, // Watch name etc
+        category: String, // Watch name etc
         shortDescription: String,
         brandName: String,
         marketPrice: Number,
