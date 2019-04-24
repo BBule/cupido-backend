@@ -93,6 +93,10 @@ router.get("/presentsales", (req, res) => {
         endtime: { $gte: currdate },
         starttime: { $lte: currdate }
     })
+        .populate(
+            "product.id",
+            "Category marketPrice  emiPrice brand_title title"
+        )
         .sort({ endtime: 1 })
         .then(result => {
             salesholder = result;
@@ -104,13 +108,12 @@ router.get("/presentsales", (req, res) => {
             var queryParams = salesholder;
             var startpoint = req.query.offset; // zero
             var howmany = req.query.limit; // ten
-            res.status(200).send({
-                listofpresentsales: queryParams.splice(startpoint, howmany)
-            });
+            return res.json(queryParams.splice(startpoint, howmany));
             // return app.render(req, res,"/timesales", queryParams);
         })
         .catch(err => {
-            res.status(400).send("Bad request");
+            console.log(err);
+            return next({ status: 400, message: "unknown error occured" });
         });
 });
 

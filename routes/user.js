@@ -9,8 +9,8 @@ const { SendMail, getEJSTemplate } = require("../helpers/mailHelper");
 
 router.post("/edit", async function(req, res, next) {
     let query = { $set: {} };
-    if (req.body.hasOwnProperty("phone")) {
-        query.$set = { contact: req.body.phone, verified: true }; //make it verified as of now
+    if (req.body.hasOwnProperty("mobile")) {
+        query.$set = { contact: req.body.mobile, verified: true }; //make it verified as of now
     }
     if (req.body.hasOwnProperty("email")) {
         var email_token = jwt
@@ -41,8 +41,8 @@ router.post("/edit", async function(req, res, next) {
         };
         await SendMail(message);
     }
-    if (req.body.hasOwnProperty("name")) {
-        query.$set = { username: req.body.name };
+    if (req.body.hasOwnProperty("full_name")) {
+        query.$set = { username: req.body.full_name };
     }
     if (req.body.hasOwnProperty("gender")) {
         query.$set = { gender: req.body.gender };
