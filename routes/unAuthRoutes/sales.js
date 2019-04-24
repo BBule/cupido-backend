@@ -86,6 +86,30 @@ function newIndDate() {
 //     }
 // });
 
+router.get("/getDetails/:id", (req, res, next) => {
+    if (!req.params.id) {
+        return next({
+            status: 400,
+            message: "No sale found"
+        });
+    }
+    return Saleslist.findOne({
+        _id: req.params.id
+    })
+        .populate("product.id")
+        .then(result => {
+            return res.json(result);
+        })
+        .catch(err => {
+            console.log(err);
+            return next({
+                status: 400,
+                message: "No sale found",
+                stack: err
+            });
+        });
+});
+
 // API end point to route traffic of current sales
 router.get("/presentsales", (req, res) => {
     var currdate = newIndDate();
