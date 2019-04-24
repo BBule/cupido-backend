@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const app = express();
 const bodyParser = require("body-parser");
 
@@ -8,18 +9,7 @@ const agenda = require("./agenda");
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(function(req, res, next) {
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader("Access-Control-Expose-Headers", "authorization");
-    res.header("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE");
-    res.setHeader(
-        "Access-Control-Allow-Headers",
-        "Origin, X-Requested-With,content-type, Accept , authorization"
-    );
-
-    next();
-});
-
+app.use(cors());
 apiRoutes.includeRoutes(app);
 app.get("*", (req, res, next) => {
     return next({ message: "I lost!", status: 404 });

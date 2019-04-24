@@ -48,39 +48,43 @@ var start = async () => {
         return Sales.findOne(salesQuery)
             .exec()
             .then(salesDoc => {
-                /**
-                 * Use cursor to loop over all users
-                 */
-                return User.find({
-                    notif_subscribe: true
-                })
-                    .select({ username: 1, email: 1 })
-                    .cursor()
-                    .on("data", async user => {
-                        const ejsTemplate = await getEJSTemplate({
-                            fileName: "sale_is_live.ejs"
-                        });
-                        const finalHTML = ejsTemplate({
-                            time: moment().format("lll"),
-                            username: user.name,
-                            saleDetails: salesDoc //may be format properly before passing it
-                        });
-                        const message = {
-                            to: user.email,
-                            subject:
-                                "Sale is now live! check out whats there for you.",
-                            body: finalHTML
-                        };
-                        return await SendMail(message);
+                if (salesDoc) {
+                    /**
+                     * Use cursor to loop over all users
+                     */
+                    return User.find({
+                        notif_subscribe: true
                     })
-                    .on("error", err => {
-                        done(err);
-                    })
-                    .on("end", () => {
-                        salesDoc.notification_level = 1;
-                        salesDoc.save();
-                        return true;
-                    });
+                        .select({ username: 1, email: 1 })
+                        .cursor()
+                        .on("data", async user => {
+                            const ejsTemplate = await getEJSTemplate({
+                                fileName: "sale_is_live.ejs"
+                            });
+                            const finalHTML = ejsTemplate({
+                                time: moment().format("lll"),
+                                username: user.name,
+                                saleDetails: salesDoc //may be format properly before passing it
+                            });
+                            const message = {
+                                to: user.email,
+                                subject:
+                                    "Sale is now live! check out whats there for you.",
+                                body: finalHTML
+                            };
+                            return await SendMail(message);
+                        })
+                        .on("error", err => {
+                            done(err);
+                        })
+                        .on("end", () => {
+                            salesDoc.notification_level = 1;
+                            salesDoc.save();
+                            return true;
+                        });
+                } else {
+                    return false;
+                }
             })
             .catch(error => {
                 done(error);
@@ -263,6 +267,10 @@ var start = async () => {
                 return done();
             });
     });
+    await agenda.schedule("in 20 seconds", "on start sale all user");
+    await agenda.schedule("in 20 seconds", "before end sale all user");
+    await agenda.schedule("in 20 seconds", "pay_full_sellBuffer_end");
+    await agenda.schedule("in 20 seconds", "pay_full_sellBuffer_start");
 };
 
 start();

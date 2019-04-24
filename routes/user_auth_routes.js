@@ -18,7 +18,7 @@ function newIndDate() {
 const User = require("../models/user");
 const EmailToken = require("../models/emailtoken");
 
-router.route("/sendotp").post(async function(req, res) {
+router.route("/sendotp").post(async function(req, res, next) {
     var phone = req.body.phone; //along with country code
     request.post(
         "https://control.msg91.com/api/sendotp.php?authkey=" +
@@ -33,12 +33,12 @@ router.route("/sendotp").post(async function(req, res) {
                 // console.log(body);
                 res.send(body);
             } else {
-                res.send(error);
+                return next({ message: "unknown error occured", status: 400 });
             }
         }
     );
 });
-router.route("/phone/verifyotp").post(async function(req, res) {
+router.route("/phone/verifyotp").post(async function(req, res, next) {
     var phone = req.body.phone;
     var otp = req.body.otp;
     request.post(
@@ -57,7 +57,7 @@ router.route("/phone/verifyotp").post(async function(req, res) {
                     res.status(400).send(body);
                 }
             } else {
-                res.status(400).send(error);
+                return next({ message: "unknown error occured", status: 400 });
             }
         }
     );
@@ -127,6 +127,21 @@ router.route("/verifyotp").post(async function(req, res) {
                                 verified: true
                             }
                         });
+                        if (req.body.referral_code) {
+                            const referedBy = await User.findOneAndUpdate(
+                                {
+                                    refer_code: req.body.referral_code
+                                },
+                                { $push: { my_referrals: data._id } }
+                            )
+                                .select("_id")
+                                .exec();
+                            user["referred_by"] = {
+                                user: referedBy._id,
+                                code: req.body.referral_code
+                            };
+                        }
+
                         await user.save();
                         const token = jwt.sign(
                             {
@@ -172,6 +187,21 @@ router.route("/google").post(async function(req, res, next) {
             return res.json({ token, user, new: false });
         } else {
             user = new User(data);
+            if (req.body.referral_code) {
+                const referedBy = await User.findOneAndUpdate(
+                    {
+                        refer_code: req.body.referral_code
+                    },
+                    { $push: { my_referrals: data._id } }
+                )
+                    .select("_id")
+                    .exec();
+                user["referred_by"] = {
+                    user: referedBy._id,
+                    code: req.body.referral_code
+                };
+            }
+
             user.save()
                 .then(function() {
                     const token = jwt.sign(
@@ -196,8 +226,35 @@ router.route("/google").post(async function(req, res, next) {
         next({ message: "unable to login", status: 400, stack: ex });
     }
 });
+router.get("/refer_verify", (req, res, next) => {
+    if (!req.query.code) {
+        return next({
+            status: 400,
+            message: "invalid request"
+        });
+    }
+    return User.findOne({ refer_code: decodeURIComponent(req.query.code) })
+        .exec()
+        .then(data => {
+            if (data) {
+                return res.json({ success: true });
+            } else {
+                return next({
+                    message: "referral code not found",
+                    status: 404
+                });
+            }
+        })
+        .catch(error => {
+            return next({
+                message: "unkown error occured",
+                status: 400,
+                stack: error
+            });
+        });
+});
 router.route("/google/url").get(function(req, res) {
-    res.send(googleUtils.urlGoogle());
+    res.send({ url: googleUtils.urlGoogle() });
     console.log(googleUtils.urlGoogle());
 });
 

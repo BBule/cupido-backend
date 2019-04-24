@@ -18,7 +18,7 @@ const SalesList = require("../models/saleslist");
 // POST Route to send cart entry of an individual
 // Create a new object and then embed data into the array
 // User can send this route
-router.post("/add", (req, res) => {
+router.post("/add", (req, res, next) => {
     console.log("Posting cart data to the DB");
     let curruser = req.user;
     let newcartitem = new mycartingeneral({
@@ -41,14 +41,22 @@ router.post("/add", (req, res) => {
                 { $push: { mycarts: newcartitem } }
             )
                 .then(() => {
-                    console.log("Cart item was pushed.");
+                    return res.json(newcartitem);
                 })
                 .catch(err => {
-                    res.status(400).send("Bad request");
+                    console.log(err);
+                    return next({
+                        status: 400,
+                        message: "unknown error while updating cart"
+                    });
                 })
         )
         .catch(err => {
-            res.status(400).send("Bad request 2");
+            console.log(err);
+            return next({
+                status: 400,
+                message: "unknown error while updating cart"
+            });
         });
 });
 

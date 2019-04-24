@@ -19,6 +19,10 @@ var UserSchema = new mongoose.Schema(
             type: Boolean,
             default: true
         },
+        gender: {
+            type: String,
+            enum: ["Male", "Female"]
+        },
         googleId: String,
         facebookId: String,
         myorders: [Schema.Types.Mixed], //To be embedded
@@ -35,7 +39,7 @@ var UserSchema = new mongoose.Schema(
                 .replace(/[_-]/g, "")
         },
         referred_by: {
-            user: Schema.Types.ObjectId,
+            user: { type: Schema.Types.ObjectId, ref: "Users" },
             code: String
         },
         my_referrals: [Schema.Types.ObjectId],

@@ -9,8 +9,8 @@ const { SendMail, getEJSTemplate } = require("../helpers/mailHelper");
 
 router.post("/edit", async function(req, res, next) {
     let query = { $set: {} };
-    if (req.body.hasOwnProperty("phone")) {
-        query.$set = { contact: req.body.phone, verified: false };
+    if (req.body.hasOwnProperty("mobile")) {
+        query.$set = { contact: req.body.mobile, verified: true }; //make it verified as of now
     }
     if (req.body.hasOwnProperty("email")) {
         var email_token = jwt
@@ -41,13 +41,18 @@ router.post("/edit", async function(req, res, next) {
         };
         await SendMail(message);
     }
-    if (req.body.hasOwnProperty("name")) {
-        query.$set = { username: req.body.name };
-        await User.findOneAndUpdate(req.user._id, query);
+    if (req.body.hasOwnProperty("full_name")) {
+        query.$set = { username: req.body.full_name };
+    }
+    if (req.body.hasOwnProperty("gender")) {
+        query.$set = { gender: req.body.gender };
     }
     try {
         // var user = User.findOne(req.user._id);
         // res.send(user);
+        if (Object.keys(query.$set).length) {
+            await User.findOneAndUpdate(req.user._id, query);
+        }
         return res.json({ success: true });
     } catch (e) {
         console.log(e);
@@ -115,5 +120,64 @@ router.get("/orders", (req, res) => {
         .catch(err => {
             res.status(400).send("Bad request");
         });
+});
+
+router.get("/my_refers", (req, res, next) => {
+    return User.findOne({ _id: req.user._id })
+        .populate("my_referrals", "username")
+        .exec()
+        .then(data => {
+            return res.json(data);
+        })
+        .catch(err => {
+            console.log(err);
+            return next({
+                status: 400,
+                message: "unknown error occurred",
+                stack: err
+            });
+        });
+});
+
+router.post("/add_referral_code", (req, res, next) => {
+    return User.findOne({
+        _id: req.user._id,
+        refer_code: { $exists: false }
+    }).exec(async (err, doc) => {
+        if (err) {
+            console.log(err);
+            return next({
+                status: 400,
+                message: "unknown error occured",
+                stack: err
+            });
+        }
+        if (!doc) {
+            return next({ status: 404, message: "Already applied" });
+        }
+        try {
+            const referedBy = await User.findOneAndUpdate(
+                {
+                    refer_code: req.body.referral_code
+                },
+                { $push: { my_referrals: data._id } }
+            )
+                .select("_id")
+                .exec();
+            doc.referred_by = {
+                user: referedBy._id,
+                code: req.body.referral_code
+            };
+            doc.save();
+            return res.json({ success: true });
+        } catch (ex) {
+            console.log(ex);
+            return next({
+                stack: ex,
+                status: 400,
+                message: "unknown error odcured"
+            });
+        }
+    });
 });
 module.exports = router;
