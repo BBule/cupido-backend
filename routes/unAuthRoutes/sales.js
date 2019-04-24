@@ -95,7 +95,7 @@ router.get("/presentsales", (req, res) => {
     })
         .populate(
             "product.id",
-            "Category marketPrice  emiPrice brand_title title"
+            "Category marketPrice  emiPrice brand_title title images"
         )
         .sort({ endtime: 1 })
         .then(result => {
