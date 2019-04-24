@@ -41,4 +41,4 @@ async function verifyOTP(
     );
 }
 
-module.exports = { sendSMS };
+module.exports = { sendSMS,verifyOTP };
