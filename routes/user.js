@@ -10,7 +10,7 @@ const { SendMail, getEJSTemplate } = require("../helpers/mailHelper");
 router.post("/edit", async function(req, res, next) {
     let query = { $set: {} };
     if (req.body.hasOwnProperty("phone")) {
-        query.$set = { contact: req.body.phone, verified: false };
+        query.$set = { contact: req.body.phone, verified: true }; //make it verified as of now
     }
     if (req.body.hasOwnProperty("email")) {
         var email_token = jwt
