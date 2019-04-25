@@ -42,11 +42,15 @@ let mycommitsSchema = new Schema({
         },
         email: String
     },
+    addressId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "myaddresses"
+    },
     payment_details: [Schema.Types.Mixed],
     timecreated: { type: Date, default: Date.now },
     commit_time: Date, // when payment portal sends positive ack
-    commit_amount: Number, // At what amount user commited
-    commit_quantity: Number,
+    commit_amount: { type: Number, default: 0 }, // At what amount user commited
+    commit_quantity: { type: Number, default: 1 },
     worth_coupons_applied: Number,
     coupon_code: [Schema.Types.Mixed], // List of strings of coupon_codes applied
     // amount_paid: Number, // 10% of market price*quantity - coupons // What if coupon value is more than the price to be paid

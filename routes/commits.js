@@ -13,6 +13,7 @@ function newIndDate() {
 const User = require("../models/user");
 
 const mycommits = require("../models/mycommits");
+const myOrders = require("../models/myorders");
 
 // API end point to route traffic of mycommits page, split into active and missed
 // To check authenticate function, currently disabled.
@@ -113,15 +114,26 @@ router.get("/", (req, res) => {
 });
 
 router.post("/orderOrCommit", (req, res, next) => {
-    const { orders, commits } = req.body;
+    const { wholeCart, addressId } = req.body;
     let commitsPromise = [];
-    commits.forEach(element => {
-        commitsPromise.push(
-            new mycommits({
-                ...element,
-                User: { id: req.user._id, email: req.user.email }
-            })
-        );
+    let ordersPromise = [];
+    wholeCart.forEach(element => {
+        if (element.is_commit) {
+            commitsPromise.push(
+                new mycommits({
+                    ...element,
+                    addressId: addressId
+                })
+            );
+        } else {
+            //order
+            ordersPromise.push(
+                new myOrders({
+                    ...element,
+                    addressId: addressId
+                })
+            );
+        }
     });
     return Promise.all(commitsPromise)
         .then(data => {

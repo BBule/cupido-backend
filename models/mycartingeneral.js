@@ -9,8 +9,10 @@ let Schema = mongoose.Schema;
 
 let mycartSchema = new Schema({
     sale: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "saleslist"
+        id: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "saleslist"
+        }
     },
     User: {
         id: {
