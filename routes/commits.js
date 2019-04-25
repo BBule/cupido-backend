@@ -31,9 +31,7 @@ router.get("/", (req, res) => {
             .then(() => {
                 if (commitsholder == null || commitsholder.length == 0) {
                     console.log("No commits found");
-                    res.status(200).send({
-                        commitsdata: "No commits found"
-                    });
+                    return res.json([]);
                 } else {
                     var startpoint = req.query.offset; // zero
                     var howmany = req.query.limit; // ten
@@ -57,20 +55,15 @@ router.get("/", (req, res) => {
                         commitfullholder.length == 0
                     ) {
                         console.log("No commits found");
-                        res.status(200).send({
-                            commitsdata: "No commits found"
-                        });
+                        return res.json([]);
                     }
-                    res.status(200).send({
-                        commitsdata: commitfullholder.splice(
-                            startpoint,
-                            howmany
-                        )
-                    });
+                    res.status(200).send(
+                        commitfullholder.splice(startpoint, howmany)
+                    );
                 }
             })
             .catch(err => {
-                res.status(400).send("Bad request");
+                next({ message: "Bad request", status: 400, stack: err });
             });
     } else {
         User.findOne({ _id: curruser, "mycommits.is_active": false })
@@ -80,9 +73,7 @@ router.get("/", (req, res) => {
             .then(() => {
                 if (commitsholder == null || commitsholder.length == 0) {
                     console.log("No commits found");
-                    res.status(200).send({
-                        commitsdata: "No commits found"
-                    });
+                    return res.json([]);
                 } else {
                     var startpoint = req.query.offset; // zero
                     var howmany = req.query.limit; // ten
@@ -106,16 +97,9 @@ router.get("/", (req, res) => {
                         commitfullholder.length == 0
                     ) {
                         console.log("No commits found");
-                        res.status(200).send({
-                            commitsdata: "No commits found"
-                        });
+                        return res.json([]);
                     }
-                    res.status(200).send({
-                        commitsdata: commitfullholder.splice(
-                            startpoint,
-                            howmany
-                        )
-                    });
+                    res.json(commitfullholder.splice(startpoint, howmany));
                 }
             })
             .catch(err => {
