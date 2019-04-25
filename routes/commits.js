@@ -119,9 +119,36 @@ router.get("/", (req, res) => {
                 }
             })
             .catch(err => {
-                res.status(400).send("Bad request");
+                return next({
+                    message: "Bad request",
+                    status: 400,
+                    stack: err
+                });
             });
     }
 });
 
+router.post("/orderOrCommit", (req, res, next) => {
+    const { orders, commits } = req.body;
+    let commitsPromise = [];
+    commits.forEach(element => {
+        commitsPromise.push(
+            new mycommits({
+                ...element,
+                User: { id: req.user._id, email: req.user.email }
+            })
+        );
+    });
+    return Promise.all(commitsPromise)
+        .then(data => {
+            return res.json(data);
+        })
+        .catch(error => {
+            return next({
+                status: 400,
+                message: "Unknown error occured!",
+                stack: error
+            });
+        });
+});
 module.exports = router;
