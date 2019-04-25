@@ -1,4 +1,5 @@
 const express = require("express");
+const mongoose = require("mongoose");
 const router = express.Router();
 
 // Helper Functions
@@ -66,7 +67,7 @@ router.post("/remove", async (req, res, next) => {
         await mycartingeneral.findByIdAndRemove(cartitemId);
         await User.findOneAndUpdate(
             { _id: req.user._id },
-            { $pull: { mycarts: { _id: cartitemId } } }
+            { $pull: { mycarts: { _id: mongoose.Types.ObjectId(cartitemId) } } }
         );
         return res.send({ message: "Cart item removed successfully" });
     } catch (error) {
