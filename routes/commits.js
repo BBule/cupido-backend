@@ -116,7 +116,7 @@ const {
 // });
 
 router.get("/", (req, res, next) => {
-    const { type = null, skip = 0, limit = 10 } = req.query;
+    const { type = true, skip = 0, limit = 10 } = req.query;
     return getUserCommits(req.user._id, type, limit, skip)
         .then(data => {
             return res.json(data);
