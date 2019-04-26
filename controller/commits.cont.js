@@ -1,11 +1,18 @@
 const cartCont = require("./cart.cont");
-
 const mycommits = require("../models/mycommits");
 const myOrders = require("../models/myorders");
 
-const getUserCommits = (userId, activeStat = true, limit = 20, skip = 0) => {
-    return mycommits
-        .find({ "User.id": userId, is_active: activeStat })
+const getUserCommits = async (
+    userId,
+    activeStat = true,
+    limit = 20,
+    skip = 0
+) => {
+    return await mycommits
+        .find({
+            "User.id": userId,
+            is_active: activeStat
+        })
         .limit(limit)
         .skip(skip)
         .exec();
