@@ -3,7 +3,15 @@ const cartCont = require("./cart.cont");
 const mycommits = require("../models/mycommits");
 const myOrders = require("../models/myorders");
 
-createCommitOrOrder = (wholeCart, addressId, userId) => {
+const getUserCommits = (userId, activeStat = true, limit = 20, skip = 0) => {
+    return mycommits
+        .find({ "User.id": userId, is_active: activeStat })
+        .limit(limit)
+        .skip(skip)
+        .exec();
+};
+
+const createCommitOrOrder = (wholeCart, addressId, userId) => {
     let promiseArr = [];
     wholeCart.forEach(element => {
         if (element.is_commit) {
@@ -34,4 +42,4 @@ createCommitOrOrder = (wholeCart, addressId, userId) => {
         });
 };
 
-module.exports = { createCommitOrOrder };
+module.exports = { createCommitOrOrder, getUserCommits };
