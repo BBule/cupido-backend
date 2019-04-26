@@ -136,7 +136,7 @@ router.get("/", (req, res, next) => {
             if (addressholder == null || addressholder.length == 0) {
                 console.log("No addresses found");
                 res.status(200).send({
-                    addressdata: "No addresses found"
+                    addressdata: []
                 });
             } else {
                 var startpoint = req.query.offset; // zero
