@@ -122,7 +122,7 @@ router.post("/orderOrCommit", (req, res, next) => {
                 new mycommits({
                     ...element,
                     shipping_address: addressId
-                })
+                }).save()
             );
         } else {
             //order
@@ -130,7 +130,7 @@ router.post("/orderOrCommit", (req, res, next) => {
                 new myOrders({
                     ...element,
                     shipping_address: addressId
-                })
+                }).save()
             );
         }
     });
