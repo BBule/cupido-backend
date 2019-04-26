@@ -18,7 +18,7 @@ const { createCommitOrOrder } = require("../controller/commits.cont");
 // To check authenticate function, currently disabled.
 // Also after login the route takes him to the exact same page
 // Remember the commits are refrenced
-router.get("/", (req, res) => {
+router.get("/", (req, res, next) => {
     var commitholder;
     var curruser = req.user._id;
     var typeofcommit = req.query.type || "active";
