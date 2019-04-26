@@ -16,6 +16,8 @@ const User = require("../models/user");
 const mycartingeneral = require("../models/mycartingeneral");
 const SalesList = require("../models/saleslist");
 
+const cartCont = require("../controller/cart.cont");
+
 // POST Route to send cart entry of an individual
 // Create a new object and then embed data into the array
 // User can send this route
@@ -61,21 +63,20 @@ router.post("/add", (req, res, next) => {
         });
 });
 
-router.post("/remove", async (req, res, next) => {
+router.post("/remove", (req, res, next) => {
     let cartitemId = req.body.cartitemId;
-    try {
-        await mycartingeneral.findByIdAndRemove(cartitemId);
-        await User.findOneAndUpdate(
-            { _id: req.user._id },
-            { $pull: { mycarts: { _id: mongoose.Types.ObjectId(cartitemId) } } }
-        );
-        return res.send({ message: "Cart item removed successfully" });
-    } catch (error) {
-        return next({
-            message: error.message || "Server Error",
-            status: 500
+
+    return cartCont
+        .removeFromCart(cartitemId, req.user._id)
+        .then(data => {
+            return res.send({ message: "Cart item removed successfully" });
+        })
+        .catch(error => {
+            return next({
+                message: error.message || "Server Error",
+                status: 500
+            });
         });
-    }
 });
 
 // API end point to route traffic of mycarts page, split into commit and buy now

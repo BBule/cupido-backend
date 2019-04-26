@@ -13,8 +13,7 @@ function newIndDate() {
 const User = require("../models/user");
 
 const mycommits = require("../models/mycommits");
-const myOrders = require("../models/myorders");
-
+const { createCommitOrOrder } = require("../controller/commits.cont");
 // API end point to route traffic of mycommits page, split into active and missed
 // To check authenticate function, currently disabled.
 // Also after login the route takes him to the exact same page
@@ -22,7 +21,7 @@ const myOrders = require("../models/myorders");
 router.get("/", (req, res) => {
     var commitholder;
     var curruser = req.user._id;
-    var typeofcommit = req.query.type;
+    var typeofcommit = req.query.type || "active";
     console.log(req.originalUrl);
     if (typeofcommit == "active") {
         User.findOne({ _id: curruser, "mycommits.is_active": true })
@@ -115,27 +114,13 @@ router.get("/", (req, res) => {
 
 router.post("/orderOrCommit", (req, res, next) => {
     const { wholeCart, addressId } = req.body;
-    let promiseArr = [];
-    wholeCart.forEach(element => {
-        if (element.is_commit) {
-            promiseArr.push(
-                new mycommits({
-                    ...element,
-                    shipping_address: addressId
-                }).save()
-            );
-        } else {
-            //order
-            promiseArr.push(
-                new myOrders({
-                    ...element,
-                    shipping_address: addressId
-                }).save()
-            );
-        }
-    });
-
-    return Promise.all(promiseArr)
+    if (!wholeCart || !wholeCart.length) {
+        return next({
+            status: 400,
+            message: "[please pass all the cart item"
+        });
+    }
+    createCommitOrOrder(wholeCart, addressId, req.user._id)
         .then(data => {
             return res.json(data);
         })
