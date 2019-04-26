@@ -115,27 +115,27 @@ router.get("/", (req, res) => {
 
 router.post("/orderOrCommit", (req, res, next) => {
     const { wholeCart, addressId } = req.body;
-    let commitsPromise = [];
-    let ordersPromise = [];
+    let promiseArr = [];
     wholeCart.forEach(element => {
         if (element.is_commit) {
-            commitsPromise.push(
+            promiseArr.push(
                 new mycommits({
                     ...element,
-                    addressId: addressId
+                    shipping_address: addressId
                 })
             );
         } else {
             //order
-            ordersPromise.push(
+            promiseArr.push(
                 new myOrders({
                     ...element,
-                    addressId: addressId
+                    shipping_address: addressId
                 })
             );
         }
     });
-    return Promise.all(commitsPromise)
+
+    return Promise.all(promiseArr)
         .then(data => {
             return res.json(data);
         })

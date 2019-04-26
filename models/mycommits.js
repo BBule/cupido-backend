@@ -42,10 +42,6 @@ let mycommitsSchema = new Schema({
         },
         email: String
     },
-    addressId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "myaddresses"
-    },
     payment_details: [Schema.Types.Mixed],
     timecreated: { type: Date, default: Date.now },
     commit_time: Date, // when payment portal sends positive ack
