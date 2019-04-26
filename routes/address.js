@@ -209,4 +209,34 @@ router.post("/add", (req, res) => {
         });
 });
 
+router.post("/remove", (req, res, next) => {
+    if (!req.body.addressId) {
+        return next({
+            message: "please pass all the required elements",
+            status: 400
+        });
+    }
+    const a = User.findOneAndUpdate(
+        {
+            _id: req.user._id,
+            "myaddresses._id": mongoose.Types.ObjectId(req.body.addressId)
+        },
+        { new: true }
+    ).exec();
+    const b = myaddresses
+        .findByIdAndRemove({ _id: mongoose.Types.ObjectId(req.body.addressId) })
+        .exec();
+    return Promise.all([a, b])
+        .then(data => {
+            return res.json(data[0]);
+        })
+        .catch(error => {
+            return next({
+                message: "unable to delete address",
+                status: 400,
+                stack: error
+            });
+        });
+});
+
 module.exports = router;
