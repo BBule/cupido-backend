@@ -33,8 +33,8 @@ router.get("/", (req, res, next) => {
                     console.log("No commits found");
                     return res.json([]);
                 } else {
-                    var startpoint = req.query.offset; // zero
-                    var howmany = req.query.limit; // ten
+                    var startpoint = req.query.offset || 0; // zero
+                    var howmany = req.query.limit || 20; // ten
                     console.log(
                         "commits is found and it's product marketprice: "
                     );
