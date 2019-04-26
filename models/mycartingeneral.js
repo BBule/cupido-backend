@@ -11,7 +11,7 @@ let mycartSchema = new Schema({
     sale: {
         id: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "saleslist"
+            ref: "Saleslist"
         }
     },
     User: {
