@@ -20,105 +20,69 @@ router.post("/edit", (req, res, next) => {
     console.log("Editing address of the user");
     let curruserid = mongoose.Types.ObjectId(req.user._id);
     let addressid = mongoose.Types.ObjectId(req.body.addressid);
-    // Edit the address DB
-    myaddresses
+    const a = myaddresses
         .findOneAndUpdate(
             { _id: addressid },
             {
                 $set: {
-                    "User.id": curruserid,
-                    "User.username": req.user.username,
-                    "User.useremail": req.body.useremail
-                        ? req.body.useremail
-                        : req.user.email
-                        ? req.user.email.email
-                        : "",
-                    "User.contact": req.body.contact,
-                    "User.address": req.body.address,
-                    "User.landmark": req.body.landmark,
-                    "User.city": req.body.city,
-                    "User.state": req.body.state,
-                    "User.country": req.body.country,
-                    timecreated: newIndDate()
+                    User: {
+                        id: curruserid,
+                        username: req.user.username,
+                        useremail: req.body.useremail
+                            ? req.body.useremail
+                            : req.user.email
+                            ? req.user.email.email
+                            : "",
+                        contact: req.body.contact,
+                        address: req.body.address,
+                        landmark: req.body.landmark,
+                        city: req.body.city,
+                        state: req.body.state,
+                        country: req.body.country
+                    }
                 }
             },
             { new: true }
         )
-        .then(addressdoc => {
-            console.log(addressdoc);
-        })
-        .catch(err => {
-            console.log(err);
-            res.status(400).send("Error occured");
-        });
-    // Make changes in the USER DB
-    let addresslist = [];
-    var flag = false;
-    User.findOne(
+        .exec();
+    const b = User.update(
         {
             _id: curruserid,
             "myaddresses._id": addressid
         },
-        { "myaddresses._id.$": 1 },
-        function(err, docuser) {
-            console.log("User found");
-            if (docuser && docuser.myaddresses && docuser.myaddresses.length) {
-                addresslist = docuser.myaddresses;
-                const i = 0;
-                console.log("Address found");
-                addresslist[i].User.id = curruserid;
-                addresslist[i].User.username = req.user.username;
-                addresslist[i].User.useremail = req.body.email
-                    ? req.body.email
-                    : req.user.email
-                    ? req.user.email.email
-                    : "";
-                addresslist[i].User.contact = req.body.contact;
-                addresslist[i].User.address = req.body.address;
-                addresslist[i].User.landmark = req.body.landmark;
-                addresslist[i].User.city = req.body.city;
-                addresslist[i].User.state = req.body.state;
-                addresslist[i].User.country = req.body.country;
-                console.log("New address list : ");
-                console.log(addresslist);
-                flag = true;
-            } else {
-                console.log("DOcuser incompat");
-                console.log(docuser);
+        {
+            $set: {
+                "myaddresses.$.User": {
+                    id: curruserid,
+                    username: req.user.username,
+                    useremail: req.body.useremail
+                        ? req.body.useremail
+                        : req.user.email
+                        ? req.user.email.email
+                        : "",
+                    contact: req.body.contact,
+                    address: req.body.address,
+                    landmark: req.body.landmark,
+                    city: req.body.city,
+                    state: req.body.state,
+                    country: req.body.country
+                }
             }
         }
-    ).then(() => {
-        if (flag == true) {
-            console.log("User is being updated");
-            User.findOneAndUpdate(
-                { _id: curruserid },
-                {
-                    $set: {
-                        myaddresses: addresslist
-                    }
-                },
-                { new: true }
-            )
-                .then(userdoc => {
-                    console.log(userdoc);
-                    res.status(200).json({ message: "User doc was updated" });
-                })
-                .catch(err => {
-                    console.log(err);
-                    return next({
-                        message: err.message || "unknown error occured",
-                        status: 400,
-                        stack: err
-                    });
-                });
-        } else {
-            console.log("No address match found");
+    ).exec();
+
+    return Promise.all([a, b])
+        .then(data => {
+            return res.json(data);
+        })
+        .catch(error => {
+            console.log(error);
             return next({
-                message: "No matching address found",
-                status: 400
+                message: "unable to update, please try again later!",
+                status: 400,
+                stack: error
             });
-        }
-    });
+        });
 });
 
 // API end point to route traffic of my addresses page
