@@ -221,8 +221,15 @@ router.post("/remove", (req, res, next) => {
             _id: req.user._id,
             "myaddresses._id": mongoose.Types.ObjectId(req.body.addressId)
         },
+        {
+            $pull: {
+                "myaddresses._id": mongoose.Types.ObjectId(req.body.addressId)
+            }
+        },
         { new: true }
-    ).exec();
+    )
+        .select({ "myaddresses.$": 1 })
+        .exec();
     const b = myaddresses
         .findByIdAndRemove({ _id: mongoose.Types.ObjectId(req.body.addressId) })
         .exec();
