@@ -28,8 +28,8 @@ router.post("/edit", (req, res, next) => {
                 $set: {
                     "User.id": curruserid,
                     "User.username": req.user.username,
-                    "User.useremail": req.body.email
-                        ? req.body.email
+                    "User.useremail": req.body.useremail
+                        ? req.body.useremail
                         : req.user.email
                         ? req.user.email.email
                         : "",
