@@ -29,17 +29,20 @@ let SalesListSchema = new Schema({
         }
     ],
     addedBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Admins",
-      required: true
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Admins",
+        required: true
     },
-    cupidLove: [{
-        quantity:Number,
-        cupidLove:Number
-    }], // [{quantity,cupidLove}]
+    cupidLove: [
+        {
+            quantity: Number,
+            cupidLove: Number
+        }
+    ], // [{quantity,cupidLove}]
     quantity_committed: { type: Number, default: 0 },
     quantity_sold: { type: Number, default: 0 },
     current_inventory: Number,
+    initial_commit_price: { type: Number, default: 0 },
     cart_customer_emails: [Schema.Types.Mixed],
     sale_buffer_time: Number, // in hours
     gender: Boolean, // 0 for male (Target Audience)
