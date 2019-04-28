@@ -4,9 +4,9 @@ const configs = {
         "mongodb://getlow:lowerlowest1@ds131721.mlab.com:31721/getlow",
     GOOGLE_CLIENT_ID:
         process.env.GOOGLE_CLIENT_ID ||
-        "538251364150-kg2713vshgkc3uvlqprirg47bq8s74pu.apps.googleusercontent.com",
+        "524726124380-536q8uhh4gfic4rq2s3jepc9s2btirkj.apps.googleusercontent.com",
     GOOGLE_CLIENT_SECRET:
-        process.env.GOOGLE_CLIENT_SECRET || "OUUSDpDbBe2C_ehka7hiis4U",
+        process.env.GOOGLE_CLIENT_SECRET || "s-G0KeQEKJ3AagIs3PYe4SoZ",
     GOOGLE_REDIRECT_URL:
         process.env.GOOGLE_REDIRECT_URL || "http://127.0.0.1:3000/login",
     JWT_SECRET:
