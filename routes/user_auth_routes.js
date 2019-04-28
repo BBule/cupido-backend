@@ -5,7 +5,8 @@ const otpUtils = require(".././msg91utils/otputils");
 const request = require("request");
 const config = require("../config/config");
 const router = express.Router();
-
+const moment = require("moment");
+const { SendMail, getEJSTemplate } = require("../helpers/mailHelper");
 // Helper Functions
 function newIndDate() {
     var nDate = new Date().toLocaleString("en-US", {
@@ -31,7 +32,10 @@ router.route("/sendotp").post(async function(req, res, next) {
         async function(error, response, body) {
             if (!error) {
                 // console.log(body);
-                res.send(body);
+                const newUser = await User.findOne({
+                    "contact.contact": phone
+                }).exec();
+                res.send({ ...body, new: newUser ? false : true });
             } else {
                 return next({ message: "unknown error occured", status: 400 });
             }
@@ -54,10 +58,17 @@ router.route("/phone/verifyotp").post(async function(req, res, next) {
                 if (body.type === "success") {
                     res.send(body);
                 } else {
-                    res.status(400).send(body);
+                    return next({
+                        message: "unknown error occured",
+                        status: 400
+                    });
                 }
             } else {
-                return next({ message: "unknown error occured", status: 400 });
+                return next({
+                    message: "unknown error occured",
+                    status: 400,
+                    stack: error
+                });
             }
         }
     );
@@ -92,8 +103,8 @@ router.route("/verifyemail/:token").post(async function(req, res) {
 });
 
 router.route("/verifyotp").post(async function(req, res) {
-    var phone = req.body.phone;
-    var otp = req.body.otp;
+    var { phone, otp, username, email, gender } = req.body.phone;
+
     request.post(
         "https://control.msg91.com/api/verifyRequestOTP.php?authkey=" +
             config.SMS.AUTH_KEY +
@@ -122,11 +133,18 @@ router.route("/verifyotp").post(async function(req, res) {
                         return res.json({ token, user, new: false });
                     } else {
                         user = new User({
+                            username: username,
+                            email: {
+                                email: email,
+                                verified: false
+                            },
+                            gender: gender, //Male/Female
                             contact: {
                                 contact: phone,
                                 verified: true
                             }
                         });
+
                         if (req.body.referral_code) {
                             const referedBy = await User.findOneAndUpdate(
                                 {
@@ -143,6 +161,40 @@ router.route("/verifyotp").post(async function(req, res) {
                         }
 
                         await user.save();
+                        if (email) {
+                            var email_token = jwt
+                                .sign(
+                                    { _id: user._id, email: req.body.email },
+                                    config.JWT_SECRET
+                                )
+                                .toString();
+                            var verification_link =
+                                config.FRONT_HOST +
+                                "/verifyemail/" +
+                                email_token;
+                            var emailtoken = new EmailToken({
+                                token: email_token,
+                                used: false
+                            });
+                            emailtoken.save();
+                            //send verification
+                            const ejsTemplate = await getEJSTemplate({
+                                fileName: "email_verification.ejs"
+                            });
+                            const finalHTML = ejsTemplate({
+                                time: moment().format("lll"),
+                                username: req.user.username
+                                    ? req.user.username.split(" ")[0]
+                                    : "Dear",
+                                link: verification_link //may be format properly before passing it
+                            });
+                            const message = {
+                                to: req.body.email,
+                                subject: "Please verify your email!",
+                                body: finalHTML
+                            };
+                            await SendMail(message);
+                        }
                         const token = jwt.sign(
                             {
                                 _id: user._id,
@@ -184,7 +236,12 @@ router.route("/google").post(async function(req, res, next) {
                     expiresIn: config.JWT_EXP
                 }
             );
-            return res.json({ token, user, new: false });
+
+            return res.json({
+                token,
+                user,
+                new: user.contact && user.contact.verified ? false : true
+            });
         } else {
             user = new User(data);
             if (req.body.referral_code) {

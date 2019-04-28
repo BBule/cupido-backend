@@ -10,7 +10,7 @@ const { SendMail, getEJSTemplate } = require("../helpers/mailHelper");
 router.post("/edit", async function(req, res, next) {
     let query = { $set: {} };
     if (req.body.hasOwnProperty("mobile")) {
-        query.$set = { contact: req.body.mobile, verified: true }; //make it verified as of now
+        query.$set = { contact: req.body.mobile, verified: true };
     }
     if (req.body.hasOwnProperty("email")) {
         var email_token = jwt
@@ -20,7 +20,7 @@ router.post("/edit", async function(req, res, next) {
             )
             .toString();
         var verification_link =
-            "https://cupido.netlify.com/verifyemail/" + email_token;
+            config.FRONT_HOST + "/verifyemail/" + email_token;
         var emailtoken = new EmailToken({ token: email_token, used: false });
         emailtoken.save();
         //send verification

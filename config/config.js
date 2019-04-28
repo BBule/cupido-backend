@@ -29,6 +29,7 @@ const configs = {
         AUTH_KEY: process.env.SMS_AUTH_KEY || "271701A7FBbvWdD52e5cad80c2",
         SENDER_ID: process.env.SMS_SENDER_ID || "Cupido"
     },
+    FRONT_HOST: process.env.FRONT_HOST || "http://localhost:3000",
     ENV: process.env.NODE_ENV || "development"
 };
 
