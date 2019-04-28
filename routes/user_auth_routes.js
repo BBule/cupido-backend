@@ -164,7 +164,7 @@ router.route("/verifyotp").post(async function(req, res) {
                         if (email) {
                             var email_token = jwt
                                 .sign(
-                                    { _id: user._id, email: req.body.email },
+                                    { _id: user._id, email: user.email },
                                     config.JWT_SECRET
                                 )
                                 .toString();
@@ -183,8 +183,8 @@ router.route("/verifyotp").post(async function(req, res) {
                             });
                             const finalHTML = ejsTemplate({
                                 time: moment().format("lll"),
-                                username: req.user.username
-                                    ? req.user.username.split(" ")[0]
+                                username: user.username
+                                    ? user.username.split(" ")[0]
                                     : "Dear",
                                 link: verification_link //may be format properly before passing it
                             });

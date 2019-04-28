@@ -17,7 +17,7 @@ const myreplies = require("../models/myreplies");
 // POST Route to send comment entry of an individual to the admin discretion portal
 // Create a new object and then embed data into the array
 // User can send this route
-router.post("/:productid", (req, res, next) => {
+router.post("/add/:productid", (req, res, next) => {
     console.log("Posting comment to the admin discretion portal");
     let curruser = req.user;
     // All properties to be input from user
@@ -51,7 +51,7 @@ router.post("/:productid", (req, res, next) => {
         });
 });
 
-router.get("/:productid", async (req, res, next) => {
+router.get("/get/:productid", async (req, res, next) => {
     let curruser = req.user;
     try {
         var comments = await mycomments
@@ -84,7 +84,7 @@ router.get("/:productid", async (req, res, next) => {
     }
 });
 
-router.post("/upvote", async function(req, res,next) {
+router.post("/upvote", async function(req, res, next) {
     let curruser = req.user;
     try {
         var commentUpvoted = await mycomments.findOne({
