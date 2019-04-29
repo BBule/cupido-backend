@@ -6,27 +6,22 @@ let Schema = mongoose.Schema;
 
 let cupidLoveSchema = new Schema({
     timecreated: { type: Date, default: Date.now },
-    Order: {
-        id: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Orders"
-        }
+    order: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Orders"
     },
-    User: {
-        id: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User"
-        }
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
     },
-    GameCard: {
+    gameCard: {
         id: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User"
         }
     },
-    isOrder:Boolean,
-    amount:Number
-
+    isOrder: Boolean,
+    amount: Number
 });
 
 module.exports = mongoose.model("CupidLove", cupidLoveSchema);

@@ -10,7 +10,7 @@ const getUserCommits = async (
 ) => {
     return await mycommits
         .find({
-            "User.id": userId,
+            "user.id": userId,
             is_active: activeStat
         })
         .limit(limit)

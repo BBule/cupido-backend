@@ -12,7 +12,7 @@ let mycommitsSchema = new Schema({
     // THis will be executed when the buffer time of some sale ends...
     // Alternatively it can be checked if the currtime is more than the sale buffer value
     gift_card_code: String, // The gift card code generated if the commit becomes missed
-    Product: {
+    product: {
         id: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Products"
@@ -35,7 +35,7 @@ let mycommitsSchema = new Schema({
         current_quantity_committed: Number,
         price_markers: [Schema.Types.Mixed]
     },
-    User: {
+    user: {
         id: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User"

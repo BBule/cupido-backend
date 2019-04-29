@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 let Schema = mongoose.Schema;
 
 let myorderSchema = new Schema({
-    Product: {
+    product: {
         id: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Products"
@@ -25,11 +25,9 @@ let myorderSchema = new Schema({
         current_quantity_ordered: Number,
         price_markers: [Schema.Types.Mixed]
     },
-    User: {
-        id: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User"
-        }
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
     },
     payment_details: [Schema.Types.Mixed],
     timecreated: { type: Date, default: Date.now },

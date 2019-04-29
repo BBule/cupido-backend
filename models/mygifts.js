@@ -9,7 +9,7 @@ let giftsSchema = new Schema({
     giftcode: String,
     discount: Number,
     timecreated: { type: Date, default: Date.now },
-    Product: {
+    product: {
         id: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Products"
@@ -25,11 +25,9 @@ let giftsSchema = new Schema({
         endtime: Date,
         sale_buffer_time: Number
     },
-    User: {
-        id: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User"
-        }
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
     },
     specificcommit: {
         id: {

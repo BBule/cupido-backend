@@ -25,21 +25,19 @@ router.post("/edit", (req, res, next) => {
             { _id: addressid },
             {
                 $set: {
-                    User: {
-                        id: curruserid,
-                        username: req.user.username,
-                        useremail: req.body.useremail
-                            ? req.body.useremail
-                            : req.user.email
-                            ? req.user.email.email
-                            : "",
-                        contact: req.body.contact,
-                        address: req.body.address,
-                        landmark: req.body.landmark,
-                        city: req.body.city,
-                        state: req.body.state,
-                        country: req.body.country
-                    }
+                    id: curruserid,
+                    username: req.user.username,
+                    useremail: req.body.useremail
+                        ? req.body.useremail
+                        : req.user.email
+                        ? req.user.email.email
+                        : "",
+                    contact: req.body.contact,
+                    address: req.body.address,
+                    landmark: req.body.landmark,
+                    city: req.body.city,
+                    state: req.body.state,
+                    country: req.body.country
                 }
             },
             { new: true }
@@ -52,7 +50,7 @@ router.post("/edit", (req, res, next) => {
         },
         {
             $set: {
-                "myaddresses.$.User": {
+                "myaddresses.$": {
                     id: curruserid,
                     username: req.user.username,
                     useremail: req.body.useremail
@@ -130,19 +128,19 @@ router.post("/add", (req, res) => {
     // All properties to be input from user
     // Nothing except ID of user from tech logics.
     let newaddress = new myaddresses({
-        "User.id": curruser._id,
-        "User.username": req.user.username,
-        "User.useremail": req.body.email
+        id: curruser._id,
+        username: req.user.username,
+        useremail: req.body.email
             ? req.body.email
             : req.user.email
             ? req.user.email.email
             : "",
-        "User.contact": req.body.contact,
-        "User.address": req.body.address,
-        "User.landmark": req.body.landmark,
-        "User.city": req.body.city,
-        "User.state": req.body.state,
-        "User.country": req.body.country
+        contact: req.body.contact,
+        address: req.body.address,
+        landmark: req.body.landmark,
+        city: req.body.city,
+        state: req.body.state,
+        country: req.body.country
     });
     newaddress
         .save()

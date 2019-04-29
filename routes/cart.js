@@ -25,11 +25,11 @@ router.post("/add", (req, res, next) => {
     console.log("Posting cart data to the DB");
     let curruser = req.user;
     let newcartitem = new mycartingeneral({
-        "User.id": curruser._id,
-        "Product.id": req.body.productid,
-        "Product.name": req.body.productname,
-        "Product.marketPrice": req.body.marketPrice,
-        "sale.id": req.body.saleid,
+        user: curruser._id,
+        "product.id": req.body.productid,
+        "product.name": req.body.productname,
+        "product.marketPrice": req.body.marketPrice,
+        sale: req.body.saleid,
         timecreated: newIndDate(),
         is_commit: req.body.iscommit,
         price_committed_at: req.body.price_committed_at,

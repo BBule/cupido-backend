@@ -130,7 +130,6 @@ router.get("/presentsales", (req, res, next) => {
         .then(result => {
             return res.json(result);
         })
-
         .catch(err => {
             console.log(err);
             return next({ status: 400, message: "unknown error occured" });
@@ -138,29 +137,24 @@ router.get("/presentsales", (req, res, next) => {
 });
 
 // API end point to route traffic of future sales
-router.get("/futuresales", (req, res) => {
+router.get("/futuresales", (req, res, next) => {
+    const { limit = 20, skip = 0 } = req.query;
     var currdate = newIndDate();
-    var salesholder;
     Saleslist.find({ starttime: { $gte: currdate } })
         .populate("product.id")
         .sort({ startpoint: 1 })
+        .limit(limit)
+        .skip(skip)
+        .exec()
         .then(result => {
-            salesholder = result;
-            console.log(
-                "Total futuresales found : " + result.length.toString()
-            );
-        })
-        .then(() => {
-            var queryParams = salesholder;
-            var startpoint = req.query.offset; // zero
-            var howmany = req.query.limit; // ten
-            res.status(200).send({
-                listoffuturesales: queryParams.splice(startpoint, howmany)
-            });
-            // return app.render(req, res,"/timesales", queryParams);
+            return res.json(result);
         })
         .catch(err => {
-            res.status(400).send("Bad request");
+            return next({
+                stack: err,
+                message: "unknown error occured",
+                status: 400
+            });
         });
 });
 

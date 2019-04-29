@@ -33,7 +33,7 @@ router.post("/add/:productid", (req, res, next) => {
         }
     });
     let newcomment = new mycomments({
-        "User.id": curruser._id,
+        user: curruser._id,
         "Product.id": req.params.productid,
         "Product.name": req.body.productname,
         "Product.rating": req.body.productrating,
@@ -58,7 +58,7 @@ router.get("/get/:productid", async (req, res, next) => {
             .find({
                 "Product.id": req.params.productid
             })
-            .populate("User.id", "username")
+            .populate("user", "username")
             .exec();
         comments = comments.map(async function(comment) {
             if (comment.upvotes.meta.indexOf(curruser._id) >= 0) {
@@ -240,8 +240,8 @@ router.post("/reply/:commentid", async (req, res, next) => {
         });
 
         let newreply = new myreplies({
-            "User.id": curruser._id,
-            "Comment.id": req.params.commentid,
+            user: curruser._id,
+            comment: req.params.commentid,
             timecreated: newIndDate(),
             is_review: true,
             is_published: false,
@@ -265,9 +265,9 @@ router.get("/reply/:commentid", async (req, res) => {
     try {
         var replies = await myreplies
             .find({
-                "Comment.id": req.params.commentid
+                comment: req.params.commentid
             })
-            .populate("User.id", "username")
+            .populate("user", "username")
             .exec();
         return res.send(replies);
     } catch (error) {

@@ -24,20 +24,16 @@ const getProductById = async id => {
         .exec();
 };
 
-const getAllProducts = async (
-    page = 1,
-    limit = 20,
-    req_query
-) => {
-    let category=(req_query.category?req_query.category:null);
+const getAllProducts = async (page = 1, limit = 20, req_query) => {
+    let category = req_query.category ? req_query.category : null;
     delete req_query.category;
-    let query={};
-    if(category){
-        query=`{"category":"${category}"`;
-        Object.keys(req_query).forEach(function(key){
-            query+=`,"filters.${key}":"${req_query[key]}"`;
+    let query = {};
+    if (category) {
+        query = `{"product.category":"${category}"`;
+        Object.keys(req_query).forEach(function(key) {
+            query += `,"filters.${key}":"${req_query[key]}"`;
         });
-        query=JSON.parse(query+'}');
+        query = JSON.parse(query + "}");
     }
     const skip = limit * (page - 1);
     limit = skip + limit;
@@ -47,6 +43,5 @@ const getAllProducts = async (
         .skip(skip)
         .exec();
 };
-
 
 module.exports = { searchWithKeyword, getProductById, getAllProducts };

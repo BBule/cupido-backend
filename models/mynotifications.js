@@ -5,11 +5,9 @@ const mongoose = require("mongoose");
 let Schema = mongoose.Schema;
 
 let notificationsSchema = new Schema({
-    User: {
-        id: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User"
-        }
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
     },
     sale: {
         id: {

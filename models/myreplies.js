@@ -5,17 +5,13 @@ const mongoose = require("mongoose");
 let Schema = mongoose.Schema;
 
 let myrepliesSchema = new Schema({
-    User: {
-        id: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User"
-        }
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
     },
-    Comment: {
-        id: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "mycomments"
-        }
+    comment: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "mycomments"
     },
     timecreated: { type: Date, default: Date.now },
     timeaccepted: Date,
