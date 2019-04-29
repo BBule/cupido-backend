@@ -111,30 +111,26 @@ router.get("/getDetails/:id", (req, res, next) => {
 });
 
 // API end point to route traffic of current sales
-router.get("/presentsales", (req, res) => {
+router.get("/presentsales", (req, res, next) => {
+    const { limit, skip, cats } = req.query;
     var currdate = newIndDate();
-    var salesholder;
-    Saleslist.find({
+    let query = {
         endtime: { $gte: currdate },
         starttime: { $lte: currdate }
-    })
-        .populate(
-            "product.id"
-        )
+    };
+    if (cats.length) {
+        query["product.category"] = { $in: cats.split(",") };
+    }
+    return Saleslist.find(query)
+        .populate("product.id")
+        .limit(limit)
+        .skip(skip)
         .sort({ endtime: 1 })
+        .exec()
         .then(result => {
-            salesholder = result;
-            console.log(
-                "Total presentsales found : " + result.length.toString()
-            );
+            return res.json(result);
         })
-        .then(() => {
-            var queryParams = salesholder;
-            var startpoint = req.query.offset; // zero
-            var howmany = req.query.limit; // ten
-            return res.json(queryParams.splice(startpoint, howmany));
-            // return app.render(req, res,"/timesales", queryParams);
-        })
+
         .catch(err => {
             console.log(err);
             return next({ status: 400, message: "unknown error occured" });
@@ -146,9 +142,7 @@ router.get("/futuresales", (req, res) => {
     var currdate = newIndDate();
     var salesholder;
     Saleslist.find({ starttime: { $gte: currdate } })
-    .populate(
-            "product.id"
-        )
+        .populate("product.id")
         .sort({ startpoint: 1 })
         .then(result => {
             salesholder = result;
