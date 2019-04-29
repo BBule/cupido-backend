@@ -107,11 +107,11 @@ router.get("/", (req, res, next) => {
                 if (typeofcart == "commit") {
                     cupidLove = await getEstimateCupidLove(cartsholder);
                 }
-                res.status(200).send({
+                return res.json({
                     cartsdata: result.mycarts.splice(startpoint, howmany)
                 });
             } else {
-                return res.json({ message: "No items found" });
+                return res.json({ cartsdata: [] });
             }
         })
         .catch(err => {

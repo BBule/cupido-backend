@@ -64,7 +64,7 @@ router.post("/edit", async function(req, res, next) {
     }
 });
 
-router.get("/gift", (req, res) => {
+router.get("/gift", (req, res, next) => {
     var giftsholder;
     var curruser = req.user._id;
     console.log(req.originalUrl);
@@ -75,25 +75,29 @@ router.get("/gift", (req, res) => {
         .then(() => {
             if (giftsholder == null || giftsholder.length == 0) {
                 console.log("No gifts found");
-                res.status(200).send({
-                    giftsdata: "No gifts found"
+                res.send({
+                    giftsdata: []
                 });
             } else {
                 var startpoint = req.query.offset; // zero
                 var howmany = req.query.limit; // ten
                 console.log("gift is found and it's code: ");
                 console.log(giftsholder[0].giftcode);
-                res.status(200).send({
+                res.send({
                     giftsdata: giftsholder.splice(startpoint, howmany)
                 });
             }
         })
         .catch(err => {
-            res.status(400).send("Bad request");
+            return next({
+                stack: err,
+                status: 400,
+                message: "bad request!"
+            });
         });
 });
 
-router.get("/orders", (req, res) => {
+router.get("/orders", (req, res, next) => {
     var ordersholder;
     var curruser = req.user._id;
     console.log(req.originalUrl);
@@ -104,21 +108,25 @@ router.get("/orders", (req, res) => {
         .then(() => {
             if (ordersholder == null || ordersholder.length == 0) {
                 console.log("No orders found");
-                res.status(200).send({
-                    ordersdata: "No orders found"
+                res.send({
+                    ordersdata: []
                 });
             } else {
                 var startpoint = req.query.offset; // zero
                 var howmany = req.query.limit; // ten
                 console.log("order is found and it's amount: ");
                 console.log(ordersholder[0].order_amount);
-                res.status(200).send({
+                res.send({
                     ordersdata: ordersholder.splice(startpoint, howmany)
                 });
             }
         })
         .catch(err => {
-            res.status(400).send("Bad request");
+            return next({
+                stack: err,
+                status: 400,
+                message: "bad request!"
+            });
         });
 });
 

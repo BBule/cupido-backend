@@ -93,12 +93,20 @@ router.route("/verifyemail/:token").post(async function(req, res) {
                     type: "auth",
                     message: "Email verified successfully"
                 });
-            } catch (e) {
-                res.status(400).send({ message: "Invalid Link" });
+            } catch (ex) {
+                return next({
+                    stack: ex,
+                    status: 400,
+                    message: "Invalid Link"
+                });
             }
         }
     } catch (e) {
-        res.status(500).send({ message: "Server Error" });
+        return next({
+            stack: e,
+            status: 500,
+            message: "bad request!"
+        });
     }
 });
 
@@ -210,10 +218,19 @@ router.route("/verifyotp").post(async function(req, res) {
                         return res.json({ token, user, new: true });
                     }
                 } else {
-                    res.status(400).send(body);
+                    // res.status(400).send(body);
+                    return next({
+                        stack: body,
+                        status: 400,
+                        message: "Invalid Otp"
+                    });
                 }
             } else {
-                res.status(400).send(error);
+                return next({
+                    stack: error,
+                    status: 400,
+                    message: "bad request!"
+                });
             }
         }
     );
@@ -260,7 +277,7 @@ router.route("/google").post(async function(req, res, next) {
             }
 
             user.save()
-                .then(function() {
+                .then(() => {
                     const token = jwt.sign(
                         {
                             _id: user._id,
@@ -276,11 +293,15 @@ router.route("/google").post(async function(req, res, next) {
                     return res.json({ token, user, new: true });
                 })
                 .catch(function(e) {
-                    res.status(400).send(e);
+                    return next({
+                        stack: e,
+                        status: 400,
+                        message: "bad request!"
+                    });
                 });
         }
     } catch (ex) {
-        next({ message: "unable to login", status: 400, stack: ex });
+        return next({ message: "unable to login", status: 400, stack: ex });
     }
 });
 router.get("/refer_verify", (req, res, next) => {

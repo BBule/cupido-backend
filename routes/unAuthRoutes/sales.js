@@ -138,7 +138,7 @@ router.get("/presentsales", (req, res, next) => {
 });
 
 // API end point to route traffic of future sales
-router.get("/futuresales", (req, res) => {
+router.get("/futuresales", (req, res, next) => {
     var currdate = newIndDate();
     var salesholder;
     Saleslist.find({ starttime: { $gte: currdate } })
@@ -154,13 +154,15 @@ router.get("/futuresales", (req, res) => {
             var queryParams = salesholder;
             var startpoint = req.query.offset; // zero
             var howmany = req.query.limit; // ten
-            res.status(200).send({
-                listoffuturesales: queryParams.splice(startpoint, howmany)
-            });
+            return res.send(queryParams.splice(startpoint, howmany));
             // return app.render(req, res,"/timesales", queryParams);
         })
         .catch(err => {
-            res.status(400).send("Bad request");
+            return next({
+                stack: err,
+                status: 400,
+                message: "bad request!"
+            });
         });
 });
 

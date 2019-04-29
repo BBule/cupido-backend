@@ -99,7 +99,7 @@ router.get("/", (req, res, next) => {
         .then(() => {
             if (addressholder == null || addressholder.length == 0) {
                 console.log("No addresses found");
-                res.status(200).send({
+                return res.send({
                     addressdata: []
                 });
             } else {

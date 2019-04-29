@@ -104,7 +104,7 @@ router.post("/upvote", async function(req, res, next) {
                 },
                 { new: true }
             );
-            res.send({
+            return res.send({
                 upvotes: comment.upvotes.count,
                 downvotes: comment.downvotes.count,
                 user_upvoted: false,
