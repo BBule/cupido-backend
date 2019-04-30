@@ -112,7 +112,7 @@ router.get("/getDetails/:id", (req, res, next) => {
 
 // API end point to route traffic of current sales
 router.get("/presentsales", (req, res, next) => {
-    const { limit, skip, cats } = req.query;
+    const { limit = 20, skip = 0, cats } = req.query;
     var currdate = newIndDate();
     let query = {
         endtime: { $gte: currdate },
@@ -123,8 +123,8 @@ router.get("/presentsales", (req, res, next) => {
     }
     return Saleslist.find(query)
         .populate("product.id")
-        .limit(limit)
-        .skip(skip)
+        .limit(Number(limit))
+        .skip(Number(skip))
         .sort({ endtime: 1 })
         .exec()
         .then(result => {
