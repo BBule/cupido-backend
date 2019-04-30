@@ -21,18 +21,18 @@ let mycommentsSchema = new Schema({
     },
     upvotes: {
         meta: [mongoose.Schema.Types.ObjectId],
-        count: Number
+        count: { type: Number, default: 0 }
     },
     downvotes: {
         meta: [mongoose.Schema.Types.ObjectId],
-        count: Number
+        count: { type: Number, default: 0 }
     },
     timecreated: { type: Date, default: Date.now },
     timeaccepted: Date,
-    is_review: Boolean, // Other option being is discussion
-    is_published: Boolean, // Other option being admin discretion
+    is_review: { type: Boolean, default: true }, // Other option being is discussion
+    is_published: { type: Boolean, default: true }, // Other option being admin discretion
     commentbody: String,
-    is_verified_buyer: Boolean // is the comment maker a buyer of the product
+    is_verified_buyer: { type: Boolean, default: false } // is the comment maker a buyer of the product
     // This can be implemented by seeing the user's orders, if a product is found it's good.
 });
 

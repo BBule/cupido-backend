@@ -59,8 +59,9 @@ router.get("/get/:productid", async (req, res, next) => {
                 "Product.id": req.params.productid
             })
             .populate("User.id", "username")
+            .lean()
             .exec();
-        comments = comments.map(async function(comment) {
+        const bars = comments.map(comment => {
             if (comment.upvotes.meta.indexOf(curruser._id) >= 0) {
                 comment.user_upvoted = true;
                 comment.down_upvoted = false;
@@ -74,7 +75,7 @@ router.get("/get/:productid", async (req, res, next) => {
             return comment;
         });
 
-        return res.send(comments);
+        return res.send(bars);
     } catch (error) {
         return next({
             message: error.message || "Unknown error",
