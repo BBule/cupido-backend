@@ -110,7 +110,7 @@ router.route("/verifyemail/:token").post(async function(req, res) {
     }
 });
 
-router.route("/verifyotp").post(async function(req, res) {
+router.route("/verifyotp").post(async function(req, res, next) {
     var { phone, otp, username, email, gender } = req.body.phone;
 
     request.post(
