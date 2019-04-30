@@ -45,7 +45,7 @@ router.post("/add/:productid", (req, res, next) => {
     });
     newcomment
         .save()
-        .then(() => res.send({ message: "Comment sent for review" }))
+        .then(data => res.send(data))
         .catch(err => {
             return next({ message: "Bad request", status: 400, stack: err });
         });
