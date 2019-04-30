@@ -233,7 +233,7 @@ router.post("/reply/:commentid", async (req, res, next) => {
         // Will be true if myorders in user will be found.
         User.findOne({ _id: curruser._id }).then(result => {
             var found = result.myorders.some(function(el) {
-                return el.Product.id === req.params.productid;
+                return el.Product.id === req.body.productid;
             });
             if (found) {
                 checkbuy = true;
@@ -251,7 +251,9 @@ router.post("/reply/:commentid", async (req, res, next) => {
         });
 
         await newreply.save();
-
+        await mycomments
+            .update({ _id: req.params.commentid }, { reply_count: { $inc: 1 } })
+            .exec();
         return res.send({ message: "Reply sent for review" });
     } catch (error) {
         return next({

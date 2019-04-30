@@ -32,7 +32,11 @@ let mycommentsSchema = new Schema({
     is_review: { type: Boolean, default: true }, // Other option being is discussion
     is_published: { type: Boolean, default: true }, // Other option being admin discretion
     commentbody: String,
-    is_verified_buyer: { type: Boolean, default: false } // is the comment maker a buyer of the product
+    is_verified_buyer: { type: Boolean, default: false }, // is the comment maker a buyer of the product
+    reply_count: {
+        type: Number,
+        default: 0
+    }
     // This can be implemented by seeing the user's orders, if a product is found it's good.
 });
 
