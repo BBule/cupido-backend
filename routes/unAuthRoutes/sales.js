@@ -118,7 +118,7 @@ router.get("/presentsales", (req, res, next) => {
         endtime: { $gte: currdate },
         starttime: { $lte: currdate }
     };
-    if (cats.length) {
+    if (cats && cats.length) {
         query["product.category"] = { $in: cats.split(",") };
     }
     return Saleslist.find(query)
