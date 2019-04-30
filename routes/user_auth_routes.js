@@ -110,8 +110,8 @@ router.route("/verifyemail/:token").post(async function(req, res) {
     }
 });
 
-router.route("/verifyotp").post(async function(req, res, next) {
-    var { phone, otp, username, email, gender } = req.body.phone;
+router.post("/verifyotp", (req, res, next) => {
+    const { email, gender, otp, phone, username } = req.body;
 
     request.post(
         "https://control.msg91.com/api/verifyRequestOTP.php?authkey=" +
