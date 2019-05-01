@@ -6,7 +6,7 @@ const app = require("./app");
 
 require("./db/connectDB");
 
-if (cluster.isMaster) {
+if (cluster.isMaster && process.env.NODE_ENV == "production") {
     console.log(`Master ${process.pid} is running`);
     for (let i = 0; i < numCPUs; i++) {
         cluster.fork();
