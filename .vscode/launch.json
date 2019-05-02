@@ -9,7 +9,10 @@
             "request": "launch",
             "name": "Launch Program",
             "program": "${workspaceFolder}/server.js",
-            "autoAttachChildProcesses": true
+            "autoAttachChildProcesses": true,
+            "env": {
+                "NODE_ENV": "development"
+            }
         }
     ]
 }

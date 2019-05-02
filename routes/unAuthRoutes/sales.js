@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-
+const lodash = require("lodash");
 // Models
 
 const Saleslist = require("../../models/saleslist");
@@ -58,22 +58,27 @@ router.get("/presentsales", (req, res, next) => {
         .then(result => {
             if (result && result.length) {
                 const a = result.map(async i => {
-                    i.total_commit = ((await commitCont(i._id)) || 0) + 5;
+                    i.total_commit =
+                        ((await commitCont.getCommitCountBySale(i._id)) || 0) +
+                        5;
 
                     const b = lodash.sortBy(i.cupidLove, "quantity");
                     const c = b.map(element => {
                         return {
-                            key: "0 - " + element.quantity,
+                            key: " > " + element.quantity,
                             price: i.initial_commit_price - element.cupidLove
                         };
                     });
                     i.cupid_summery = c;
                     return i;
                 });
-                return res.json(a);
+                return Promise.all(a);
             } else {
                 return res.json([]);
             }
+        })
+        .then(data => {
+            return res.json(data);
         })
 
         .catch(err => {
