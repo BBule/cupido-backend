@@ -19,7 +19,7 @@ module.exports = {
             env_production: {
                 NODE_ENV: "production",
                 MONGO_URL:
-                    "mongodb://Is_admin:Lecupido01!@ds149706.mlab.com:49706/cupido_prod_db",
+                    "mongodb://lc_saikat:saikat%40123@ds149706.mlab.com:49706/cupido_prod_db",
                 GOOGLE_CLIENT_ID:
                     "524726124380-536q8uhh4gfic4rq2s3jepc9s2btirkj.apps.googleusercontent.com",
                 GOOGLE_CLIENT_SECRET: "s-G0KeQEKJ3AagIs3PYe4SoZ",
