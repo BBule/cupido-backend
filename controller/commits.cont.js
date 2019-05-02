@@ -18,6 +18,10 @@ const getUserCommits = async (
         .exec();
 };
 
+const getCommitCountBySale = id => {
+    return mycommits.countDocuments({ "sale.id": id }).exec();
+};
+
 const createCommitOrOrder = (wholeCart, addressId, userId) => {
     let promiseArr = [];
     wholeCart.forEach(element => {
@@ -49,4 +53,4 @@ const createCommitOrOrder = (wholeCart, addressId, userId) => {
         });
 };
 
-module.exports = { createCommitOrOrder, getUserCommits };
+module.exports = { createCommitOrOrder, getUserCommits, getCommitCountBySale };
