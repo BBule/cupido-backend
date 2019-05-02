@@ -66,7 +66,9 @@ router.get("/presentsales", (req, res, next) => {
                     const c = b.map(element => {
                         return {
                             key: " > " + element.quantity,
-                            price: i.initial_commit_price - element.cupidLove
+                            price:
+                                (i.product.id.marketPrice || 0) -
+                                element.cupidLove
                         };
                     });
                     i.cupid_summery = c;
