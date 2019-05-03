@@ -13,15 +13,15 @@ function newIndDate() {
     return nDate;
 }
 
-router.get("/getDetails/:id", (req, res, next) => {
-    if (!req.params.id) {
+router.get("/getDetails", (req, res, next) => {
+    if (!req.query.id) {
         return next({
             status: 400,
             message: "No sale found"
         });
     }
-    return Saleslist.findOne({
-        _id: req.params.id
+    return Saleslist.find({
+        _id: { $in: req.query.id ? req.query.id.split(",") : [] }
     })
         .populate("product.id")
         .then(result => {
@@ -36,6 +36,8 @@ router.get("/getDetails/:id", (req, res, next) => {
             });
         });
 });
+
+router.get("/getSalesById", (req, res, next) => {});
 
 // API end point to route traffic of current sales
 router.get("/presentsales", (req, res, next) => {
