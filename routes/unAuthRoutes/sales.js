@@ -60,7 +60,7 @@ router.get("/presentsales", (req, res, next) => {
                 const a = result.map(async i => {
                     i.total_commit =
                         ((await commitCont.getCommitCountBySale(i._id)) || 0) +
-                        5;
+                        (i.counter_flag_temp || 5);
 
                     const b = lodash.sortBy(i.cupidLove, "quantity");
                     const c = b.map(element => {
