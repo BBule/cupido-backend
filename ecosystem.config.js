@@ -1,7 +1,7 @@
 module.exports = {
     apps: [
         {
-            name: "dev_cupido",
+            name: "prod_cupido",
             script: "server.js",
             instances: 1,
             autorestart: true,
