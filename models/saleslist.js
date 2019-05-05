@@ -39,6 +39,8 @@ let SalesListSchema = new Schema({
             cupidLove: Number
         }
     ], // [{quantity,cupidLove}]
+    recomandation: [Schema.Types.ObjectId],
+    counter_flag_temp: { type: Number, default: ~~(Math.random() * 5) + 1 },
     quantity_committed: { type: Number, default: 0 },
     quantity_sold: { type: Number, default: 0 },
     current_inventory: Number,
