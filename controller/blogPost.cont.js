@@ -11,7 +11,8 @@ const getBlogPosts = async (page = 1, limit = 10, sortByPopularity = false) => {
             title: 1,
             time_to_read: 1,
             author: 1,
-            createdAt: 1
+            createdAt: 1,
+            body: 1
         })
         .sort(sortQuery)
         .skip(limit * (page - 1))
