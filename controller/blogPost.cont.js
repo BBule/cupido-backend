@@ -5,6 +5,10 @@ const getBlogPosts = async (page = 1, limit = 10, sortByPopularity = false) => {
     if (sortByPopularity) {
         sortQuery["popularity_hits"] = -1;
     }
+
+    let limit_int = parseInt(limit);
+    let page_int = parseInt(page);
+
     const allPosts = await BlogPost.find()
         .select({
             topic: 1,
@@ -15,13 +19,13 @@ const getBlogPosts = async (page = 1, limit = 10, sortByPopularity = false) => {
             body: 1
         })
         .sort(sortQuery)
-        .skip(limit * (page - 1))
-        .limit(limit * (page - 1) + limit)
+        .skip(limit_int * (page_int - 1))
+        .limit(limit_int * (page_int - 1) + limit_int)
         .exec();
     const totalPostCount = await BlogPost.countDocuments().exec();
     return {
         currentPage: page,
-        maxPage: Math.ceil(totalPostCount / limit),
+        maxPage: Math.ceil(totalPostCount / limit_int),
         data: allPosts
     };
 };
