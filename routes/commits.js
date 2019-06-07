@@ -26,7 +26,7 @@ router.post("/orderOrCommit", (req, res, next) => {
     if (!wholeCart || !wholeCart.length) {
         return next({
             status: 400,
-            message: "[please pass all the cart item"
+            message: "please pass all the cart item"
         });
     }
     createCommitOrOrder(wholeCart, addressId, req.user._id)

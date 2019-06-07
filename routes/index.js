@@ -46,6 +46,7 @@ api.includeRoutes = app => {
     const sales = require("./sales");
     const users = require("./user");
     const payments = require("./payments");
+    const referral = require("./referral");
 
     app.use("/gp", unAuthRoutes);
     app.use("/blogposts", blogPost);
@@ -57,7 +58,7 @@ api.includeRoutes = app => {
     app.use("/apis/v1/comments", comments);
     app.use("/apis/v1/commits", commits);
     app.use("/apis/v1/products", products);
-    // app.use("/apis/v1/sales", sales);
+    app.use("/apis/v1/referral", referral);
     app.use("/apis/v1/payments", payments);
 };
 module.exports = api;

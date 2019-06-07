@@ -267,6 +267,7 @@ var start = async () => {
                 return done();
             });
     });
+    
     await agenda.schedule("in 20 seconds", "on start sale all user");
     await agenda.schedule("in 20 seconds", "before end sale all user");
     await agenda.schedule("in 20 seconds", "pay_full_sellBuffer_end");

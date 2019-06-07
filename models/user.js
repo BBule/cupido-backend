@@ -23,6 +23,9 @@ var UserSchema = new mongoose.Schema(
             type: String,
             enum: ["Male", "Female"]
         },
+        cupidCoins:{
+            type:Number
+        },
         googleId: String,
         facebookId: String,
         myorders: [Schema.Types.Mixed], //To be embedded

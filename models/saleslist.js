@@ -33,12 +33,10 @@ let SalesListSchema = new Schema({
         ref: "Admins",
         required: true
     },
-    cupidLove: [
-        {
+    cupidLove:{
             quantity: Number,
             cupidLove: Number
-        }
-    ], // [{quantity,cupidLove}]
+    }, // [{quantity,cupidLove}]
     recomandation: [Schema.Types.ObjectId],
     counter_flag_temp: { type: Number, default: ~~(Math.random() * 5) + 1 },
     quantity_committed: { type: Number, default: 0 },

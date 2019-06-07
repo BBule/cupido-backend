@@ -15,13 +15,13 @@ const User = require("../models/user");
 
 const mycartingeneral = require("../models/mycartingeneral");
 const SalesList = require("../models/saleslist");
-
+const Referral=require("../models/referral");
 const cartCont = require("../controller/cart.cont");
 
 // POST Route to send cart entry of an individual
 // Create a new object and then embed data into the array
 // User can send this route
-router.post("/add", (req, res, next) => {
+router.post("/add", async (req, res, next) => {
     console.log("Posting cart data to the DB");
     let curruser = req.user;
     let newcartitem = new mycartingeneral({
@@ -36,6 +36,21 @@ router.post("/add", (req, res, next) => {
         quantity: req.body.quantity,
         total_expected_price: req.body.price_committed_at * req.body.quantity
     });
+
+    if(req.body.referral_code){
+        var token=await Referral.findOne({code:req.query.code,used:false,sale:req.query.sale,createdBy: { $ne: req.user._id }});
+        if(token){
+            newcartitem.referral_code=req.body.referral_code;
+            newcartitem.total_expected_price-=50;
+        }   
+        else{
+            return next({
+                status: 400,
+                message: "Invalid Token"
+            });
+        }
+    }
+
     newcartitem
         .save()
         .then(() =>
@@ -129,11 +144,9 @@ async function getEstimateCupidLove(cart) {
         let saleid = cart.Sale.id;
         let sale = await SalesList.findById(saleid);
         let quantitySold = sale.quantity_sold + 1;
-        for (i = 0; i < sale.cupidLove.length; i++) {
-            if (quantitySold <= sale.cupidLove[i].quantity) {
-                totalCupidLove += sale.cupidLove[i].cupidLove;
-            }
-        }
+      
+                totalCupidLove += sale.cupidLove.cupidLove;
+            
     });
     return totalCupidLove;
 }
