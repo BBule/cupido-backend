@@ -22,23 +22,30 @@ router.get("/", (req, res, next) => {
         });
 });
 router.post("/orderOrCommit", (req, res, next) => {
-    const { wholeCart, addressId } = req.body;
-    if (!wholeCart || !wholeCart.length) {
-        return next({
-            status: 400,
-            message: "please pass all the cart item"
-        });
-    }
-    createCommitOrOrder(wholeCart, addressId, req.user._id)
-        .then(data => {
-            return res.json(data);
-        })
-        .catch(error => {
+    if(req.body.payment.id){
+        const { wholeCart, addressId ,payment} = req.body;
+        if (!wholeCart || !wholeCart.length) {
             return next({
                 status: 400,
-                message: "Unknown error occured!",
-                stack: error
+                message: "please pass all the cart item"
             });
-        });
+        }
+        createCommitOrOrder(wholeCart, addressId,payment, req.user._id)
+            .then(data => {
+                return res.json(req.user);
+            })
+            .catch(error => {
+                return next({
+                    status: 400,
+                    message: "Unknown error occured!",
+                    stack: error
+                });
+            });
+    }else{
+        return next({
+            status:400,
+            message:"please complete your payment"
+        })
+    }
 });
 module.exports = router;

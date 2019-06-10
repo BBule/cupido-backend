@@ -33,9 +33,9 @@ let SalesListSchema = new Schema({
         ref: "Admins",
         required: true
     },
-    cupidLove:{
-            quantity: Number,
-            cupidLove: Number
+    cupidLove: {
+        quantity: Number,
+        cupidLove: Number
     }, // [{quantity,cupidLove}]
     recomandation: [Schema.Types.ObjectId],
     counter_flag_temp: { type: Number, default: ~~(Math.random() * 5) + 1 },
@@ -47,6 +47,7 @@ let SalesListSchema = new Schema({
     sale_buffer_time: Number, // in hours
     gender: Boolean, // 0 for male (Target Audience)
     sale_visits: { type: Number, default: 5 },
+    salePrice: Number,
     macho_factor: Number,
     notif2over3: { type: Boolean, default: false },
     notifcartlasthour: { type: Boolean, default: false },

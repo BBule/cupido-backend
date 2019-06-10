@@ -58,8 +58,8 @@ router.post("/add", async (req, res, next) => {
                 { _id: curruser._id },
                 { $push: { mycarts: newcartitem } }
             )
-                .then(() => {
-                    return res.json(newcartitem);
+                .then((user) => {
+                    return res.json(user.mycarts);
                 })
                 .catch(err => {
                     console.log(err);
@@ -136,6 +136,43 @@ router.get("/", (req, res, next) => {
                 stack: err
             });
         });
+});
+
+router.get("/view",(req,res,next)=>{
+    var cartsholder;
+    var curruser = req.user._id;
+    var typeofcart = req.query.type;
+    console.log(req.originalUrl);
+    query={
+        "User.id":curruser
+    }
+    if (typeofcart == "commit") {
+        query.is_commit = true;
+    }
+    mycartingeneral.find(query).then(async result=>{
+        if(result&&result.length){
+            var startpoint = req.query.offset || 0; // zero
+            var howmany = req.query.limit || 10; // ten
+            console.log("carts is found and it's product marketprice: ");
+            console.log(result[0].Product.marketPrice);
+            let cupidLove = null;
+            if (typeofcart == "commit") {
+                cupidLove = await getEstimateCupidLove(cartsholder);
+            }
+            return res.json({
+                cartsdata: result.splice(startpoint, howmany)
+            });
+        } else {
+            return res.json({ cartsdata: [] });
+        }
+    })
+    .catch(err => {
+        return next({
+            message: err.message || "unknown error occured",
+            status: 400,
+            stack: err
+        });
+    });
 });
 
 async function getEstimateCupidLove(cart) {

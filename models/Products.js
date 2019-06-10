@@ -30,6 +30,7 @@ let ProductsSchema = new Schema(
         description: String,
         gender: Boolean, // 0 is Male
         recomandation: [Schema.Types.ObjectId],
+        featuresAtGlance: [{ title: String, icon: String }],
         video: String,
         // Relevent Details
         // addedBy: {

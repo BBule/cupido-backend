@@ -1,6 +1,7 @@
 const cartCont = require("./cart.cont");
 const mycommits = require("../models/mycommits");
 const myOrders = require("../models/myorders");
+const Saleslist = require("../models/saleslist");
 
 const getUserCommits = async (
     userId,
@@ -22,7 +23,7 @@ const getCommitCountBySale = async id => {
     return mycommits.countDocuments({ "sale.id": id }).exec();
 };
 
-const createCommitOrOrder = async (wholeCart, addressId, userId) => {
+const createCommitOrOrder = async (wholeCart, addressId,payment, userId) => {
     let promiseArr = [];
 
     wholeCart.forEach(async element => {
