@@ -3,10 +3,12 @@ const router = express.Router();
 
 const {
     createCommitOrOrder,
-    getUserCommits
+    getUserCommits,
+    getUserOrders
 } = require("../controller/commits.cont");
 
-router.get("/", (req, res, next) => {
+router.get("/mycommits", (req, res, next) => {
+    // console.log("Hello")
     const { type = true, skip = 0, limit = 10 } = req.query;
     return getUserCommits(req.user._id, type, limit, skip)
         .then(data => {
@@ -21,6 +23,23 @@ router.get("/", (req, res, next) => {
             });
         });
 });
+
+router.get("/myorders", (req, res, next) => {
+    const { type = true, skip = 0, limit = 10 } = req.query;
+    return getUserOrders(req.user._id, type, limit, skip)
+        .then(data => {
+            return res.json(data);
+        })
+        .catch(error => {
+            console.log(error);
+            return next({
+                stack: error,
+                message: "unknown error occured",
+                status: 400
+            });
+        });
+});
+
 router.post("/orderOrCommit", (req, res, next) => {
     if(req.body.payment.id){
         const { wholeCart, addressId ,payment} = req.body;
@@ -32,7 +51,7 @@ router.post("/orderOrCommit", (req, res, next) => {
         }
         createCommitOrOrder(wholeCart, addressId,payment, req.user._id)
             .then(data => {
-                return res.json(req.user);
+                return res.json(data);
             })
             .catch(error => {
                 return next({

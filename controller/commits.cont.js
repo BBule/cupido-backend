@@ -19,56 +19,83 @@ const getUserCommits = async (
         .exec();
 };
 
+const getUserOrders = async (
+    userId,
+    activeStat = true,
+    limit = 20,
+    skip = 0
+) => {
+    return await myOrders
+        .find({
+            "User.id": userId,
+            is_active: activeStat
+        })
+        .limit(limit)
+        .skip(skip)
+        .exec();
+};
+
 const getCommitCountBySale = async id => {
     return mycommits.countDocuments({ "sale.id": id }).exec();
 };
 
-const createCommitOrOrder = async (wholeCart, addressId,payment, userId) => {
+const createCommitOrOrder = async (wholeCart, addressId, payment, userId) => {
     let promiseArr = [];
 
     wholeCart.forEach(async element => {
-        let commit_count=await getCommitCountBySale(element.sale.id);
-        let sale=await Saleslist.findById(element.sale.id);
-        if (element.is_commit&&commit_count<sale.cupidLove.quantity) {
+        let commit_count = await getCommitCountBySale(element.sale.id);
+        let sale = await Saleslist.findById(element.sale.id);
+        if (element.is_commit && commit_count < sale.cupidLove.quantity) {
             promiseArr.push(
                 new mycommits({
                     ...element,
-                    shipping_address: addressId
+                    shipping_address: addressId,
+                    payment_details: payment
                 }).save()
             );
-        }
-        else if(element.is_commit&&commit_count>=sale.cupidLove.quantity){
+            Saleslist.findOneAndUpdate({_id:element.sale.id},{$inc: {quantity_committed:element.current_quantity_committed}});
+        } else if (
+            element.is_commit &&
+            commit_count >= sale.cupidLove.quantity
+        ) {
             promiseArr.push(
                 new myOrders({
                     ...element,
-                    shipping_address: addressId
+                    shipping_address: addressId,
+                    payment_details: payment
                 }).save()
             );
-            let commits=await mycommits.find({ "sale.id": element.sale.id });
+            let commits = await mycommits.find({ "sale.id": element.sale.id });
             commits.forEach(function(commit) {
-                promiseArr.push(
-                    mycommits.findByIdAndRemove(commit._id)
-                );
-                delete commit._id
-                promiseArr.push(
-                    new myOrders(commit).save()
-                );
-
+                promiseArr.push(mycommits.findByIdAndRemove(commit._id));
+                delete commit._id;
+                promiseArr.push(new myOrders(commit).save());
+                Saleslist.findOneAndUpdate({_id:element.sale.id},{$inc: {quantity_sold:element.current_quantity_committed}});
             });
-
         } else {
             //order
             promiseArr.push(
                 new myOrders({
                     ...element,
-                    shipping_address: addressId
+                    shipping_address: addressId,
+                    payment_details: payment
                 }).save()
             );
+            Saleslist.findOneAndUpdate({_id:element.sale.id},{$inc: {quantity_sold:element.current_quantity_committed}});
         }
-        if(element.referral_code){
-           promiseArr.push(Referral.findOneAndUpdate({code:element.referral_code},{used:true,usedBy:userId}));
-            var referralBy=await Referral.findOne({code:element.referral_code}).select('createdBy');
-            promiseArr.push(User.findByIdAndUpdate(referralBy,{ $inc: { cupidCoins: 50 }}));
+        if (element.referral_code) {
+            promiseArr.push(
+                Referral.findOneAndUpdate(
+                    { code: element.referral_code },
+                    { used: true, usedBy: userId }
+                )
+            );
+            var referralBy = await Referral.findOne({
+                code: element.referral_code
+            }).select("createdBy");
+            promiseArr.push(
+                User.findByIdAndUpdate(referralBy, { $inc: { cupidCoins: 50 } })
+            );
         }
         promiseArr.push(cartCont.removeFromCart(wholeCart._id, userId));
     });
@@ -82,4 +109,9 @@ const createCommitOrOrder = async (wholeCart, addressId,payment, userId) => {
         });
 };
 
-module.exports = { createCommitOrOrder, getUserCommits, getCommitCountBySale };
+module.exports = {
+    createCommitOrOrder,
+    getUserCommits,
+    getUserOrders,
+    getCommitCountBySale
+};
