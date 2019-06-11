@@ -28,13 +28,14 @@ router.post("/add", async (req, res, next) => {
         "User.id": curruser._id,
         "Product.id": req.body.productid,
         "Product.name": req.body.productname,
-        "Product.marketPrice": req.body.marketPrice,
+        "Product.salePrice": req.body.salePrice,
         "sale.id": req.body.saleid,
         timecreated: newIndDate(),
         is_commit: req.body.iscommit,
-        price_committed_at: req.body.price_committed_at,
+        cupidCoins: req.body.cupidCoins,
+        referralCupidCoins:req.body.referralCupidCoins,
         quantity: req.body.quantity,
-        total_expected_price: req.body.price_committed_at * req.body.quantity
+        total_expected_price: req.body.cupidCoins * req.body.quantity
     });
 
     if(req.body.referral_code){

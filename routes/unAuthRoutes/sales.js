@@ -72,7 +72,7 @@ router.get("/presentsales", (req, res, next) => {
                                 (i.product.id.marketPrice || 0) -
                                 element.cupidLove
                         };
-                    });
+                    }); 
                     i.cupid_summery = c;
                     return i;
                 });

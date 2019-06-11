@@ -26,12 +26,13 @@ let mycartSchema = new Schema({
             ref: "Products"
         },
         name: String,
-        marketPrice: Number
+        salePrice: Number
     },
     timecreated: { type: Date, default: Date.now },
     is_commit: Boolean,
     referral_code:String,
-    price_commited_at: Number,
+    cupidCoins: Number,
+    referralCupidCoins:Number,
     quantity: { type: Number, default: 1 },
     total_expected_price: Number // price_committed_at*quantity-referral
 });
