@@ -15,7 +15,7 @@ const User = require("../models/user");
 
 const mycartingeneral = require("../models/mycartingeneral");
 const SalesList = require("../models/saleslist");
-const Referral=require("../models/referral");
+const Referral = require("../models/referral");
 const cartCont = require("../controller/cart.cont");
 
 // POST Route to send cart entry of an individual
@@ -33,18 +33,22 @@ router.post("/add", async (req, res, next) => {
         timecreated: newIndDate(),
         is_commit: req.body.iscommit,
         cupidCoins: req.body.cupidCoins,
-        referralCupidCoins:req.body.referralCupidCoins,
+        referralCupidCoins: req.body.referralCupidCoins,
         quantity: req.body.quantity,
         total_expected_price: req.body.cupidCoins * req.body.quantity
     });
 
-    if(req.body.referral_code){
-        var token=await Referral.findOne({code:req.query.code,used:false,sale:req.query.sale,createdBy: { $ne: req.user._id }});
-        if(token){
-            newcartitem.referral_code=req.body.referral_code;
-            newcartitem.total_expected_price-=50;
-        }   
-        else{
+    if (req.body.referral_code) {
+        var token = await Referral.findOne({
+            code: req.query.code,
+            used: false,
+            sale: req.query.sale,
+            createdBy: { $ne: req.user._id }
+        });
+        if (token) {
+            newcartitem.referral_code = req.body.referral_code;
+            newcartitem.total_expected_price -= 50;
+        } else {
             return next({
                 status: 400,
                 message: "Invalid Token"
@@ -59,7 +63,7 @@ router.post("/add", async (req, res, next) => {
                 { _id: curruser._id },
                 { $push: { mycarts: newcartitem } }
             )
-                .then((user) => {
+                .then(user => {
                     return res.json(user.mycarts);
                 })
                 .catch(err => {
@@ -139,41 +143,43 @@ router.get("/", (req, res, next) => {
         });
 });
 
-router.get("/view",(req,res,next)=>{
+router.get("/view", (req, res, next) => {
     var cartsholder;
     var curruser = req.user._id;
     var typeofcart = req.query.type;
     console.log(req.originalUrl);
-    query={
-        "User.id":curruser
-    }
+    query = {
+        "User.id": curruser
+    };
     if (typeofcart == "commit") {
         query.is_commit = true;
     }
-    mycartingeneral.find(query).then(async result=>{
-        if(result&&result.length){
-            var startpoint = req.query.offset || 0; // zero
-            var howmany = req.query.limit || 10; // ten
-            console.log("carts is found and it's product marketprice: ");
-            console.log(result[0].Product.marketPrice);
-            let cupidLove = null;
-            if (typeofcart == "commit") {
-                cupidLove = await getEstimateCupidLove(cartsholder);
+    mycartingeneral
+        .find(query)
+        .then(async result => {
+            if (result && result.length) {
+                var startpoint = req.query.offset || 0; // zero
+                var howmany = req.query.limit || 10; // ten
+                console.log("carts is found and it's product marketprice: ");
+                console.log(result[0].Product.salePrice);
+                let cupidLove = null;
+                if (typeofcart == "commit") {
+                    cupidLove = await getEstimateCupidLove(cartsholder);
+                }
+                return res.json({
+                    cartsdata: result.splice(startpoint, howmany)
+                });
+            } else {
+                return res.json({ cartsdata: [] });
             }
-            return res.json({
-                cartsdata: result.splice(startpoint, howmany)
+        })
+        .catch(err => {
+            return next({
+                message: err.message || "unknown error occured",
+                status: 400,
+                stack: err
             });
-        } else {
-            return res.json({ cartsdata: [] });
-        }
-    })
-    .catch(err => {
-        return next({
-            message: err.message || "unknown error occured",
-            status: 400,
-            stack: err
         });
-    });
 });
 
 async function getEstimateCupidLove(cart) {
@@ -182,9 +188,8 @@ async function getEstimateCupidLove(cart) {
         let saleid = cart.Sale.id;
         let sale = await SalesList.findById(saleid);
         let quantitySold = sale.quantity_sold + 1;
-      
-                totalCupidLove += sale.cupidLove.cupidLove;
-            
+
+        totalCupidLove += sale.cupidLove.cupidLove;
     });
     return totalCupidLove;
 }
