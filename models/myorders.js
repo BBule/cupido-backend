@@ -17,7 +17,7 @@ let myorderSchema = new Schema({
     sale: {
         id: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "saleslist"
+            ref: "Saleslist"
         },
         starttime: Date,
         endtime: Date,

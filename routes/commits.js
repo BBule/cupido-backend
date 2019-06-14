@@ -29,7 +29,7 @@ router.get("/mycommits", (req, res, next) => {
 
 router.get("/myorders", (req, res, next) => {
     const { type = true, skip = 0, limit = 10 } = req.query;
-    return getUserOrders(req.user._id, type, limit, skip)
+    return getUserOrders(req.user._id, limit, skip)
         .then(data => {
             return res.json(data);
         })

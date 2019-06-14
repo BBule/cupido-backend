@@ -56,6 +56,10 @@ let mycommitsSchema = new Schema({
         type: Number,
         default: 0,
         max: 3
+    },
+    shipping_address: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "myaddresses"
     }
 });
 

@@ -7,14 +7,16 @@ const cart = require("../models/mycartingeneral.js");
 const getUserCommits = async (
     userId,
     activeStat = true,
-    limit = 100,
+    limit = 10,
     skip = 0
 ) => {
     return await mycommits
         .find({
             "User.id": userId,
             is_active: activeStat
-        })
+        }).populate("Product.id")
+        .populate("sale.id")
+        .populate("shipping_address")
         .limit(limit)
         .skip(skip)
         .exec();
@@ -22,14 +24,14 @@ const getUserCommits = async (
 
 const getUserOrders = async (
     userId,
-    activeStat = true,
-    limit = 100,
+    limit = 10,
     skip = 0
 ) => {
     return await myOrders
         .find({
             "User.id": userId
-        })
+        }).populate("Product.id")
+        .populate("shipping_address")
         .limit(limit)
         .skip(skip)
         .exec();
