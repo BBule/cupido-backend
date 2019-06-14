@@ -43,7 +43,7 @@ router.get("/myorders", (req, res, next) => {
         });
 });
 
-router.post("/orderOrCommit",async (req, res, next) => {
+router.post("/orderOrCommit", async (req, res, next) => {
     if (req.body.payment) {
         const { wholeCart, addressId, payment } = req.body;
         if (!wholeCart || !wholeCart.length) {
@@ -57,11 +57,11 @@ router.post("/orderOrCommit",async (req, res, next) => {
                 return res.status(200).json(data);
             })
             .catch(error => {
-        return next({
-            status: 400,
-            message: "Unknown error occured!",
-            stack: error
-        });
+                return next({
+                    status: 400,
+                    message: "Unknown error occured!",
+                    stack: error
+                });
             });
     } else {
         return next({
@@ -70,28 +70,5 @@ router.post("/orderOrCommit",async (req, res, next) => {
         });
     }
 });
-
-// router.post("/exit", (req, res, next) => {
-//     let promiseArr = [];
-//     promiseArr.push(
-//         new myorders({
-//             ...req.body.wholeCart[0],
-//             "User.id": req.user._id,
-//             shipping_address: req.body.addressId,
-//             payment_details: req.body.payment
-//         }).save()
-//     );
-//     promiseArr.push(
-//         new mycommits({
-//             ...req.body.wholeCart[0],
-//             "User.id": req.user._id,
-//             shipping_address: req.body.addressId,
-//             payment_details: req.body.payment
-//         }).save()
-//     );
-//     Promise.all(promiseArr).then(() => {
-//         res.status(200).json({ msg: "done" });
-//     });
-// });
 
 module.exports = router;
