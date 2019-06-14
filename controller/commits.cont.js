@@ -48,7 +48,9 @@ const getOrderCountBySale = async id => {
 };
 
 const createCommitOrOrder = async (wholeCart, addressId, payment, userId) => {
+    var itemsProcessed = 0;
     asyncForEach(wholeCart, async element => {
+        itemsProcessed++;
         let commit_count = await getCommitCountBySale(element.sale.id);
         let order_count = await getOrderCountBySale(element.sale.id);
         console.log(commit_count, order_count);
@@ -60,7 +62,8 @@ const createCommitOrOrder = async (wholeCart, addressId, payment, userId) => {
                 "sale.id": element.sale.id,
                 "User.id": element.User.id,
                 shipping_address: addressId,
-                payment_details: payment
+                payment_details: payment,
+                commit_amount: element.Product.salePrice - element.cupidCoins
             });
             commit1
                 .save()
@@ -76,6 +79,17 @@ const createCommitOrOrder = async (wholeCart, addressId, payment, userId) => {
                     )
                         .then(async sale => {
                             // console.log("Hurrah!");
+                            if (itemsProcessed == wholeCart.length) {
+                                console.log(itemsProcessed, wholeCart.length);
+                                await cart
+                                    .findByIdAndRemove(userId)
+                                    .then(() => {
+                                        // console.log("Deleted");
+                                    })
+                                    .catch(err => {
+                                        console.log(err);
+                                    });
+                            }
                         })
                         .catch(err => {
                             console.log(err);
@@ -94,7 +108,8 @@ const createCommitOrOrder = async (wholeCart, addressId, payment, userId) => {
                 "sale.id": element.sale.id,
                 "User.id": element.User.id,
                 shipping_address: addressId,
-                payment_details: payment
+                payment_details: payment,
+                order_amount: element.Product.salePrice - element.cupidCoins
             });
             order1
                 .save()
@@ -115,14 +130,17 @@ const createCommitOrOrder = async (wholeCart, addressId, payment, userId) => {
                                             "sale.id": commit.sale.id,
                                             "User.id": commit.User.id,
                                             shipping_address: addressId,
-                                            payment_details: payment
+                                            payment_details: payment,
+                                            commit_amount:
+                                                element.Product.salePrice -
+                                                element.cupidCoins
                                         });
                                         // console.log(order1)
                                         // console.log(commit)
                                         order1
                                             .save()
                                             .then(async order => {
-                                                console.log("Orderinloopsaved");
+                                                // console.log("Orderinloopsaved");
                                                 await Saleslist.findOneAndUpdate(
                                                     {
                                                         _id: element.sale.id
@@ -137,7 +155,28 @@ const createCommitOrOrder = async (wholeCart, addressId, payment, userId) => {
                                                     }
                                                 )
                                                     .then(async sale => {
-                                                        console.log("Hurray1");
+                                                        // console.log("Hurray1");
+                                                        if (
+                                                            itemsProcessed ==
+                                                            wholeCart.length
+                                                        ) {
+                                                            console.log(
+                                                                itemsProcessed,
+                                                                wholeCart.length
+                                                            );
+                                                            await cart
+                                                                .findByIdAndRemove(
+                                                                    userId
+                                                                )
+                                                                .then(() => {
+                                                                    // console.log("Deleted");
+                                                                })
+                                                                .catch(err => {
+                                                                    console.log(
+                                                                        err
+                                                                    );
+                                                                });
+                                                        }
                                                     })
                                                     .catch(err => {
                                                         console.log(err);
@@ -150,13 +189,13 @@ const createCommitOrOrder = async (wholeCart, addressId, payment, userId) => {
                                     .catch(err => {
                                         console.log(err);
                                     });
-                                console.log("Hurray2");
+                                // console.log("Hurray2");
                             });
                         })
                         .catch(err => {
                             console.log(err);
                         });
-                    console.log("Hurray3");
+                    // console.log("Hurray3");
                 })
                 .catch(err => {
                     console.log(err);
@@ -167,7 +206,8 @@ const createCommitOrOrder = async (wholeCart, addressId, payment, userId) => {
                 "sale.id": element.sale.id,
                 "User.id": element.User.id,
                 shipping_address: addressId,
-                payment_details: payment
+                payment_details: payment,
+                commit_amount: element.Product.salePrice - element.cupidCoins
             });
             order1
                 .save()
@@ -177,8 +217,19 @@ const createCommitOrOrder = async (wholeCart, addressId, payment, userId) => {
                         { $inc: { quantity_sold: 1 } },
                         { useFindAndModify: false }
                     )
-                        .then(sale => {
-                            console.log("OrderPlaced");
+                        .then(async sale => {
+                            // console.log("OrderPlaced");
+                            if (itemsProcessed == wholeCart.length) {
+                                console.log(itemsProcessed, wholeCart.length);
+                                await cart
+                                    .findByIdAndRemove(userId)
+                                    .then(() => {
+                                        // console.log("Deleted");
+                                    })
+                                    .catch(err => {
+                                        console.log(err);
+                                    });
+                            }
                         })
                         .catch(err => {
                             console.log(err);
