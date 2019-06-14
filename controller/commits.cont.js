@@ -14,7 +14,8 @@ const getUserCommits = async (
         .find({
             "User.id": userId,
             is_active: activeStat
-        }).populate("Product.id")
+        })
+        .populate("Product.id")
         .populate("sale.id")
         .populate("shipping_address")
         .limit(limit)
@@ -22,15 +23,12 @@ const getUserCommits = async (
         .exec();
 };
 
-const getUserOrders = async (
-    userId,
-    limit = 10,
-    skip = 0
-) => {
+const getUserOrders = async (userId, limit = 10, skip = 0) => {
     return await myOrders
         .find({
             "User.id": userId
-        }).populate("Product.id")
+        })
+        .populate("Product.id")
         .populate("shipping_address")
         .limit(limit)
         .skip(skip)
@@ -116,69 +114,98 @@ const createCommitOrOrder = async (wholeCart, addressId, payment, userId) => {
             order1
                 .save()
                 .then(async order => {
-                    //from here if to increase 1 more quantity sold
-                    await mycommits
-                        .find({
-                            "sale.id": element.sale.id
-                        })
-                        .then(commits => {
-                            asyncForEach(commits, async commit => {
-                                await mycommits
-                                    .findByIdAndRemove(commit._id)
-                                    .then(() => {
-                                        delete commit._id;
-                                        order1 = new myOrders({
-                                            "Product.id": commit.Product.id,
-                                            "sale.id": commit.sale.id,
-                                            "User.id": commit.User.id,
-                                            shipping_address: addressId,
-                                            payment_details: payment,
-                                            commit_amount:
-                                                element.Product.salePrice -
-                                                element.cupidCoins
-                                        });
-                                        // console.log(order1)
-                                        // console.log(commit)
-                                        order1
-                                            .save()
-                                            .then(async order => {
-                                                // console.log("Orderinloopsaved");
-                                                await Saleslist.findOneAndUpdate(
-                                                    {
-                                                        _id: element.sale.id
-                                                    },
-                                                    {
-                                                        $inc: {
-                                                            quantity_sold: 1
-                                                        }
-                                                    },
-                                                    {
-                                                        useFindAndModify: false
-                                                    }
-                                                )
-                                                    .then(async sale => {
-                                                        // console.log("Hurray1");
-                                                        if (
-                                                            itemsProcessed ==
-                                                            wholeCart.length
-                                                        ) {
-                                                            console.log(
-                                                                itemsProcessed,
-                                                                wholeCart.length
-                                                            );
-                                                            await cart
-                                                                .findByIdAndRemove(
-                                                                    userId
-                                                                )
-                                                                .then(() => {
-                                                                    // console.log("Deleted");
-                                                                })
-                                                                .catch(err => {
-                                                                    console.log(
-                                                                        err
-                                                                    );
-                                                                });
-                                                        }
+                    await Saleslist.findOneAndUpdate(
+                        {
+                            _id: element.sale.id
+                        },
+                        {
+                            $inc: {
+                                quantity_sold: 1
+                            }
+                        },
+                        {
+                            useFindAndModify: false
+                        }
+                    )
+                        .then(async sale => {
+                            await mycommits
+                                .find({
+                                    "sale.id": element.sale.id
+                                })
+                                .then(commits => {
+                                    asyncForEach(commits, async commit => {
+                                        await mycommits
+                                            .findByIdAndRemove(commit._id)
+                                            .then(() => {
+                                                delete commit._id;
+                                                order1 = new myOrders({
+                                                    "Product.id":
+                                                        commit.Product.id,
+                                                    "sale.id": commit.sale.id,
+                                                    "User.id": commit.User.id,
+                                                    shipping_address: addressId,
+                                                    payment_details: payment,
+                                                    commit_amount:
+                                                        element.Product
+                                                            .salePrice -
+                                                        element.cupidCoins
+                                                });
+                                                // console.log(order1)
+                                                // console.log(commit)
+                                                order1
+                                                    .save()
+                                                    .then(async order => {
+                                                        // console.log("Orderinloopsaved");
+                                                        await Saleslist.findOneAndUpdate(
+                                                            {
+                                                                _id:
+                                                                    element.sale
+                                                                        .id
+                                                            },
+                                                            {
+                                                                $inc: {
+                                                                    quantity_sold: 1
+                                                                }
+                                                            },
+                                                            {
+                                                                useFindAndModify: false
+                                                            }
+                                                        )
+                                                            .then(
+                                                                async sale => {
+                                                                    // console.log("Hurray1");
+                                                                    if (
+                                                                        itemsProcessed ==
+                                                                        wholeCart.length
+                                                                    ) {
+                                                                        console.log(
+                                                                            itemsProcessed,
+                                                                            wholeCart.length
+                                                                        );
+                                                                        await cart
+                                                                            .findByIdAndRemove(
+                                                                                userId
+                                                                            )
+                                                                            .then(
+                                                                                () => {
+                                                                                    // console.log("Deleted");
+                                                                                }
+                                                                            )
+                                                                            .catch(
+                                                                                err => {
+                                                                                    console.log(
+                                                                                        err
+                                                                                    );
+                                                                                }
+                                                                            );
+                                                                    }
+                                                                }
+                                                            )
+                                                            .catch(err => {
+                                                                console.log(
+                                                                    err
+                                                                );
+                                                            });
                                                     })
                                                     .catch(err => {
                                                         console.log(err);
@@ -187,12 +214,12 @@ const createCommitOrOrder = async (wholeCart, addressId, payment, userId) => {
                                             .catch(err => {
                                                 console.log(err);
                                             });
-                                    })
-                                    .catch(err => {
-                                        console.log(err);
+                                        // console.log("Hurray2");
                                     });
-                                // console.log("Hurray2");
-                            });
+                                })
+                                .catch(err => {
+                                    console.log(err);
+                                });
                         })
                         .catch(err => {
                             console.log(err);
