@@ -11,6 +11,8 @@ function newIndDate() {
 // Models
 const User = require("../models/user");
 
+const myorders = require("../models/myorders");
+
 const mycomments = require("../models/mycomments");
 
 const myreplies = require("../models/myreplies");
@@ -23,28 +25,51 @@ router.post("/add/:productid", async (req, res, next) => {
     // All properties to be input from user
     let checkbuy = false;
     // Will be true if myorders in user will be found.
-        // var found =await curruser.myorders.some(function(el) {
-        //     return el.Product.id === req.params.productid;
-        // });
-        // if (found) {
-        //     checkbuy = true;
-        // }
-    let newcomment = new mycomments({
-        "User.id": curruser._id,
-        "Product.id": req.params.productid,
-        "Product.name": req.body.productname,
-        "Product.rating": req.body.productrating,
-        timecreated: newIndDate(),
-        is_review: true,
-        is_published: false,
-        commentbody: req.body.commentbody,
-        is_verified_buyer: checkbuy
-    });
-    newcomment
-        .save()
-        .then(data => res.send(data))
+    // var found =await curruser.myorders.some(function(el) {
+    //     return el.Product.id === req.params.productid;
+    // });
+    // if (found) {
+    //     checkbuy = true;
+    // }
+
+    await myorders
+        .findOne({
+            "Product.id": req.params.productId,
+            "User.id": curruser._id
+        })
+        .then(myorder => {
+            if (myorder) {
+                checkbuy = true;
+            }
+            let newcomment = new mycomments({
+                "User.id": curruser._id,
+                "Product.id": req.params.productid,
+                "Product.name": req.body.productname,
+                "Product.rating": req.body.productrating,
+                timecreated: newIndDate(),
+                is_review: true,
+                is_published: false,
+                commentbody: req.body.commentbody,
+                is_verified_buyer: checkbuy
+            });
+            newcomment
+                .save()
+                .then(data => res.send(data))
+                .catch(err => {
+                    return next({
+                        message: "Bad request",
+                        status: 400,
+                        stack: err
+                    });
+                });
+        })
         .catch(err => {
-            return next({ message: "Bad request", status: 400, stack: err });
+            return next({
+                message: "Bad request",
+                status: 400,
+                stack: err
+            });
+            // console.log(err)
         });
 });
 
