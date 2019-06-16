@@ -41,6 +41,7 @@ api.includeRoutes = app => {
     const address = require("./address");
     const cart = require("./cart");
     const comments = require("./comments");
+    const reviews = require("./reviews");
     const commits = require("./commits");
     const products = require("./products");
     const sales = require("./sales");
@@ -56,6 +57,7 @@ api.includeRoutes = app => {
     app.use("/apis/v1/cart", cart);
     app.use("/apis/v1/me", users);
     app.use("/apis/v1/comments", comments);
+    app.use("/apis/v1/reviews", reviews);
     app.use("/apis/v1/commits", commits);
     app.use("/apis/v1/products", products);
     app.use("/apis/v1/referral", referral);

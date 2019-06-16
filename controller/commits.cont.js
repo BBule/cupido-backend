@@ -63,7 +63,7 @@ const createCommitOrOrder = async (wholeCart, addressId, payment, userId) => {
                 "User.id": element.User.id,
                 shipping_address: addressId,
                 payment_details: payment,
-                commit_amount: element.Product.salePrice - element.cupidCoins
+                commit_amount: element.salePrice - element.cupidCoins
             });
             commit1
                 .save()
@@ -109,7 +109,7 @@ const createCommitOrOrder = async (wholeCart, addressId, payment, userId) => {
                 "User.id": element.User.id,
                 shipping_address: addressId,
                 payment_details: payment,
-                order_amount: element.Product.salePrice - element.cupidCoins
+                order_amount: element.salePrice - element.cupidCoins
             });
             order1
                 .save()
@@ -146,7 +146,7 @@ const createCommitOrOrder = async (wholeCart, addressId, payment, userId) => {
                                                     shipping_address: addressId,
                                                     payment_details: payment,
                                                     commit_amount:
-                                                        element.Product
+                                                        element
                                                             .salePrice -
                                                         element.cupidCoins
                                                 });
@@ -236,7 +236,7 @@ const createCommitOrOrder = async (wholeCart, addressId, payment, userId) => {
                 "User.id": element.User.id,
                 shipping_address: addressId,
                 payment_details: payment,
-                commit_amount: element.Product.salePrice - element.cupidCoins
+                commit_amount: element.salePrice - element.cupidCoins
             });
             order1
                 .save()
