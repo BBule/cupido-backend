@@ -31,7 +31,7 @@ router.post("/add", async (req, res, next) => {
         "Product.salePrice": req.body.salePrice,
         "sale.id": req.body.saleid,
         timecreated: newIndDate(),
-        is_commit: req.body.iscommit,
+        is_commit: req.body.is_commit,
         cupidCoins: req.body.cupidCoins,
         referralCupidCoins: req.body.referralCupidCoins,
         quantity: req.body.quantity,
@@ -151,7 +151,7 @@ router.get("/view", (req, res, next) => {
     // if (typeofcart == "commit") {
     //     query["is_commit"] = true;
     // }
-    console.log(query);
+    // console.log(query);
     mycartingeneral
         .find(query)
         .then(async result => {
