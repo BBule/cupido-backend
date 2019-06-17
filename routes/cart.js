@@ -157,7 +157,7 @@ router.get("/view", (req, res, next) => {
         .then(async result => {
             if (result && result.length) {
                 var startpoint = req.query.offset || 0; // zero
-                var howmany = req.query.limit || 1000; // ten
+                var howmany = req.query.limit || 10; // ten
                 console.log("carts is found and it's product marketprice: ");
                 // console.log(result[0].Product.salePrice);
                 let cupidLove = null;
