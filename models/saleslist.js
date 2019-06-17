@@ -33,6 +33,7 @@ let SalesListSchema = new Schema({
         ref: "Admins",
         required: true
     },
+    referralPercent:Number,
     cupidLove: {
         quantity: Number,
         cupidLove: Number

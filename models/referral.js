@@ -10,7 +10,8 @@ let referralSchema = new Schema({
     sale:Schema.ObjectId,
     usedBy:Schema.ObjectId,
     timecreated: { type: Date, default: Date.now },
-    used: Boolean
+    used: Boolean,
+    amount:Number
 });
 
 module.exports = mongoose.model("Referral", referralSchema);

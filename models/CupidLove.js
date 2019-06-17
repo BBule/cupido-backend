@@ -12,6 +12,16 @@ let cupidLoveSchema = new Schema({
             ref: "Orders"
         }
     },
+    Sale:{
+        id: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Saleslist"
+        }
+    },
+    earned:{
+        type:Boolean,
+        default:false
+    },
     User: {
         id: {
             type: mongoose.Schema.Types.ObjectId,
@@ -21,11 +31,12 @@ let cupidLoveSchema = new Schema({
     GameCard: {
         id: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "User"
+            ref: "User"//should be changed when game introduced
         }
     },
     isOrder:Boolean,
-    amount:Number
+    amount:Number,
+    referralId:mongoose.Schema.Types.ObjectId
 
 });
 

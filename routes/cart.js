@@ -58,8 +58,8 @@ router.post("/add", async (req, res, next) => {
 
     newcartitem
         .save()
-        .then(() =>
-            User.findOneAndUpdate(
+        .then(async (cartitem) =>{
+            await User.findOneAndUpdate(
                 { _id: curruser._id },
                 { $push: { mycarts: newcartitem } }
             )
@@ -73,7 +73,7 @@ router.post("/add", async (req, res, next) => {
                         message: "unknown error while updating cart"
                     });
                 })
-        )
+            })
         .catch(err => {
             console.log(err);
             return next({
@@ -102,66 +102,64 @@ router.post("/remove", (req, res, next) => {
 // API end point to route traffic of mycarts page, split into commit and buy now
 // To check authenticate function, currently disabled.
 // Also after login the route takes him to the exact same page
-router.get("/", (req, res, next) => {
-    var cartsholder;
-    var curruser = req.user._id;
-    var typeofcart = req.query.type;
-    console.log(req.originalUrl);
-    let query = {
-        _id: curruser,
-        mycarts: {
-            is_commit: false
-        }
-    };
-    if (typeofcart == "commit") {
-        query.mycarts.is_commit = true;
-    }
-    User.findOne(query)
-        .then(async result => {
-            if (result && result.mycarts && result.mycarts.length) {
-                var startpoint = req.query.offset || 0; // zero
-                var howmany = req.query.limit || 10; // ten
-                console.log("carts is found and it's product marketprice: ");
-                console.log(result.mycarts[0].Product.marketPrice);
-                let cupidLove = null;
-                if (typeofcart == "commit") {
-                    cupidLove = await getEstimateCupidLove(cartsholder);
-                }
-                return res.json({
-                    cartsdata: result.mycarts.splice(startpoint, howmany)
-                });
-            } else {
-                return res.json({ cartsdata: [] });
-            }
-        })
-        .catch(err => {
-            return next({
-                message: err.message || "unknown error occured",
-                status: 400,
-                stack: err
-            });
-        });
-});
+// router.get("/", (req, res, next) => {
+//     var curruser = req.user._id;
+//     // var typeofcart = req.query.type;
+//     // console.log(req.originalUrl);
+//     let query = {
+//         _id: curruser
+//     };
+//     if (req.query.type) {
+//         query["mycarts.is_commit"] = req.query.type;
+//     }
+//     console.log(query)
+    // User.findOne(query)
+    //     .then(async result => {
+    //         if (result && result.mycarts && result.mycarts.length) {
+    //             var startpoint = req.query.offset || 0; // zero
+    //             var howmany = req.query.limit || 10; // ten
+    //             console.log("carts is found and it's product marketprice: ");
+    //             // console.log(result.mycarts[0].Product.marketPrice);
+    //             let cupidLove = null;
+    //             if (typeofcart == "commit") {
+    //                 cupidLove = await getEstimateCupidLove(cartsholder);
+    //             }
+    //             return res.json({
+    //                 cartsdata: result.mycarts.splice(startpoint, howmany)
+    //             });
+    //         } else {
+    //             return res.json({ cartsdata: [] });
+    //         }
+    //     })
+    //     .catch(err => {
+    //         return next({
+    //             message: err.message || "unknown error occured",
+    //             status: 400,
+    //             stack: err
+    //         });
+    //     });
+// });
 
 router.get("/view", (req, res, next) => {
     var cartsholder;
-    var curruser = req.user._id;
+    var curruser = req.user;
     var typeofcart = req.query.type;
-    console.log(req.originalUrl);
+    // console.log(req.originalUrl);
     query = {
-        "User.id": curruser
+        "User.id": curruser._id
     };
-    if (typeofcart == "commit") {
-        query.is_commit = true;
-    }
+    // if (typeofcart == "commit") {
+    //     query["is_commit"] = true;
+    // }
+    console.log(query);
     mycartingeneral
         .find(query)
         .then(async result => {
             if (result && result.length) {
                 var startpoint = req.query.offset || 0; // zero
-                var howmany = req.query.limit || 10; // ten
+                var howmany = req.query.limit || 1000; // ten
                 console.log("carts is found and it's product marketprice: ");
-                console.log(result[0].Product.salePrice);
+                // console.log(result[0].Product.salePrice);
                 let cupidLove = null;
                 if (typeofcart == "commit") {
                     cupidLove = await getEstimateCupidLove(cartsholder);
