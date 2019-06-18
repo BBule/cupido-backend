@@ -135,7 +135,7 @@ router.post("/apply", async (req, res, next) => {
         .catch(err => {
             console.log(err);
             return next({
-                message: err || "unknown error",
+                message: "Invalid Token",
                 status: 400
             });
         });
