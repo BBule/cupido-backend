@@ -85,7 +85,7 @@ router.post("/apply", async (req, res, next) => {
                 } else {
                     await Referral.findOneAndUpdate(
                         { _id: referral._id },
-                        { used: true }
+                        { used: true,usedBy:req.user._id}
                     )
                         .then(referral => {
                             cupidlove1 = new Cupidlove({
