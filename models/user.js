@@ -24,7 +24,8 @@ var UserSchema = new mongoose.Schema(
             enum: ["Male", "Female"]
         },
         cupidCoins:{
-            type:Number
+            type:Number,
+            default:0
         },
         googleId: String,
         facebookId: String,
