@@ -14,6 +14,6 @@ let referralSchema = new Schema({
     amount:Number
 });
 
-referralSchema.index({sale:1,usedBy:1},{unique:true});
+// referralSchema.index({sale:1,usedBy:1},{unique:true});
 
 module.exports = mongoose.model("Referral", referralSchema);
