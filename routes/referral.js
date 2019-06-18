@@ -117,7 +117,7 @@ router.post("/apply", async (req, res, next) => {
                                         status: 400,
                                         message: "Unable to add CupidLove"
                                     });
-                                }else res.send("Applied");
+                                }else res.send(referral);
                             });
                         })
                         .catch(err => {
@@ -141,9 +141,4 @@ router.post("/apply", async (req, res, next) => {
         });
 });
 
-// router.get("/cupidlove",(req,res,next)=>{
-//     Cupidlove.find().then(loves=>{
-//         res.status(200).send(loves);
-//     })
-// })
 module.exports = router;
