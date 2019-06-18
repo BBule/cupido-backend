@@ -156,8 +156,8 @@ router.get("/view", (req, res, next) => {
         .find(query)
         .then(async result => {
             if (result && result.length) {
-                var startpoint = req.query.offset || 0; // zero
-                var howmany = req.query.limit || 10; // ten
+                // var startpoint = req.query.offset || 0; // zero
+                // var howmany = req.query.limit || 10; // ten
                 console.log("carts is found and it's product marketprice: ");
                 // console.log(result[0].Product.salePrice);
                 let cupidLove = null;
@@ -165,7 +165,7 @@ router.get("/view", (req, res, next) => {
                     cupidLove = await getEstimateCupidLove(cartsholder);
                 }
                 return res.json({
-                    cartsdata: result.splice(startpoint, howmany)
+                    cartsdata: result //.splice(startpoint, howmany)
                 });
             } else {
                 return res.json({ cartsdata: [] });

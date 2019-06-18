@@ -104,11 +104,11 @@ router.get("/", (req, res, next) => {
                 });
             } else {
                 var startpoint = req.query.offset; // zero
-                var howmany = req.query.limit; // ten
+                // var howmany = req.query.limit; // ten
                 console.log("Address is found and it's city: ");
                 console.log(addressholder[0].city);
                 return res.json({
-                    addressdata: addressholder.splice(startpoint, howmany)
+                    addressdata: addressholder //.splice(startpoint, howmany)
                 });
             }
         })
