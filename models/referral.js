@@ -8,9 +8,9 @@ let referralSchema = new Schema({
     code: String,
     createdBy:Schema.ObjectId,
     sale:Schema.ObjectId,
-    usedBy:Schema.ObjectId,
+    usedBy:[Schema.ObjectId],
     timecreated: { type: Date, default: Date.now },
-    used: Boolean,
+    // used: Boolean,
     amount:Number
 });
 

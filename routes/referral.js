@@ -21,8 +21,8 @@ router.post("/send", async (req, res, next) => {
                     code: token,
                     createdBy: req.user._id,
                     sale: req.body.sale,
-                    // usedBy: req.body.receiverId,
-                    used: false,
+                    usedBy: [],
+                    // used: false,
                     amount: amount
                 });
                 referral
@@ -44,7 +44,7 @@ router.post("/send", async (req, res, next) => {
 router.post("/apply", async (req, res, next) => {
     await Referral.findOne({
         code: req.body.code,
-        used: false,
+        // used: false,
         sale: req.body.sale,
         createdBy: { $ne: req.user._id }
     })
@@ -66,7 +66,7 @@ router.post("/apply", async (req, res, next) => {
                 }
                 let referral2;
                 try {
-                    referral2 = await Referral.findOne({
+                    referral2 = await Referral.findOne({                                        //change here to make array
                         usedBy: req.user._id,
                         sale: req.body.sale
                     });
@@ -85,7 +85,9 @@ router.post("/apply", async (req, res, next) => {
                 } else {
                     await Referral.findOneAndUpdate(
                         { _id: referral._id },
-                        { used: true,usedBy:req.user._id}
+                        { // used: true,
+                            $push:{usedBy:req.user._id}
+                        }
                     )
                         .then(referral => {
                             cupidlove1 = new Cupidlove({
@@ -125,7 +127,6 @@ router.post("/apply", async (req, res, next) => {
                         });
                 }
             } else {
-                console.log(err);
                 return next({
                     status: 400,
                     message: "Invalid Token"
