@@ -15,8 +15,8 @@ const getUserCommits = async (
             "User.id": userId,
             is_active: activeStat
         })
-        .populate("Product.id")
-        .populate("sale.id")
+        .populate("Product.id","images")
+        .populate("sale.id","quantity_sold quantity_committed cupidLove")
         .populate("shipping_address")
         .limit(limit)
         .skip(skip)
@@ -28,7 +28,7 @@ const getUserOrders = async (userId, limit = 10, skip = 0) => {
         .find({
             "User.id": userId
         })
-        .populate("Product.id")
+        .populate("Product.id","images")
         .populate("shipping_address")
         .limit(limit)
         .skip(skip)

@@ -17,6 +17,7 @@ const mycartingeneral = require("../models/mycartingeneral");
 const SalesList = require("../models/saleslist");
 const Referral = require("../models/referral");
 const cartCont = require("../controller/cart.cont");
+const Products = require("../models/Products");
 
 // POST Route to send cart entry of an individual
 // Create a new object and then embed data into the array
@@ -140,6 +141,12 @@ router.post("/remove", (req, res, next) => {
     //     });
 // });
 
+async function asyncForEach(array, callback) {
+    for (let index = 0; index < array.length; index++) {
+        await callback(array[index], index, array);
+    }
+}
+
 router.get("/view", (req, res, next) => {
     var cartsholder;
     var curruser = req.user;
@@ -154,19 +161,35 @@ router.get("/view", (req, res, next) => {
     // console.log(query);
     mycartingeneral
         .find(query)
+        .populate("Product.id","images")
         .then(async result => {
             if (result && result.length) {
                 // var startpoint = req.query.offset || 0; // zero
                 // var howmany = req.query.limit || 10; // ten
-                console.log("carts is found and it's product marketprice: ");
+                // console.log("carts is found and it's product marketprice: ");
                 // console.log(result[0].Product.salePrice);
-                let cupidLove = null;
-                if (typeofcart == "commit") {
-                    cupidLove = await getEstimateCupidLove(cartsholder);
-                }
+                // let cupidLove = null;
+                // if (typeofcart == "commit") {
+                //     cupidLove = await getEstimateCupidLove(cartsholder);
+                // }
                 return res.json({
                     cartsdata: result //.splice(startpoint, howmany)
                 });
+                // var itemprocessed=0;
+                // result1=[];
+                // asyncForEach(result,async element=>{
+                //     itemprocessed++;
+                //     element["image"]="";
+                //     Products.findOne({_id:element.Product.id}).then((product)=>{
+                //         element.image=product.images[0];
+                //         console.log(element)
+                //         result1.push(element);
+                //         if(itemprocessed==result.length){
+                //             console.log("hurray")
+                //             return res.send({cartsdata:result1});
+                //         }
+                //     }).catch(err=>console.log(err))
+                // })
             } else {
                 return res.json({ cartsdata: [] });
             }

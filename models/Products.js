@@ -16,6 +16,8 @@ let ProductsSchema = new Schema(
         returnTime: Number,
         ShippingPrice: Number,
         images: [String],
+        productCatalogImage:String,
+        highlights:[String],
         backdrop_image: Array,
         backdrop_title: String,
         backdrop_content: String,
