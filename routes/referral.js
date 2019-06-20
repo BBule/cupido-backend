@@ -66,7 +66,7 @@ router.post("/apply", async (req, res, next) => {
                 }
                 let referral2;
                 try {
-                    referral2 = await Referral.findOne({                                        //change here to make array
+                    referral2 = await Referral.findOne({
                         usedBy: req.user._id,
                         sale: req.body.sale
                     });

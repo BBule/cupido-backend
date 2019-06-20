@@ -23,65 +23,75 @@ const Products = require("../models/Products");
 // Create a new object and then embed data into the array
 // User can send this route
 router.post("/add", async (req, res, next) => {
-    console.log("Posting cart data to the DB");
+    // console.log("Posting cart data to the DB");
     let curruser = req.user;
-    let newcartitem = new mycartingeneral({
-        "User.id": curruser._id,
-        "Product.id": req.body.productid,
-        "Product.name": req.body.productname,
-        "Product.salePrice": req.body.salePrice,
-        "sale.id": req.body.saleid,
-        timecreated: newIndDate(),
-        is_commit: req.body.is_commit,
-        cupidCoins: req.body.cupidCoins,
-        referralCupidCoins: req.body.referralCupidCoins,
-        quantity: req.body.quantity,
-        total_expected_price: req.body.cupidCoins * req.body.quantity
-    });
-
-    if (req.body.referral_code) {
-        var token = await Referral.findOne({
-            code: req.query.code,
-            used: false,
-            sale: req.query.sale,
-            createdBy: { $ne: req.user._id }
-        });
-        if (token) {
-            newcartitem.referral_code = req.body.referral_code;
-            newcartitem.total_expected_price -= 50;
-        } else {
+    mycartingeneral.findOne({"sale.id":req.body.saleid,"User.id":curruser._id}).then(async item=>{
+        if(item){
             return next({
-                status: 400,
-                message: "Invalid Token"
+                message: "Item already present in cart.",
+                status: 400
             });
         }
-    }
-
-    newcartitem
-        .save()
-        .then(async (cartitem) =>{
-            await User.findOneAndUpdate(
-                { _id: curruser._id },
-                { $push: { mycarts: newcartitem } }
-            )
-                .then(user => {
-                    return res.json(user.mycarts);
-                })
+        else{
+            let newcartitem = new mycartingeneral({
+                "User.id": curruser._id,
+                "Product.id": req.body.productid,
+                "Product.name": req.body.productname,
+                "Product.salePrice": req.body.salePrice,
+                "sale.id": req.body.saleid,
+                timecreated: newIndDate(),
+                is_commit: req.body.is_commit,
+                cupidCoins: req.body.cupidCoins,
+                referralCupidCoins: req.body.referralCupidCoins,
+                quantity: req.body.quantity,
+                total_expected_price: req.body.cupidCoins * req.body.quantity
+            });
+        
+            if (req.body.referral_code) {
+                var token = await Referral.findOne({
+                    code: req.query.code,
+                    used: false,
+                    sale: req.query.sale,
+                    createdBy: { $ne: req.user._id }
+                });
+                if (token) {
+                    newcartitem.referral_code = req.body.referral_code;
+                    newcartitem.total_expected_price -= 50;
+                } else {
+                    return next({
+                        status: 400,
+                        message: "Invalid Token"
+                    });
+                }
+            }
+        
+            newcartitem
+                .save()
+                .then(async (cartitem) =>{
+                    await User.findOneAndUpdate(
+                        { _id: curruser._id },
+                        { $push: { mycarts: newcartitem } }
+                    )
+                        .then(user => {
+                            return res.json(user.mycarts);
+                        })
+                        .catch(err => {
+                            console.log(err);
+                            return next({
+                                status: 400,
+                                message: "unknown error while updating cart"
+                            });
+                        })
+                    })
                 .catch(err => {
                     console.log(err);
                     return next({
                         status: 400,
                         message: "unknown error while updating cart"
                     });
-                })
-            })
-        .catch(err => {
-            console.log(err);
-            return next({
-                status: 400,
-                message: "unknown error while updating cart"
-            });
-        });
+                });
+        }
+    })
 });
 
 router.post("/remove", (req, res, next) => {
