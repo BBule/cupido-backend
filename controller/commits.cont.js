@@ -4,6 +4,24 @@ const myOrders = require("../models/myorders");
 const Saleslist = require("../models/saleslist");
 const cart = require("../models/mycartingeneral.js");
 
+// const Razorpay = require("razorpay");
+
+// var instance = new Razorpay({
+//   key_id: "rzp_live_nasXctJT5J1Thz",
+//   key_secret: "Q8noJfieO0KwbFyejTfaP2XU"
+// });
+
+// var cal_amount = 100;
+
+// function checkandcapturePayments(pay_id, amount, cal_amount, status) {
+//   if (amount === cal_amount && status === "authorized") {
+//     instance.payments
+//       .capture(pay_id, amount)
+//       .then(response => console.log("success"))
+//       .error(error => console.log(error));
+//   }
+// }
+
 const getUserCommits = async (
     userId,
     activeStat = true,
