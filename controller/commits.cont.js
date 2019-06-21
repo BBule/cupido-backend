@@ -25,13 +25,14 @@ const getUserCommits = async (
         .exec();
 };
 
-const getUserOrders = async (userId, limit = 10, skip = 0) => {
+const getUserOrders = async (userId, limit = 1000, skip = 0) => {
     return await myOrders
         .find({
             "User.id": userId
-        })
+        },{order_amount:1,"sale.id":1,timecreated:1,"Product.name":1,shipping_id_API:1})
         .populate("Product.id", "images")
         .populate("shipping_address")
+        .populate("sale.id","salePrice")
         .limit(limit)
         .skip(skip)
         .exec();
@@ -115,7 +116,7 @@ const createCommitOrOrder = async (wholeCart, addressId, payment, userId) => {
                                     cal_amount
                                 );
                                 instance.payments
-                                    .fetch("pay_CiNkmzBZ4AJCYm")
+                                    .fetch(payment.id)
                                     .then(response =>
                                         checkandcapturePayments(
                                             response.id,
@@ -154,6 +155,7 @@ const createCommitOrOrder = async (wholeCart, addressId, payment, userId) => {
                 "User.id": element.User.id,
                 shipping_address: addressId,
                 payment_details: payment,
+                order_status:"Processed",
                 order_amount: element.salePrice - element.cupidCoins
             });
             order1
@@ -190,6 +192,7 @@ const createCommitOrOrder = async (wholeCart, addressId, payment, userId) => {
                                                     "User.id": commit.User.id,
                                                     shipping_address: addressId,
                                                     payment_details: payment,
+                                                    order_status:"Processed",
                                                     commit_amount:
                                                         element.salePrice -
                                                         element.cupidCoins
@@ -229,7 +232,7 @@ const createCommitOrOrder = async (wholeCart, addressId, payment, userId) => {
                                                                         );
                                                                         instance.payments
                                                                             .fetch(
-                                                                                "pay_CiNkmzBZ4AJCYm"
+                                                                                payment.id
                                                                             )
                                                                             .then(
                                                                                 response =>
@@ -300,6 +303,7 @@ const createCommitOrOrder = async (wholeCart, addressId, payment, userId) => {
                 "User.id": element.User.id,
                 shipping_address: addressId,
                 payment_details: payment,
+                order_status:"Processed",
                 commit_amount: element.salePrice - element.cupidCoins
             });
             order1
@@ -319,7 +323,7 @@ const createCommitOrOrder = async (wholeCart, addressId, payment, userId) => {
                                     cal_amount
                                 );
                                 instance.payments
-                                    .fetch("pay_CiNkmzBZ4AJCYm")
+                                    .fetch(payment.id)
                                     .then(response =>
                                         checkandcapturePayments(
                                             response.id,

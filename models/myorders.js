@@ -38,8 +38,8 @@ let myorderSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "myaddresses"
     },
-    shipping_id_API: String, // Used for tracking the order
-    order_status: Boolean, // When the order is reached this value should be turned to off. What we can do is to implement a system that calls the delivery API every hour and take actions on the orders which have reached.
+    shipping_awb: String, // Used for tracking the order
+    order_status: String, // When the order is reached this value should be turned to off. What we can do is to implement a system that calls the delivery API every hour and take actions on the orders which have reached.
     order_amount: Number, // At what amount the user placed the order
     order_quantity: Number,
     worth_coupons_applied: Number,
