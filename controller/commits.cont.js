@@ -29,8 +29,8 @@ const getUserOrders = async (userId, limit = 1000, skip = 0) => {
     return await myOrders
         .find({
             "User.id": userId
-        },{order_amount:1,"sale.id":1,timecreated:1,"Product.name":1,shipping_id_API:1})
-        .populate("Product.id", "images")
+        },{order_amount:1,"sale.id":1,timecreated:1,shipping_id_API:1})
+        .populate("Product.id", "images brandName title")
         .populate("shipping_address")
         .populate("sale.id","salePrice")
         .limit(limit)
