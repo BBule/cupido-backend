@@ -29,7 +29,7 @@ const getUserOrders = async (userId, limit = 1000, skip = 0) => {
     return await myOrders
         .find({
             "User.id": userId
-        },{order_amount:1,"sale.id":1,timecreated:1,shipping_id_API:1})
+        },{order_amount:1,"sale.id":1,timecreated:1,shipping_awb:1,order_status})
         .populate("Product.id", "images brandName title")
         .populate("shipping_address")
         .populate("sale.id","salePrice")
@@ -175,7 +175,7 @@ const createCommitOrOrder = async (wholeCart, addressId, payment, userId) => {
                         }
                     )
                         .then(async sale => {
-                            await mycommits
+                            await mycommits             //can happen multiple times
                                 .find({
                                     "sale.id": element.sale.id
                                 })
@@ -190,10 +190,10 @@ const createCommitOrOrder = async (wholeCart, addressId, payment, userId) => {
                                                         commit.Product.id,
                                                     "sale.id": commit.sale.id,
                                                     "User.id": commit.User.id,
-                                                    shipping_address: addressId,
-                                                    payment_details: payment,
+                                                    shipping_address: commit.shipping_address,
+                                                    payment_details: commit.payment_details,
                                                     order_status:"Processed",
-                                                    commit_amount:
+                                                    order_amount:
                                                         element.salePrice -
                                                         element.cupidCoins
                                                 });
@@ -304,7 +304,7 @@ const createCommitOrOrder = async (wholeCart, addressId, payment, userId) => {
                 shipping_address: addressId,
                 payment_details: payment,
                 order_status:"Processed",
-                commit_amount: element.salePrice - element.cupidCoins
+                order_amount: element.salePrice - element.cupidCoins
             });
             order1
                 .save()

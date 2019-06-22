@@ -24,7 +24,7 @@ router.post("/edit", async function(req, res, next) {
         var emailtoken = new EmailToken({ token: email_token, used: false });
         emailtoken.save();
         //send verification
-        const ejsTemplate = await getEJSTemplate({
+        const ejsTemplate = await getEJSTeemail_tokenmplate({
             fileName: "email_verification.ejs"
         });
         const finalHTML = ejsTemplate({
@@ -63,6 +63,8 @@ router.post("/edit", async function(req, res, next) {
         });
     }
 });
+
+
 
 router.get("/gift", (req, res, next) => {
     var giftsholder;

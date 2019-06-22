@@ -22,8 +22,8 @@ const configs = {
         SMTP_PASS: process.env.SMTP_PASS || "saikat95"
     },
     RAZOR_PAY: {
-        key_id: process.env.RAZ_KEY || "rzp_test_yB0vsbna19gitB",
-        key_secret: process.env.RAZ_SECRET || "qb8WNJrUPbsVWOBrUL4nWAnI"
+        key_id: process.env.RAZ_KEY || "rzp_live_nasXctJT5J1Thz",
+        key_secret: process.env.RAZ_SECRET || "Q8noJfieO0KwbFyejTfaP2XU"
     },
     SMS: {
         AUTH_KEY: process.env.SMS_AUTH_KEY || "271810AhUrdTw4cS5cadda21",
