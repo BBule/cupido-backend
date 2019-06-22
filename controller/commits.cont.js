@@ -36,7 +36,7 @@ const getUserOrders = async (userId, limit = 1000, skip = 0) => {
                 "sale.id": 1,
                 timecreated: 1,
                 shipping_awb: 1,
-                order_status
+                order_status:1
             }
         )
         .populate("Product.id", "images brandName title")
