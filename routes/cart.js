@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const router = express.Router();
+var Request = require("request");
 
 // Helper Functions
 function newIndDate() {
@@ -12,12 +13,12 @@ function newIndDate() {
 
 // Models
 const User = require("../models/user");
-
 const mycartingeneral = require("../models/mycartingeneral");
 const SalesList = require("../models/saleslist");
 const Referral = require("../models/referral");
 const cartCont = require("../controller/cart.cont");
 const Products = require("../models/Products");
+const myorders = require("../models/myorders");
 
 // POST Route to send cart entry of an individual
 // Create a new object and then embed data into the array
@@ -25,73 +26,75 @@ const Products = require("../models/Products");
 router.post("/add", async (req, res, next) => {
     // console.log("Posting cart data to the DB");
     let curruser = req.user;
-    mycartingeneral.findOne({"sale.id":req.body.saleid,"User.id":curruser._id}).then(async item=>{
-        if(item){
-            return next({
-                message: "Item already present in cart.",
-                status: 400
-            });
-        }
-        else{
-            let newcartitem = new mycartingeneral({
-                "User.id": curruser._id,
-                "Product.id": req.body.productid,
-                "Product.name": req.body.productname,
-                "Product.salePrice": req.body.salePrice,
-                "sale.id": req.body.saleid,
-                timecreated: newIndDate(),
-                is_commit: req.body.is_commit,
-                cupidCoins: req.body.cupidCoins,
-                referralCupidCoins: req.body.referralCupidCoins,
-                quantity: req.body.quantity,
-                total_expected_price: req.body.cupidCoins * req.body.quantity
-            });
-        
-            if (req.body.referral_code) {
-                var token = await Referral.findOne({
-                    code: req.query.code,
-                    used: false,
-                    sale: req.query.sale,
-                    createdBy: { $ne: req.user._id }
+    mycartingeneral
+        .findOne({ "sale.id": req.body.saleid, "User.id": curruser._id })
+        .then(async item => {
+            if (item) {
+                return next({
+                    message: "Item already present in cart.",
+                    status: 400
                 });
-                if (token) {
-                    newcartitem.referral_code = req.body.referral_code;
-                    newcartitem.total_expected_price -= 50;
-                } else {
-                    return next({
-                        status: 400,
-                        message: "Invalid Token"
+            } else {
+                let newcartitem = new mycartingeneral({
+                    "User.id": curruser._id,
+                    "Product.id": req.body.productid,
+                    "Product.name": req.body.productname,
+                    "Product.salePrice": req.body.salePrice,
+                    "sale.id": req.body.saleid,
+                    timecreated: newIndDate(),
+                    is_commit: req.body.is_commit,
+                    cupidCoins: req.body.cupidCoins,
+                    referralCupidCoins: req.body.referralCupidCoins,
+                    quantity: req.body.quantity,
+                    total_expected_price:
+                        req.body.cupidCoins * req.body.quantity
+                });
+
+                if (req.body.referral_code) {
+                    var token = await Referral.findOne({
+                        code: req.query.code,
+                        used: false,
+                        sale: req.query.sale,
+                        createdBy: { $ne: req.user._id }
                     });
+                    if (token) {
+                        newcartitem.referral_code = req.body.referral_code;
+                        newcartitem.total_expected_price -= 50;
+                    } else {
+                        return next({
+                            status: 400,
+                            message: "Invalid Token"
+                        });
+                    }
                 }
-            }
-        
-            newcartitem
-                .save()
-                .then(async (cartitem) =>{
-                    await User.findOneAndUpdate(
-                        { _id: curruser._id },
-                        { $push: { mycarts: newcartitem } }
-                    )
-                        .then(user => {
-                            return res.json(user.mycarts);
-                        })
-                        .catch(err => {
-                            console.log(err);
-                            return next({
-                                status: 400,
-                                message: "unknown error while updating cart"
+
+                newcartitem
+                    .save()
+                    .then(async cartitem => {
+                        await User.findOneAndUpdate(
+                            { _id: curruser._id },
+                            { $push: { mycarts: newcartitem } }
+                        )
+                            .then(user => {
+                                return res.json(user.mycarts);
+                            })
+                            .catch(err => {
+                                console.log(err);
+                                return next({
+                                    status: 400,
+                                    message: "unknown error while updating cart"
+                                });
                             });
-                        })
                     })
-                .catch(err => {
-                    console.log(err);
-                    return next({
-                        status: 400,
-                        message: "unknown error while updating cart"
+                    .catch(err => {
+                        console.log(err);
+                        return next({
+                            status: 400,
+                            message: "unknown error while updating cart"
+                        });
                     });
-                });
-        }
-    })
+            }
+        });
 });
 
 router.post("/remove", (req, res, next) => {
@@ -124,31 +127,31 @@ router.post("/remove", (req, res, next) => {
 //         query["mycarts.is_commit"] = req.query.type;
 //     }
 //     console.log(query)
-    // User.findOne(query)
-    //     .then(async result => {
-    //         if (result && result.mycarts && result.mycarts.length) {
-    //             var startpoint = req.query.offset || 0; // zero
-    //             var howmany = req.query.limit || 10; // ten
-    //             console.log("carts is found and it's product marketprice: ");
-    //             // console.log(result.mycarts[0].Product.marketPrice);
-    //             let cupidLove = null;
-    //             if (typeofcart == "commit") {
-    //                 cupidLove = await getEstimateCupidLove(cartsholder);
-    //             }
-    //             return res.json({
-    //                 cartsdata: result.mycarts.splice(startpoint, howmany)
-    //             });
-    //         } else {
-    //             return res.json({ cartsdata: [] });
-    //         }
-    //     })
-    //     .catch(err => {
-    //         return next({
-    //             message: err.message || "unknown error occured",
-    //             status: 400,
-    //             stack: err
-    //         });
-    //     });
+// User.findOne(query)
+//     .then(async result => {
+//         if (result && result.mycarts && result.mycarts.length) {
+//             var startpoint = req.query.offset || 0; // zero
+//             var howmany = req.query.limit || 10; // ten
+//             console.log("carts is found and it's product marketprice: ");
+//             // console.log(result.mycarts[0].Product.marketPrice);
+//             let cupidLove = null;
+//             if (typeofcart == "commit") {
+//                 cupidLove = await getEstimateCupidLove(cartsholder);
+//             }
+//             return res.json({
+//                 cartsdata: result.mycarts.splice(startpoint, howmany)
+//             });
+//         } else {
+//             return res.json({ cartsdata: [] });
+//         }
+//     })
+//     .catch(err => {
+//         return next({
+//             message: err.message || "unknown error occured",
+//             status: 400,
+//             stack: err
+//         });
+//     });
 // });
 
 async function asyncForEach(array, callback) {
@@ -171,7 +174,7 @@ router.get("/view", (req, res, next) => {
     // console.log(query);
     mycartingeneral
         .find(query)
-        .populate("Product.id","images")
+        .populate("Product.id", "images")
         .then(async result => {
             if (result && result.length) {
                 // var startpoint = req.query.offset || 0; // zero
@@ -224,5 +227,18 @@ async function getEstimateCupidLove(cart) {
     });
     return totalCupidLove;
 }
+
+router.get("/track/;orderId", (req, res, next) => {
+    const orderId = req.params.orderId;
+    myorders.findOne({ _id: orderId }).then(order => {
+        Request.get(`https://app.shiprocket.in/v1/external/track/awb/${order.shipping_awb}`, (error, response, body) => {
+            if (error) {
+                return console.dir(error);
+            }
+            console.dir(JSON.parse(body));
+            res.send(JSON);
+        });
+    });
+});
 
 module.exports = router;

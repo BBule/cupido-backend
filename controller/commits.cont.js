@@ -4,23 +4,7 @@ const myOrders = require("../models/myorders");
 const Saleslist = require("../models/saleslist");
 const cart = require("../models/mycartingeneral.js");
 
-// const Razorpay = require("razorpay");
-
-// var instance = new Razorpay({
-//   key_id: "rzp_live_nasXctJT5J1Thz",
-//   key_secret: "Q8noJfieO0KwbFyejTfaP2XU"
-// });
-
-// var cal_amount = 100;
-
-// function checkandcapturePayments(pay_id, amount, cal_amount, status) {
-//   if (amount === cal_amount && status === "authorized") {
-//     instance.payments
-//       .capture(pay_id, amount)
-//       .then(response => console.log("success"))
-//       .error(error => console.log(error));
-//   }
-// }
+const Razorpay = require("razorpay");
 
 const getUserCommits = async (
     userId,
@@ -33,21 +17,22 @@ const getUserCommits = async (
             "User.id": userId,
             is_active: activeStat
         })
-        .populate("Product.id","images")
-        .populate("sale.id","quantity_sold quantity_committed cupidLove")
+        .populate("Product.id", "images")
+        .populate("sale.id", "quantity_sold quantity_committed cupidLove")
         .populate("shipping_address")
         .limit(limit)
         .skip(skip)
         .exec();
 };
 
-const getUserOrders = async (userId, limit = 10, skip = 0) => {
+const getUserOrders = async (userId, limit = 1000, skip = 0) => {
     return await myOrders
         .find({
             "User.id": userId
-        })
-        .populate("Product.id","images")
+        },{order_amount:1,"sale.id":1,timecreated:1,shipping_id_API:1})
+        .populate("Product.id", "images brandName title")
         .populate("shipping_address")
+        .populate("sale.id","salePrice")
         .limit(limit)
         .skip(skip)
         .exec();
@@ -65,14 +50,41 @@ const getOrderCountBySale = async id => {
     return myOrders.countDocuments({ "sale.id": id }).exec();
 };
 
+var instance = new Razorpay({
+    key_id: "rzp_live_nasXctJT5J1Thz",
+    key_secret: "Q8noJfieO0KwbFyejTfaP2XU"
+});
+
+function checkandcapturePayments(pay_id, amount, cal_amount, status) {
+    if (amount === cal_amount && status === "authorized") {
+        instance.payments
+            .capture(pay_id, amount)
+            .then(response => console.log("success"))
+            .error(error => console.log(error));
+    }
+}
+// instance.payments
+//     .fetch("pay_CiNkmzBZ4AJCYm")
+//     .then(response =>
+//         checkandcapturePayments(
+//             response.id,
+//             response.amount,
+//             cal_amount,
+//             response.status
+//         )
+//     )
+//     .catch(error => console.log(error));
+
 const createCommitOrOrder = async (wholeCart, addressId, payment, userId) => {
     var itemsProcessed = 0;
+    cal_amount = 0;
     asyncForEach(wholeCart, async element => {
         itemsProcessed++;
         let commit_count = await getCommitCountBySale(element.sale.id);
         let order_count = await getOrderCountBySale(element.sale.id);
         console.log(commit_count, order_count);
         let sale = await Saleslist.findById(element.sale.id);
+        cal_amount += sale.salePrice;
         console.log(sale.cupidLove.quantity);
         if (element.is_commit && commit_count < sale.cupidLove.quantity) {
             commit1 = new mycommits({
@@ -98,7 +110,23 @@ const createCommitOrOrder = async (wholeCart, addressId, payment, userId) => {
                         .then(async sale => {
                             // console.log("Hurrah!");
                             if (itemsProcessed == wholeCart.length) {
-                                console.log(itemsProcessed, wholeCart.length);
+                                console.log(
+                                    itemsProcessed,
+                                    wholeCart.length,
+                                    cal_amount
+                                );
+                                instance.payments
+                                    .fetch(payment.id)
+                                    .then(response =>
+                                        checkandcapturePayments(
+                                            response.id,
+                                            response.amount,
+                                            cal_amount,
+                                            response.status
+                                        )
+                                    )
+                                    .catch(error => console.log(error));
+
                                 await cart
                                     .findByIdAndRemove(userId)
                                     .then(() => {
@@ -127,6 +155,7 @@ const createCommitOrOrder = async (wholeCart, addressId, payment, userId) => {
                 "User.id": element.User.id,
                 shipping_address: addressId,
                 payment_details: payment,
+                order_status:"Processed",
                 order_amount: element.salePrice - element.cupidCoins
             });
             order1
@@ -163,9 +192,9 @@ const createCommitOrOrder = async (wholeCart, addressId, payment, userId) => {
                                                     "User.id": commit.User.id,
                                                     shipping_address: addressId,
                                                     payment_details: payment,
+                                                    order_status:"Processed",
                                                     commit_amount:
-                                                        element
-                                                            .salePrice -
+                                                        element.salePrice -
                                                         element.cupidCoins
                                                 });
                                                 // console.log(order1)
@@ -198,8 +227,28 @@ const createCommitOrOrder = async (wholeCart, addressId, payment, userId) => {
                                                                     ) {
                                                                         console.log(
                                                                             itemsProcessed,
-                                                                            wholeCart.length
+                                                                            wholeCart.length,
+                                                                            cal_amount
                                                                         );
+                                                                        instance.payments
+                                                                            .fetch(
+                                                                                payment.id
+                                                                            )
+                                                                            .then(
+                                                                                response =>
+                                                                                    checkandcapturePayments(
+                                                                                        response.id,
+                                                                                        response.amount,
+                                                                                        cal_amount,
+                                                                                        response.status
+                                                                                    )
+                                                                            )
+                                                                            .catch(
+                                                                                error =>
+                                                                                    console.log(
+                                                                                        error
+                                                                                    )
+                                                                            );
                                                                         await cart
                                                                             .findByIdAndRemove(
                                                                                 userId
@@ -254,6 +303,7 @@ const createCommitOrOrder = async (wholeCart, addressId, payment, userId) => {
                 "User.id": element.User.id,
                 shipping_address: addressId,
                 payment_details: payment,
+                order_status:"Processed",
                 commit_amount: element.salePrice - element.cupidCoins
             });
             order1
@@ -267,7 +317,22 @@ const createCommitOrOrder = async (wholeCart, addressId, payment, userId) => {
                         .then(async sale => {
                             // console.log("OrderPlaced");
                             if (itemsProcessed == wholeCart.length) {
-                                console.log(itemsProcessed, wholeCart.length);
+                                console.log(
+                                    itemsProcessed,
+                                    wholeCart.length,
+                                    cal_amount
+                                );
+                                instance.payments
+                                    .fetch(payment.id)
+                                    .then(response =>
+                                        checkandcapturePayments(
+                                            response.id,
+                                            response.amount,
+                                            cal_amount,
+                                            response.status
+                                        )
+                                    )
+                                    .catch(error => console.log(error));
                                 await cart
                                     .findByIdAndRemove(userId)
                                     .then(() => {
