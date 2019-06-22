@@ -45,14 +45,20 @@ router.get("/myorders", (req, res, next) => {
 
 router.post("/orderOrCommit", async (req, res, next) => {
     if (req.body.payment) {
-        const { wholeCart, addressId, payment } = req.body;
+        const { wholeCart, addressId, payment, cash } = req.body;
         if (!wholeCart || !wholeCart.length) {
             return next({
                 status: 400,
                 message: "please pass all the cart item"
             });
         }
-        await createCommitOrOrder(wholeCart, addressId, payment, req.user._id)
+        await createCommitOrOrder(
+            wholeCart,
+            addressId,
+            payment,
+            req.user._id,
+            cash
+        )
             .then(data => {
                 return res.status(200).json(data);
             })
