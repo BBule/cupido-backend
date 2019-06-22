@@ -18,9 +18,10 @@ module.exports = {
                 FRONT_HOST: "https://dev.lecupido.com"
             },
             env_production: {
+		PORT: 3002,
                 NODE_ENV: "production",
                 MONGO_URL:
-                    "mongodb://lc_saikat:saikat%40123@ds149706.mlab.com:49706/cupido_prod_db",
+                    "mongodb://localhost:27000/cupido_backend",
                 GOOGLE_CLIENT_ID:
                     "524726124380-536q8uhh4gfic4rq2s3jepc9s2btirkj.apps.googleusercontent.com",
                 GOOGLE_CLIENT_SECRET: "s-G0KeQEKJ3AagIs3PYe4SoZ",
