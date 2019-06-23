@@ -149,7 +149,7 @@ const createCommitOrOrder = async (
                                         .catch(error => console.log(error));
                                 }
                                 await cart
-                                    .remove({ "User.id": userId })
+                                    .deleteMany({ "User.id": userId })
                                     .then(() => {
                                         // console.log("Deleted");
                                     })
@@ -284,7 +284,7 @@ const createCommitOrOrder = async (
                                                                                 );
                                                                         }
                                                                         await cart
-                                                                            .remove(
+                                                                            .deleteMany(
                                                                                 {
                                                                                     "User.id": userId
                                                                                 }
@@ -378,7 +378,7 @@ const createCommitOrOrder = async (
                                         .catch(error => console.log(error));
                                 }
                                 await cart
-                                    .remove({ "User.id": userId })
+                                    .deleteMany({ "User.id": userId })
                                     .then(() => {
                                         console.log("Deleted");
                                     })
