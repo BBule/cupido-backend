@@ -36,7 +36,7 @@ const getUserOrders = async (userId, limit = 1000, skip = 0) => {
                 "sale.id": 1,
                 timecreated: 1,
                 shipping_awb: 1,
-                order_status:1
+                order_status: 1
             }
         )
         .populate("Product.id", "images brandName title")
@@ -67,7 +67,7 @@ var instance = new Razorpay({
 function checkandcapturePayments(pay_id, amount, cal_amount, status) {
     if (amount === cal_amount && status === "authorized") {
         instance.payments
-            .capture(pay_id, amount)
+            .capture(pay_id, amount * 100)
             .then(response => console.log("success"))
             .error(error => console.log(error));
     }
@@ -108,7 +108,7 @@ const createCommitOrOrder = async (
                 "User.id": element.User.id,
                 shipping_address: addressId,
                 payment_details: payment,
-                commit_amount: element.salePrice - element.cupidCoins
+                commit_amount: sale.salePrice - element.cupidCoins
             });
             commit1
                 .save()
@@ -136,7 +136,7 @@ const createCommitOrOrder = async (
                                         .then(response =>
                                             checkandcapturePayments(
                                                 response.id,
-                                                response.amount,
+                                                response.amount / 100,
                                                 cal_amount,
                                                 response.status
                                             )
@@ -144,7 +144,7 @@ const createCommitOrOrder = async (
                                         .catch(error => console.log(error));
                                 }
                                 await cart
-                                    .findByIdAndRemove(userId)
+                                    .remove({ "User.id": userId })
                                     .then(() => {
                                         // console.log("Deleted");
                                     })
@@ -172,7 +172,7 @@ const createCommitOrOrder = async (
                 shipping_address: addressId,
                 payment_details: payment,
                 order_status: "Processed",
-                order_amount: element.salePrice - element.cupidCoins
+                order_amount: sale.salePrice - element.cupidCoins
             });
             order1
                 .save()
@@ -212,7 +212,7 @@ const createCommitOrOrder = async (
                                                         commit.payment_details,
                                                     order_status: "Processed",
                                                     order_amount:
-                                                        element.salePrice -
+                                                        sale.salePrice -
                                                         element.cupidCoins
                                                 });
                                                 // console.log(order1)
@@ -240,7 +240,7 @@ const createCommitOrOrder = async (
                                                                 async sale => {
                                                                     // console.log("Hurray1");
                                                                     if (
-                                                                        itemsProcessed ==
+                                                                        itemsProcessed ===
                                                                         wholeCart.length
                                                                     ) {
                                                                         console.log(
@@ -259,7 +259,8 @@ const createCommitOrOrder = async (
                                                                                     response =>
                                                                                         checkandcapturePayments(
                                                                                             response.id,
-                                                                                            response.amount,
+                                                                                            response.amount /
+                                                                                                100,
                                                                                             cal_amount,
                                                                                             response.status
                                                                                         )
@@ -272,8 +273,10 @@ const createCommitOrOrder = async (
                                                                                 );
                                                                         }
                                                                         await cart
-                                                                            .findByIdAndRemove(
-                                                                                userId
+                                                                            .remove(
+                                                                                {
+                                                                                    "User.id": userId
+                                                                                }
                                                                             )
                                                                             .then(
                                                                                 () => {
@@ -326,7 +329,7 @@ const createCommitOrOrder = async (
                 shipping_address: addressId,
                 payment_details: payment,
                 order_status: "Processed",
-                order_amount: element.salePrice - element.cupidCoins
+                order_amount: sale.salePrice - element.cupidCoins
             });
             order1
                 .save()
@@ -350,7 +353,7 @@ const createCommitOrOrder = async (
                                         .then(response =>
                                             checkandcapturePayments(
                                                 response.id,
-                                                response.amount,
+                                                response.amount / 100,
                                                 cal_amount,
                                                 response.status
                                             )
@@ -358,9 +361,9 @@ const createCommitOrOrder = async (
                                         .catch(error => console.log(error));
                                 }
                                 await cart
-                                    .findByIdAndRemove(userId)
+                                    .remove({ "User.id": userId })
                                     .then(() => {
-                                        // console.log("Deleted");
+                                        console.log("Deleted");
                                     })
                                     .catch(err => {
                                         console.log(err);
