@@ -101,7 +101,10 @@ const createCommitOrOrder = async (
         let sale = await Saleslist.findById(element.sale.id);
         cal_amount += sale.salePrice;
         console.log(sale.cupidLove.quantity);
-        if (element.is_commit && commit_count < sale.cupidLove.quantity) {
+        if (
+            element.is_commit &&
+            commit_count + order_count < sale.cupidLove.quantity
+        ) {
             commit1 = new mycommits({
                 "Product.id": element.Product.id,
                 "sale.id": element.sale.id,
@@ -117,7 +120,9 @@ const createCommitOrOrder = async (
                         { _id: element.sale.id },
                         {
                             $inc: {
-                                quantity_committed: 1
+                                quantity_committed: await getCommitCountBySale(
+                                    element.sale.id
+                                )
                             }
                         },
                         { useFindAndModify: false }
@@ -163,7 +168,7 @@ const createCommitOrOrder = async (
                 });
         } else if (
             element.is_commit &&
-            commit_count >= sale.cupidLove.quantity
+            commit_count + order_count >= sale.cupidLove.quantity
         ) {
             order1 = new myOrders({
                 "Product.id": element.Product.id,
@@ -183,7 +188,9 @@ const createCommitOrOrder = async (
                         },
                         {
                             $inc: {
-                                quantity_sold: 1
+                                quantity_sold: await getOrderCountBySale(
+                                    element.sale.id
+                                )
                             }
                         },
                         {
@@ -229,7 +236,11 @@ const createCommitOrOrder = async (
                                                             },
                                                             {
                                                                 $inc: {
-                                                                    quantity_sold: 1
+                                                                    quantity_sold: await getOrderCountBySale(
+                                                                        element
+                                                                            .sale
+                                                                            .id
+                                                                    )
                                                                 }
                                                             },
                                                             {
@@ -336,7 +347,13 @@ const createCommitOrOrder = async (
                 .then(async order => {
                     Saleslist.findOneAndUpdate(
                         { _id: element.sale.id },
-                        { $inc: { quantity_sold: 1 } },
+                        {
+                            $inc: {
+                                quantity_sold: await getOrderCountBySale(
+                                    element.sale.id
+                                )
+                            }
+                        },
                         { useFindAndModify: false }
                     )
                         .then(async sale => {
