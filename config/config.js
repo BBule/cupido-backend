@@ -19,7 +19,7 @@ const configs = {
         SMTP_PORT: process.env.SMTP_PORT || 465,
         SECURE: process.env.SECURE || true, //in case port value is 465
         SMTP_USER: process.env.SMTP_USER || "startsetteam",
-        SMTP_PASS: process.env.SMTP_PASS || "saikat95"
+        SMTP_PASS: process.env.SMTP_PASS || "astraalive"
     },
     RAZOR_PAY: {
         key_id: process.env.RAZ_KEY || "rzp_live_nasXctJT5J1Thz",

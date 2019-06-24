@@ -9,7 +9,7 @@ const getBlogPosts = async (page = 1, limit = 10, sortByPopularity = false) => {
     let limit_int = parseInt(limit);
     let page_int = parseInt(page);
 
-    const allPosts = await BlogPost.find()
+    const allPosts = await BlogPost.find({},{cover_photo:1})
         .select({
             topic: 1,
             title: 1,

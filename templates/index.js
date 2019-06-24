@@ -13,6 +13,7 @@ const transationals = {
     "payment_success.ejs": require("./transational/payment_success"),
     "thanks_committing.ejs": require("./transational/thanks_commiting"),
     "order_place.ejs": require("./transational/order_placed"),
-    "email_verification.ejs": require("./transational/email_verification")
+    "email_verification.ejs": require("./transational/email_verification"),
+    "signup.ejs":require("./transational/signup")
 };
 module.exports = { promotionals, transationals };

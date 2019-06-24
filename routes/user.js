@@ -5,6 +5,7 @@ var jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const EmailToken = require("../models/emailtoken");
 const config = require("../config/config");
+const nodemailer = require("nodemailer");
 const { SendMail, getEJSTemplate } = require("../helpers/mailHelper");
 
 router.post("/edit", async function(req, res, next) {
@@ -20,11 +21,12 @@ router.post("/edit", async function(req, res, next) {
             )
             .toString();
         var verification_link =
-            config.FRONT_HOST + "/verifyemail/" + email_token;
+            config.FRONT_HOST + "/gp/sales/verifyemail/" + email_token;
         var emailtoken = new EmailToken({ token: email_token, used: false });
         emailtoken.save();
         //send verification
-        const ejsTemplate = await getEJSTeemail_tokenmplate({
+        console.log(verification_link);
+        const ejsTemplate = await getEJSTemplate({
             fileName: "email_verification.ejs"
         });
         const finalHTML = ejsTemplate({
@@ -32,7 +34,7 @@ router.post("/edit", async function(req, res, next) {
             username: req.user.username
                 ? req.user.username.split(" ")[0]
                 : "Dear",
-            link: verification_link //may be format properly before passing it
+            link: verification_link
         });
         const message = {
             to: req.body.email,
@@ -63,8 +65,6 @@ router.post("/edit", async function(req, res, next) {
         });
     }
 });
-
-
 
 router.get("/gift", (req, res, next) => {
     var giftsholder;

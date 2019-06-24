@@ -1,9 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const lodash = require("lodash");
+var jwt = require("jsonwebtoken");
 // Models
-
+const config = require("../../config/config");
 const Saleslist = require("../../models/saleslist");
+const EmailToken = require("../../models/emailtoken");
+const User=require("../../models/user.js")
 const commitCont = require("../../controller/commits.cont");
 // Helper Functions
 function newIndDate() {
@@ -118,6 +121,47 @@ router.get("/futuresales", (req, res, next) => {
                 message: "bad request!"
             });
         });
+});
+
+router.get("/verifyemail/:token",async function(req, res,next) {
+    console.log(req.params.token);
+    var token = req.params.token;
+    try {
+        var emailtoken = await EmailToken.findOne({ token:token });
+        if (emailtoken.used) {
+        } else {
+            var decoded;
+
+            try {
+                decoded = await jwt.verify(token, config.JWT_SECRET);
+                console.log(decoded);
+                var user = await User.findOne({
+                    _id: decoded._id,
+                    "email.email": decoded.email
+                });
+                console.log(user);
+                user.email.verified = true;
+                await user.save();
+                res.send({
+                    type: "auth",
+                    message: "Email verified successfully"
+                });
+            } catch (ex) {
+                console.log(ex);
+                return next({
+                    stack: ex,
+                    status: 400,
+                    message: "Invalid Link"
+                });
+            }
+        }
+    } catch (e) {
+        return next({
+            stack: e,
+            status: 500,
+            message: "bad request!"
+        });
+    }
 });
 
 module.exports = router;

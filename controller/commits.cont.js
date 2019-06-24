@@ -3,6 +3,7 @@ const mycommits = require("../models/mycommits");
 const myOrders = require("../models/myorders");
 const Saleslist = require("../models/saleslist");
 const cart = require("../models/mycartingeneral.js");
+const config = require("../config/config");
 
 const Razorpay = require("razorpay");
 
@@ -60,8 +61,8 @@ const getOrderCountBySale = async id => {
 };
 
 var instance = new Razorpay({
-    key_id: "rzp_live_nasXctJT5J1Thz",
-    key_secret: "Q8noJfieO0KwbFyejTfaP2XU"
+    key_id:config.RAZOR_PAY.key_id,
+    key_secret: config.RAZOR_PAY.key_secret
 });
 
 function checkandcapturePayments(pay_id, amount, cal_amount, status) {
