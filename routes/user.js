@@ -25,9 +25,9 @@ router.post("/edit", async function(req, res, next) {
         var emailtoken = new EmailToken({ token: email_token, used: false });
         emailtoken.save();
         //send verification
-        console.log(verification_link);
+        // console.log(verification_link);
         const ejsTemplate = await getEJSTemplate({
-            fileName: "email_verification.ejs"
+            fileName: "signup.ejs"
         });
         const finalHTML = ejsTemplate({
             time: moment().format("lll"),
