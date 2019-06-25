@@ -40,6 +40,7 @@ api.includeRoutes = app => {
     // const unauthproducts = require("./unAuthRoutes/products");
     const address = require("./address");
     const cart = require("./cart");
+    const cupidLove = require("./cupidLove");
     const comments = require("./comments");
     const reviews = require("./reviews");
     const commits = require("./commits");
@@ -55,6 +56,7 @@ api.includeRoutes = app => {
     app.use("/apis/v1/*", isAuth);
     app.use("/apis/v1/addresses", address);
     app.use("/apis/v1/cart", cart);
+    app.use("/apis/v1/cupidLove", cupidLove);
     app.use("/apis/v1/me", users);
     app.use("/apis/v1/comments", comments);
     app.use("/apis/v1/reviews", reviews);

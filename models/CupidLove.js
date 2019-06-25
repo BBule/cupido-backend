@@ -28,15 +28,16 @@ let cupidLoveSchema = new Schema({
             ref: "User"
         }
     },
-    GameCard: {
+    Game: {
         id: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User"//should be changed when game introduced
+            type: mongoose.Schema.Types.ObjectId
         }
     },
     isOrder:Boolean,
     amount:Number,
-    referralId:mongoose.Schema.Types.ObjectId
+    referralId:mongoose.Schema.Types.ObjectId,
+    balance:Number,
+    source:String
 
 });
 
