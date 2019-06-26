@@ -9,7 +9,10 @@ var UserSchema = new mongoose.Schema(
         username: String,
         email: {
             email: String,
-            verified: Boolean
+            verified: {
+                type:Boolean,
+                default:false
+            }
         },
         contact: {
             contact: Number,

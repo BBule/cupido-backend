@@ -6,12 +6,6 @@ let Schema = mongoose.Schema;
 
 let cupidLoveSchema = new Schema({
     timecreated: { type: Date, default: Date.now },
-    Order: {
-        id: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Orders"
-        }
-    },
     Sale:{
         id: {
             type: mongoose.Schema.Types.ObjectId,
@@ -33,7 +27,6 @@ let cupidLoveSchema = new Schema({
             type: mongoose.Schema.Types.ObjectId
         }
     },
-    isOrder:Boolean,
     amount:Number,
     referralId:mongoose.Schema.Types.ObjectId,
     balance:Number,

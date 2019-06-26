@@ -35,6 +35,7 @@ router.get("/mywallet",async (req,res,next)=>{
     }catch(err){
         console.log(err);
     }
+    res.json({"earnedSum":earnedSum[0].sum,"redeemedSum":redeemedSum[0].sum,"cupidLoves":cupidLoves,"balance":earnedSum[0].sum-redeemedSum[0].sum})
 
 })
 
