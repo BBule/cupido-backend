@@ -147,6 +147,10 @@ const updateSaleOrder = async saleId => {
     );
 };
 
+const updateUser=async(userId,balance)=>{
+    return User.findOneAndUpdate({_id:userId},{cupidCoins:balance},{useFindOneAndModify:fale});
+};
+
 const createCupidLove = async (
     saleId,
     earned,
@@ -183,7 +187,12 @@ const createCupidLove = async (
                 source: "sale",
                 earned:false
             });
-            return cupidlove1.save();
+            await userUpdate(UserId,earnedSum[0].sum - redeemedSum[0].sum + cupidCoins)
+            .then(()=>{
+                return cupidlove1.save();
+            }).catch(err => {
+                console.log(err);
+            });
         }
         if (!order) {
             const cupidlove1 = new cupidLove({
@@ -195,7 +204,12 @@ const createCupidLove = async (
                 source: "sale",
                 earned:true
             });
-            return cupidlove1.save();
+            await updateUser(UserId,earnedSum[0].sum - redeemedSum[0].sum + cupidCoins)
+            .then(()=>{
+                return cupidlove1.save();
+            }).catch(err => {
+                console.log(err);
+            });
         }
         
     }
