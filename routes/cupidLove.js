@@ -31,7 +31,7 @@ router.get("/mywallet",async (req,res,next)=>{
 
     let cupidLoves;
     try{
-        cupidLoves=await cupidLove.find({"User.id":req.user._id},{amount:1,earned:1,balance:1,source:1})
+        cupidLoves=await cupidLove.find({"User.id":req.user._id},{amount:1,earned:1,balance:1,source:1,timecreated:1})
     }catch(err){
         console.log(err);
     }

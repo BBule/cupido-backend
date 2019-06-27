@@ -18,9 +18,9 @@ let myrepliesSchema = new Schema({
         }
     },
     timecreated: { type: Date, default: Date.now },
-    timeaccepted: Date,
-    is_review: Boolean, // Other option being is discussion
-    is_published: Boolean, // Other option being admin discretion
+    timeaccepted: Date,                                                                  //cbr
+    is_review: Boolean, // Other option being is discussion                             //cbr
+    is_published: Boolean, // Other option being admin discretion                       //cbr
     replybody: String,
     is_verified_buyer: Boolean // is the reply maker a buyer of the product
     // This can be implemented by seeing the user's orders, if a product is found it's good.

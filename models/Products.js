@@ -8,13 +8,13 @@ let ProductsSchema = new Schema(
     {
         // Static_Details
         category: String, // Watch name etc
-        shortDescription: String,
+        // shortDescription: String,
         brandName: String,
         marketPrice: Number,
-        emiPrice: Number,
-        manufacturerWarranty: Number,
-        returnTime: Number,
-        ShippingPrice: Number,
+        // emiPrice: Number,
+        // manufacturerWarranty: Number,
+        // returnTime: Number,
+        // ShippingPrice: Number,
         images: [String],
         productCatalogImage:String,
         highlights:[String],
@@ -25,13 +25,13 @@ let ProductsSchema = new Schema(
         whyweloveit_title: String,
         whyweloveit_content: String,
         brand_image: Array,
-        specifications_title: String,
-        specifications_content: String,
+        // specifications_title: String,
+        // specifications_content: String,
         brand_title: String,
         brand_content: String,
-        description: String,
+        // description: String,
         gender: Boolean, // 0 is Male
-        recomandation: [Schema.Types.ObjectId],
+        // recomandation: [Schema.Types.ObjectId],
         featuresAtGlance: [{ title: String, icon: String }],
         avrg_rating: { type: Number, default: 2.5 },
         video: String,
@@ -44,10 +44,10 @@ let ProductsSchema = new Schema(
         filters: Schema.Types.Mixed,
         timecreated: { type: Date, default: Date.now },
         title: String, // Primary Key
-        likedlist: {
-            meta: [Schema.Types.ObjectId],
-            count: Number
-        } // array of user ids, emails if possible
+        // likedlist: {
+        //     meta: [Schema.Types.ObjectId],
+        //     count: Number
+        // } // array of user ids, emails if possible
     },
     { collection: "products" }
 );

@@ -30,27 +30,27 @@ var UserSchema = new mongoose.Schema(
             type:Number,
             default:0
         },
-        googleId: String,
-        facebookId: String,
-        myorders: [Schema.Types.Mixed], //To be embedded
-        mycarts: [Schema.Types.Mixed], //To be embedded
-        mycommits: [Schema.Types.Mixed], //To be referenced ["ID001","ID002"]
-        mygifts: [Schema.Types.Mixed], //To be embedded
+        // googleId: String,
+        // facebookId: String,
+        // myorders: [Schema.Types.Mixed], //To be embedded
+        // mycarts: [Schema.Types.Mixed], //To be embedded
+        // mycommits: [Schema.Types.Mixed], //To be referenced ["ID001","ID002"]
+        // mygifts: [Schema.Types.Mixed], //To be embedded
         myaddresses: [Schema.Types.Mixed], //To be embedded
-        mynotifications: [Schema.Types.Mixed], //To be embedded
-        refer_code: {
-            type: String,
-            default: shortId
-                .generate()
-                .toLocaleUpperCase()
-                .replace(/[_-]/g, "")
-        },
-        referred_by: {
-            user: { type: Schema.Types.ObjectId, ref: "Users" },
-            code: String
-        },
-        my_referrals: [Schema.Types.ObjectId],
-        time_activated: { type: Date }
+        // mynotifications: [Schema.Types.Mixed], //To be embedded
+        // refer_code: {
+        //     type: String,
+        //     default: shortId
+        //         .generate()
+        //         .toLocaleUpperCase()
+        //         .replace(/[_-]/g, "")
+        // },
+        // referred_by: {
+        //     user: { type: Schema.Types.ObjectId, ref: "Users" },
+        //     code: String
+        // },
+        // my_referrals: [Schema.Types.ObjectId],
+        // time_activated: { type: Date }
     },
     {
         timestamps: true

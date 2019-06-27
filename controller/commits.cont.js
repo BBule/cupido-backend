@@ -19,7 +19,7 @@ const getUserCommits = async (
             "User.id": userId,
             is_active: activeStat
         })
-        .populate("Product.id", "images")
+        .populate("Product.id", "images brandName title")
         .populate("sale.id", "quantity_sold quantity_committed cupidLove")
         .populate("shipping_address")
         .limit(limit)
