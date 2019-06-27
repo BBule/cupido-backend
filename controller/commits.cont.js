@@ -3,32 +3,29 @@ const mycommits = require("../models/mycommits");
 const myOrders = require("../models/myorders");
 const cupidLove = require("../models/CupidLove");
 const Saleslist = require("../models/saleslist");
-const cart = require("../models/mycartingeneral.js");
+const cart = require("../models/mycartingeneral");
+const User=require("../models/user")
 const config = require("../config/config");
 
 const Razorpay = require("razorpay");
 
 const getUserCommits = async (
-    userId,
-    activeStat = true,
-    limit = 10,
-    skip = 0
+    userId
 ) => {
-    return await mycommits
+    return mycommits
         .find({
             "User.id": userId,
-            is_active: activeStat
         })
         .populate("Product.id", "images brandName title")
         .populate("sale.id", "quantity_sold quantity_committed cupidLove")
         .populate("shipping_address")
-        .limit(limit)
-        .skip(skip)
+        // .limit(limit)
+        // .skip(skip)
         .exec();
 };
 
-const getUserOrders = async (userId, limit = 1000, skip = 0) => {
-    return await myOrders
+const getUserOrders = async (userId) => {
+    return myOrders
         .find(
             {
                 "User.id": userId
@@ -44,8 +41,8 @@ const getUserOrders = async (userId, limit = 1000, skip = 0) => {
         .populate("Product.id", "images brandName title")
         .populate("shipping_address")
         .populate("sale.id", "salePrice")
-        .limit(limit)
-        .skip(skip)
+        // .limit(limit)
+        // .skip(skip)
         .exec();
 };
 
@@ -57,6 +54,7 @@ async function asyncForEach(array, callback) {
 const getCommitCountBySale = async id => {
     return mycommits.countDocuments({ "sale.id": id }).exec();
 };
+
 const getOrderCountBySale = async id => {
     return myOrders.countDocuments({ "sale.id": id }).exec();
 };
@@ -103,7 +101,7 @@ const createOrder = async (
     orderStatus,
     amount
 ) => {
-    commit1 = new mycommits({
+    order1 = new myOrders({
         "Product.id": productId,
         "sale.id": saleId,
         "User.id": userId,
@@ -112,7 +110,7 @@ const createOrder = async (
         order_amount: amount,
         order_status: orderStatus
     });
-    return commit1.save();
+    return order1.save();
 };
 
 const updateSaleCommit = async saleId => {
@@ -148,7 +146,7 @@ const updateSaleOrder = async saleId => {
 };
 
 const updateUser=async(userId,balance)=>{
-    return User.findOneAndUpdate({_id:userId},{cupidCoins:balance},{useFindOneAndModify:fale});
+    return User.findOneAndUpdate({_id:userId},{cupidCoins:balance},{useFindOneAndModify:false});
 };
 
 const createCupidLove = async (
@@ -187,7 +185,7 @@ const createCupidLove = async (
                 source: "sale",
                 earned:false
             });
-            await userUpdate(UserId,earnedSum[0].sum - redeemedSum[0].sum + cupidCoins)
+            await updateUser(UserId,earnedSum[0].sum - redeemedSum[0].sum + cupidCoins)
             .then(()=>{
                 return cupidlove1.save();
             }).catch(err => {

@@ -71,20 +71,21 @@ router.post("/add", async (req, res, next) => {
                 newcartitem
                     .save()
                     .then(async cartitem => {
-                        await User.findOneAndUpdate(
-                            { _id: curruser._id },
-                            { $push: { mycarts: newcartitem } }
-                        )
-                            .then(user => {
-                                return res.json(user.mycarts);
-                            })
-                            .catch(err => {
-                                console.log(err);
-                                return next({
-                                    status: 400,
-                                    message: "unknown error while updating cart"
-                                });
-                            });
+                        return res.json({msg:"Item added to cart"});
+                        // await User.findOneAndUpdate(
+                        //     { _id: curruser._id },
+                        //     { $push: { mycarts: newcartitem } }
+                        // )
+                        //     .then(user => {
+                        //         return res.json(user.mycarts);
+                        //     })
+                        //     .catch(err => {
+                        //         console.log(err);
+                        //         return next({
+                        //             status: 400,
+                        //             message: "unknown error while updating cart"
+                        //         });
+                        //     });
                     })
                     .catch(err => {
                         console.log(err);
@@ -106,6 +107,7 @@ router.post("/remove", (req, res, next) => {
             return res.send({ message: "Cart item removed successfully" });
         })
         .catch(error => {
+            console.log(error);
             return next({
                 message: error.message || "Server Error",
                 status: 500
@@ -208,6 +210,7 @@ router.get("/view", (req, res, next) => {
             }
         })
         .catch(err => {
+            console.log(err);
             return next({
                 message: err.message || "unknown error occured",
                 status: 400,

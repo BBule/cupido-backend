@@ -33,10 +33,10 @@ var UserSchema = new mongoose.Schema(
         // googleId: String,
         // facebookId: String,
         // myorders: [Schema.Types.Mixed], //To be embedded
-        // mycarts: [Schema.Types.Mixed], //To be embedded
+        mycarts: [Schema.Types.Mixed], //To be embedded
         // mycommits: [Schema.Types.Mixed], //To be referenced ["ID001","ID002"]
         // mygifts: [Schema.Types.Mixed], //To be embedded
-        myaddresses: [Schema.Types.Mixed], //To be embedded
+        // myaddresses: [Schema.Types.Mixed], //To be embedded
         // mynotifications: [Schema.Types.Mixed], //To be embedded
         // refer_code: {
         //     type: String,

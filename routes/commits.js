@@ -10,10 +10,10 @@ const {
     getUserOrders
 } = require("../controller/commits.cont");
 
-router.get("/mycommits", (req, res, next) => {
+router.get("/mycommits",async (req, res, next) => {
     // console.log("Hello")
-    const { type = true, skip = 0, limit = 10 } = req.query;
-    return getUserCommits(req.user._id, type, limit, skip)
+    // const { type = true, skip = 0, limit = 10 } = req.query;
+    return await getUserCommits(req.user._id)
         .then(data => {
             return res.json(data);
         })
@@ -27,9 +27,9 @@ router.get("/mycommits", (req, res, next) => {
         });
 });
 
-router.get("/myorders", (req, res, next) => {
-    const { type = true, skip = 0, limit = 10 } = req.query;
-    return getUserOrders(req.user._id, limit, skip)
+router.get("/myorders",async (req, res, next) => {
+    // const { type = true, skip = 0, limit = 10 } = req.query;
+    return await getUserOrders(req.user._id)
         .then(data => {
             return res.json(data);
         })
