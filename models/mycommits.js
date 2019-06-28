@@ -45,7 +45,7 @@ let mycommitsSchema = new Schema({
     payment_details: [Schema.Types.Mixed],
     timecreated: { type: Date, default: Date.now },
     // commit_time: Date, // when payment portal sends positive ack
-    // commit_amount: { type: Number, default: 0 }, // At what amount user commited
+    commit_amount: { type: Number, default: 0 }, // At what amount user commited
     // commit_quantity: { type: Number, default: 1 },
     // worth_coupons_applied: Number,
     // coupon_code: [Schema.Types.Mixed], // List of strings of coupon_codes applied

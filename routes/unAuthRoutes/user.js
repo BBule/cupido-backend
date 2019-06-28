@@ -43,7 +43,7 @@ router.post("/signup", async function(req, res, next) {
                 body: finalHTML
             };
             await SendMail(message);
-            return res.json({ success: true });
+            return res.headers().json({ success: true });
         })
         .catch(err => {
             console.log(err);
@@ -62,5 +62,9 @@ router.post("/signup", async function(req, res, next) {
         });
     });
 });
+
+router.post("/login",(req,res,next)=>{
+
+})
 
 module.exports = router;

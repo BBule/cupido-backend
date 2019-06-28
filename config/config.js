@@ -12,7 +12,7 @@ const configs = {
     JWT_SECRET:
         process.env.JWT_SECRET ||
         "ckhkfnksnfjodjf98iehfnoic4ued8rif4398eoiurjf948iednfidns0-495-",
-    JWT_EXP: process.env.JWT_EXP || 604800,
+    // JWT_EXP: process.env.JWT_EXP || 604800,
     MAIL: {
         fromMail: process.env.FROM_MAIL || "info@lecupido.com",
         SMTP_HOST: process.env.SMTP_HOST || "smtp.gmail.com",

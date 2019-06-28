@@ -31,7 +31,7 @@ let ProductsSchema = new Schema(
         brand_content: String,
         // description: String,
         gender: Boolean, // 0 is Male
-        // recomandation: [Schema.Types.ObjectId],
+        // recommendation: [Schema.Types.ObjectId],
         featuresAtGlance: [{ title: String, icon: String }],
         avrg_rating: { type: Number, default: 2.5 },
         video: String,
