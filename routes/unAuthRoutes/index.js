@@ -8,4 +8,5 @@ router.use("/reviews", require("./reviews"));
 router.use("/comments", require("./comments"));
 router.use("/blogPost", require("./blogPost"));
 router.use("/user",require("./user.js"));
+router.use("/faq",require("./faq.js"));
 module.exports = router;
