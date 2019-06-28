@@ -16,4 +16,4 @@ let faqSchema = new Schema({
     timecreated: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model("query", query);
+module.exports = mongoose.model("faq", faqSchema);

@@ -44,16 +44,33 @@ router.get("/getSalesById", (req, res, next) => {});
 
 // API end point to route traffic of current sales
 router.get("/presentsales", (req, res, next) => {
-    const { limit = 20, skip = 0, cats } = req.query;
+    const { limit = 20, skip = 0} = req.query;
+    query1=req.query;
+    delete query1.limit;
+    delete query1.skip;
     var currdate = newIndDate();
-    let query = {
-        endtime: { $gte: currdate },
-        starttime: { $lte: currdate }
-    };
-    if (cats && cats.length) {
-        query["product.category"] = { $in: cats.split(",") };
+    let query
+    // = {
+        // endtime: { $gte: currdate },
+    //     starttime: { $lte: currdate }
+    // };
+    let category=(req.query.category?req.query.category:null);
+    delete query1.category;
+    if(category){
+        query=`{"product.Category":"${category}"`;
+        Object.keys(query1).forEach(function(key){
+            query+=`,"product.filters.${key}":"${req.query[key]}"`;
+        });
+        query=JSON.parse(query+`}`);
+        query.endtime={ $gte: currdate };
+        query.starttime={ $lte: currdate };
+    }else{
+        query={};
+        query.endtime={ $gte: currdate };
+        query.starttime={ $lte: currdate };
     }
-    return Saleslist.find(query)
+    console.log(query);
+    Saleslist.find(query)
         .populate("product.id")
         .limit(Number(limit))
         .skip(Number(skip))
@@ -61,33 +78,30 @@ router.get("/presentsales", (req, res, next) => {
         .lean()
         .exec()
         .then(result => {
-            if (result && result.length) {
-                const a = result.map(async i => {
-                    i.total_commit =
-                        ((await commitCont.getCommitCountBySale(i._id)) || 0) +
-                        (i.counter_flag_temp || 5);
+            return res.send(result)
+            // if (result && result.length) {
+            //     const a = result.map(async i => {
+            //         i.total_commit =
+            //             ((await commitCont.getCommitCountBySale(i._id)) || 0) +
+            //             (i.counter_flag_temp || 5);
 
-                    const b = lodash.sortBy(i.cupidLove, "quantity");
-                    const c = b.map(element => {
-                        return {
-                            key: " > " + element.quantity,
-                            price:
-                                (i.product.id.marketPrice || 0) -
-                                element.cupidLove
-                        };
-                    }); 
-                    i.cupid_summery = c;
-                    return i;
-                });
-                return Promise.all(a);
-            } else {
-                return res.json([]);
-            }
+            //         const b = lodash.sortBy(i.cupidLove, "quantity");
+            //         const c = b.map(element => {
+            //             return {
+            //                 key: " > " + element.quantity,
+            //                 price:
+            //                     (i.product.id.marketPrice || 0) -
+            //                     element.cupidLove
+            //             };
+            //         }); 
+            //         i.cupid_summery = c;
+            //         return i;
+            //     });
+            //     return Promise.all(a);
+            // } else {
+            //     return res.json([]);
+            // }
         })
-        .then(data => {
-            return res.json(data);
-        })
-
         .catch(err => {
             console.log(err);
             return next({ status: 400, message: "unknown error occured" });

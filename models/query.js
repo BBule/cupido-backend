@@ -13,4 +13,4 @@ let querySchema = new Schema({
     reviewed: { type: Boolean, default: false }
 });
 
-module.exports = mongoose.model("query", query);
+module.exports = mongoose.model("query", querySchema);

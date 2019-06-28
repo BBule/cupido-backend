@@ -4,7 +4,7 @@ const lodash = require("lodash");
 
 const faq=require("../../models/faq");
 
-routrer.get("/faqs",(req,res,next)=>{
+router.get("/faqs",(req,res,next)=>{
     faq.find({category:req.params.query}).then(async faqs=>{
         return res.send(faqs);
     }).catch(err=>{

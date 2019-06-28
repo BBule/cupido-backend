@@ -133,10 +133,7 @@ router.post("/verifyotp", (req, res, next) => {
                                 username: user.username,
                                 contact: user.contact
                             },
-                            config.JWT_SECRET,
-                            {
-                                expiresIn: config.JWT_EXP
-                            }
+                            config.JWT_SECRET
                         );
                         return res.json({ token, user, new: false });
                     } else {
@@ -187,7 +184,7 @@ router.post("/verifyotp", (req, res, next) => {
                             emailtoken.save();
                             //send verification
                             const ejsTemplate = await getEJSTemplate({
-                                fileName: "email_verification.ejs"
+                                fileName: "signup.ejs"
                             });
                             const finalHTML = ejsTemplate({
                                 time: moment().format("lll"),
@@ -210,10 +207,7 @@ router.post("/verifyotp", (req, res, next) => {
                                 username: user.username,
                                 contact: user.contact
                             },
-                            config.JWT_SECRET,
-                            {
-                                expiresIn: config.JWT_EXP
-                            }
+                            config.JWT_SECRET
                         );
                         return res.json({ token, user, new: true });
                     }
@@ -248,10 +242,7 @@ router.route("/google").post(async function(req, res, next) {
                     username: user.username,
                     contact: user.contact
                 },
-                config.JWT_SECRET,
-                {
-                    expiresIn: config.JWT_EXP
-                }
+                config.JWT_SECRET
             );
 
             return res.json({
@@ -285,10 +276,7 @@ router.route("/google").post(async function(req, res, next) {
                             username: user.username,
                             contact: user.contact
                         },
-                        config.JWT_SECRET,
-                        {
-                            expiresIn: config.JWT_EXP
-                        }
+                        config.JWT_SECRET
                     );
                     return res.json({ token, user, new: true });
                 })

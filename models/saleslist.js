@@ -14,7 +14,8 @@ let SalesListSchema = new Schema({
         ShippingPrice: Number,
         title: String,
         brandName: String,
-        category: String
+        category: String,
+        filters:Schema.Types.Mixed
     },
     timecreated: { type: Date, default: Date.now },
     starttime: Date,
