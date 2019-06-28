@@ -221,6 +221,9 @@ const createCommitOrOrder = async (
         console.log(commit_count, order_count);
         let sale = await Saleslist.findById(element.sale.id);
         cal_amount += sale.salePrice;
+        if(element.is_commit){
+            cal_amount-=sale.cupidLove.cupidLove;
+        }
         console.log(sale.cupidLove.quantity);
         if (
             element.is_commit &&
@@ -241,7 +244,7 @@ const createCommitOrOrder = async (
                                 element.sale.id,
                                 false,
                                 userId,
-                                sale.cupidLove.quantity
+                                sale.cupidLove.cupidLove
                             ).then(async () => {
                                 if (itemsProcessed == wholeCart.length) {
                                     if (!cash) {
@@ -295,7 +298,7 @@ const createCommitOrOrder = async (
                                 element.sale.id,
                                 false,
                                 userId,
-                                sale.cupidLove.quantity
+                                sale.cupidLove.cupidLove
                             )
                                 .then(async sale => {
                                     await mycommits
