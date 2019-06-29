@@ -43,7 +43,7 @@ router.route("/sendotp").post(async function(req, res, next) {
     );
 });
 router.route("/phone/verifyotp").post(async function(req, res, next) {
-    var phone = req.body.phone;
+    var phone = "91"+req.body.phone;
     var otp = req.body.otp;
     request.post(
         "https://control.msg91.com/api/verifyRequestOTP.php?authkey=" +
@@ -112,7 +112,7 @@ router.route("/verifyemail/:token").post(async function(req, res) {
 
 router.post("/verifyotp", (req, res, next) => {
     const { email, gender, otp, phone, username } = req.body;
-
+    phone="91"+phone;
     request.post(
         "https://control.msg91.com/api/verifyRequestOTP.php?authkey=" +
             config.SMS.AUTH_KEY +

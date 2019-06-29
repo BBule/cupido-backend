@@ -8,6 +8,19 @@ const config = require("../config/config");
 const nodemailer = require("nodemailer");
 const { SendMail, getEJSTemplate } = require("../helpers/mailHelper");
 
+router.patch("/update",(req,res,next)=>{
+    const userId=req.user._id;
+    User.findOneAndUpdate({_id:userId},req.body).then(user=>{
+        return res.send(user);
+    }).catch(err=>{
+        return next({
+            stack: err,
+            status: 400,
+            message: "bad request!"
+        });
+    })
+})
+
 router.post("/edit", async function(req, res, next) {
     let query = { $set: {} };
     if (req.body.hasOwnProperty("mobile")) {
@@ -43,6 +56,7 @@ router.post("/edit", async function(req, res, next) {
         };
         await SendMail(message);
     }
+
     if (req.body.hasOwnProperty("full_name")) {
         query.$set = { username: req.body.full_name };
     }
@@ -193,7 +207,7 @@ router.post("/add_referral_code", (req, res, next) => {
 
 router.get("/myprofile",(req,res,next)=>{
     const userId=req.user._id;
-    User.findOne({_id:userId},{username:1,email:1,contact:1,cupidCoins:1}).then(user=>{
+    User.findOne({_id:userId},{username:1,email:1,contact:1,cupidCoins:1,myaddresses:1}).then(user=>{
         return res.send(user);
     })
 })

@@ -19,59 +19,48 @@ function newIndDate() {
 router.post("/edit", (req, res, next) => {
     console.log("Editing address of the user");
     let curruserid = mongoose.Types.ObjectId(req.user._id);
-    let addressid = mongoose.Types.ObjectId(req.body.addressid);
-    const a = myaddresses
-        .findOneAndUpdate(
-            { _id: addressid },
-            {
-                $set: {
-                    User: {
-                        id: curruserid,
-                        username: req.user.username,
-                        useremail: req.body.useremail
-                            ? req.body.useremail
-                            : req.user.email
-                            ? req.user.email.email
-                            : "",
-                        contact: req.body.contact,
-                        address: req.body.address,
-                        landmark: req.body.landmark,
-                        city: req.body.city,
-                        state: req.body.state,
-                        country: req.body.country
-                    }
-                }
-            },
-            { new: true }
-        )
-        .exec();
-    const b = User.update(
+    // let addressid = mongoose.Types.ObjectId(req.body.addressid);
+    // const a = myaddresses
+    //     .findOneAndUpdate(
+    //         { _id: addressid },
+    //         {
+    //             $set: {
+    //                 User: {
+    //                     id: curruserid,
+    //                     username: req.user.username,
+    //                     useremail: req.body.useremail
+    //                         ? req.body.useremail
+    //                         : req.user.email
+    //                         ? req.user.email.email
+    //                         : "",
+    //                     contact: req.body.contact,
+    //                     address: req.body.address,
+    //                     landmark: req.body.landmark,
+    //                     city: req.body.city,
+    //                     state: req.body.state,
+    //                     country: req.body.country
+    //                 }
+    //             }
+    //         },
+    //         { new: true }
+    //     )
+    //     .exec();
+    // const b = 
+    User.updateOne(
         {
-            _id: curruserid,
-            "myaddresses._id": addressid
+            "myaddresses.city":req.body.city
         },
         {
             $set: {
-                "myaddresses.$.User": {
-                    id: curruserid,
-                    username: req.user.username,
-                    useremail: req.body.useremail
-                        ? req.body.useremail
-                        : req.user.email
-                        ? req.user.email.email
-                        : "",
-                    contact: req.body.contact,
-                    address: req.body.address,
-                    landmark: req.body.landmark,
-                    city: req.body.city,
-                    state: req.body.state,
-                    country: req.body.country
-                }
+                "myaddresses.$.contact":req.body.contact,
+                "myaddresses.$.state":req.body.state,
+                "myaddresses.$.address":req.body.address,
+                "myaddresses.$.landmark":req.body.landmark,
+                "myaddresses.$.country":req.body.country
             }
         }
-    ).exec();
-
-    return Promise.all([a, b])
+    ).exec()
+    // return Promise.all([a, b])
         .then(data => {
             return res.json(data);
         })
@@ -103,10 +92,10 @@ router.get("/", (req, res, next) => {
                     addressdata: []
                 });
             } else {
-                var startpoint = req.query.offset; // zero
+                // var startpoint = req.query.offset; // zero
                 // var howmany = req.query.limit; // ten
-                console.log("Address is found and it's city: ");
-                console.log(addressholder[0].city);
+                // console.log("Address is found and it's city: ");
+                // console.log(addressholder[0].city);
                 return res.json({
                     addressdata: addressholder //.splice(startpoint, howmany)
                 });
@@ -129,27 +118,18 @@ router.post("/add", (req, res) => {
     let curruser = req.user;
     // All properties to be input from user
     // Nothing except ID of user from tech logics.
-    let newaddress = new myaddresses({
-        "User.id": curruser._id,
-        "User.username": req.user.username,
-        "User.useremail": req.body.email
-            ? req.body.email
-            : req.user.email
-            ? req.user.email.email
-            : "",
-        "User.contact": req.body.contact,
-        "User.address": req.body.address,
-        "User.landmark": req.body.landmark,
-        "User.city": req.body.city,
-        "User.state": req.body.state,
-        "User.country": req.body.country
-    });
-    newaddress
-        .save()
-        .then(() =>
+    let newaddress = {
+        contact: req.body.contact,
+        address: req.body.address,
+        landmark: req.body.landmark,
+        city: req.body.city,
+        state: req.body.state,
+        country: req.body.country
+    }
+
             User.findOneAndUpdate(
                 { _id: curruser._id },
-                { $push: { myaddresses: newaddress } }
+                { $push: {myaddresses: newaddress } }
             )
                 .then(() => {
                     return res.json({
@@ -163,14 +143,7 @@ router.post("/add", (req, res) => {
                         stack: err
                     });
                 })
-        )
-        .catch(err => {
-            return next({
-                message: err.message || "unknown error",
-                status: 400,
-                stack: err
-            });
-        });
+        
 });
 
 router.post("/remove", (req, res, next) => {
@@ -180,7 +153,8 @@ router.post("/remove", (req, res, next) => {
             status: 400
         });
     }
-    const a = User.findOneAndUpdate(
+    // const a = 
+    User.findOneAndUpdate(
         {
             _id: req.user._id,
             "myaddresses._id": mongoose.Types.ObjectId(req.body.addressId)
@@ -193,11 +167,11 @@ router.post("/remove", (req, res, next) => {
             }
         },
         { new: true }
-    ).exec();
-    const b = myaddresses
-        .findByIdAndRemove({ _id: mongoose.Types.ObjectId(req.body.addressId) })
-        .exec();
-    return Promise.all([a, b])
+    ).exec()
+    // const b = myaddresses
+    //     .findByIdAndRemove({ _id: mongoose.Types.ObjectId(req.body.addressId) })
+    //     .exec();
+    // return Promise.all([a, b])
         .then(data => {
             return res.json(data[0]);
         })
