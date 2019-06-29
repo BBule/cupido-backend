@@ -48,11 +48,12 @@ router.post("/edit", (req, res, next) => {
     // const b = 
     User.updateOne(
         {
-            "myaddresses.city":req.body.city
+            "myaddresses.uniqueId":req.body.uniqueId
         },
         {
             $set: {
                 "myaddresses.$.contact":req.body.contact,
+                "myaddresses.$.city":req.body.city,
                 "myaddresses.$.state":req.body.state,
                 "myaddresses.$.address":req.body.address,
                 "myaddresses.$.landmark":req.body.landmark,
@@ -116,17 +117,18 @@ router.get("/", (req, res, next) => {
 router.post("/add", (req, res) => {
     console.log("Posting address to the user");
     let curruser = req.user;
-    // All properties to be input from user
-    // Nothing except ID of user from tech logics.
-    let newaddress = {
-        contact: req.body.contact,
-        address: req.body.address,
-        landmark: req.body.landmark,
-        city: req.body.city,
-        state: req.body.state,
-        country: req.body.country
-    }
-
+    User.findOne({ _id: req.user._id })
+        .select("myaddresses").then((user)=>{
+            // console.log(user.myaddresses.length);
+            let newaddress = {
+                contact: req.body.contact,
+                address: req.body.address,
+                landmark: req.body.landmark,
+                city: req.body.city,
+                state: req.body.state,
+                country: req.body.country,
+                uniqueId:user.myaddresses.length+1
+            };
             User.findOneAndUpdate(
                 { _id: curruser._id },
                 { $push: {myaddresses: newaddress } }
@@ -142,7 +144,8 @@ router.post("/add", (req, res) => {
                         status: 400,
                         stack: err
                     });
-                })
+                });
+        });
         
 });
 
