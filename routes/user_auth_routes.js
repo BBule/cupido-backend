@@ -20,14 +20,15 @@ const User = require("../models/user");
 const EmailToken = require("../models/emailtoken");
 
 router.route("/sendotp").post(async function(req, res, next) {
-    var phone = req.body.phone; //along with country code
+    var phone = req.body.phone;
+    var phone_91 = "91" + phone; //along with country code
     request.post(
         "https://control.msg91.com/api/sendotp.php?authkey=" +
             config.SMS.AUTH_KEY +
             "&message=Your%20verification%20code%20is%20%23%23OTP%23%23&sender=" +
             config.SMS.SENDER_ID +
             "&mobile=" +
-            phone,
+            phone_91,
         { json: true },
         async function(error, response, body) {
             if (!error) {
@@ -43,7 +44,7 @@ router.route("/sendotp").post(async function(req, res, next) {
     );
 });
 router.route("/phone/verifyotp").post(async function(req, res, next) {
-    var phone = "91"+req.body.phone;
+    var phone = "91" + req.body.phone;
     var otp = req.body.otp;
     request.post(
         "https://control.msg91.com/api/verifyRequestOTP.php?authkey=" +
@@ -112,12 +113,12 @@ router.route("/verifyemail/:token").post(async function(req, res) {
 
 router.post("/verifyotp", (req, res, next) => {
     const { email, gender, otp, phone, username } = req.body;
-    phone="91"+phone;
+    phone_91 = "91" + phone;
     request.post(
         "https://control.msg91.com/api/verifyRequestOTP.php?authkey=" +
             config.SMS.AUTH_KEY +
             "&mobile=" +
-            phone +
+            phone_91 +
             "&otp=" +
             otp,
         { json: true },
