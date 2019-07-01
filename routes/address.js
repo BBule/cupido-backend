@@ -16,7 +16,7 @@ function newIndDate() {
 // Edit existing address by changing the address as well as the user collection
 // User cansend this route
 
-router.post("/edit", (req, res, next) => {
+router.patch("/edit", (req, res, next) => {
     console.log("Editing address of the user");
     let curruserid = mongoose.Types.ObjectId(req.user._id);
     // let addressid = mongoose.Types.ObjectId(req.body.addressid);
@@ -46,19 +46,27 @@ router.post("/edit", (req, res, next) => {
     //     )
     //     .exec();
     // const b = 
+    const uniqueId=req.body.uniqueId;
+    delete req.body.uniqueId;
+    let updateObj={};
+    for(var item in req.body){
+        updateObj["myaddresses.$."+item]=req.body[item];
+    }
+    
     User.updateOne(
         {
-            "myaddresses.uniqueId":req.body.uniqueId
+            "myaddresses.uniqueId":uniqueId
         },
         {
-            $set: {
-                "myaddresses.$.contact":req.body.contact,
-                "myaddresses.$.city":req.body.city,
-                "myaddresses.$.state":req.body.state,
-                "myaddresses.$.address":req.body.address,
-                "myaddresses.$.landmark":req.body.landmark,
-                "myaddresses.$.country":req.body.country
-            }
+            $set: updateObj
+            // {
+            //     // "myaddresses.$.contact":req.body.contact,
+            //     // "myaddresses.$.city":req.body.city,
+            //     // "myaddresses.$.state":req.body.state,
+            //     // "myaddresses.$.address":req.body.address,
+            //     // "myaddresses.$.landmark":req.body.landmark,
+            //     // "myaddresses.$.country":req.body.country
+            // }
         }
     ).exec()
     // return Promise.all([a, b])
