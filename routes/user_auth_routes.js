@@ -25,7 +25,7 @@ router.route("/sendotp").post(async function(req, res, next) {
     request.post(
         "https://control.msg91.com/api/sendotp.php?authkey=" +
             config.SMS.AUTH_KEY +
-            "&message=Your%20verification%20code%20is%20%23%23OTP%23%23&sender=" +
+            "&message=Welcome%20to%20Cupido.%20Discover%20the%20new%20world%20of%20products.%20Hope%20you%20have%20an%20awesome%20time%20here.%20Here%20is%20your%20OTP%20%20%23%23OTP%23%23&sender=" +
             config.SMS.SENDER_ID +
             "&mobile=" +
             phone_91,
@@ -43,6 +43,30 @@ router.route("/sendotp").post(async function(req, res, next) {
         }
     );
 });
+
+router.route("/resendotp").post(async function(req,res,next){
+    var phone = req.body.phone;
+    var phone_91 = "91" + phone;
+    request.post(
+        "https://control.msg91.com/api/retryotp.php?authkey=" +
+            config.SMS.AUTH_KEY +
+            "&mobile=" +
+            phone_91,
+        { json: true },
+        async function(error, response, body) {
+            if (!error) {
+                // console.log(body);
+                const newUser = await User.findOne({
+                    "contact.contact": phone
+                }).exec();
+                res.send({ ...body, new: newUser ? false : true });
+            } else {
+                return next({ message: "unknown error occured", status: 400 });
+            }
+        }
+    );
+})
+
 router.route("/phone/verifyotp").post(async function(req, res, next) {
     var phone = "91" + req.body.phone;
     var otp = req.body.otp;

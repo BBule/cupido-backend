@@ -44,31 +44,39 @@ router.get("/getSalesById", (req, res, next) => {});
 
 // API end point to route traffic of current sales
 router.get("/presentsales", (req, res, next) => {
-    const { limit = 20, skip = 0} = req.query;
+    const { limit = 20, skip = 0,cats} = req.query;
     query1=req.query;
     delete query1.limit;
     delete query1.skip;
     var currdate = newIndDate();
     let query
-    // = {
-        // endtime: { $gte: currdate },
-    //     starttime: { $lte: currdate }
-    // };
-    let category=(req.query.category?req.query.category:null);
-    delete query1.category;
-    if(category){
-        query=`{"product.Category":"${category}"`;
-        Object.keys(query1).forEach(function(key){
-            query+=`,"product.filters.${key}":"${req.query[key]}"`;
-        });
-        query=JSON.parse(query+`}`);
-        query.endtime={ $gte: currdate };
-        query.starttime={ $lte: currdate };
+    if(cats){
+        query= {
+            endtime: { $gte: currdate },
+            starttime: { $lte: currdate },
+            "product.category":cats
+        };
     }else{
-        query={};
-        query.endtime={ $gte: currdate };
-        query.starttime={ $lte: currdate };
+        query= {
+            endtime: { $gte: currdate },
+            starttime: { $lte: currdate }
+        };
     }
+    // let category=(req.query.category?req.query.category:null);
+    // delete query1.category;
+    // if(category){
+    //     query=`{"product.Category":"${category}"`;
+    //     Object.keys(query1).forEach(function(key){
+    //         query+=`,"product.filters.${key}":"${req.query[key]}"`;
+    //     });
+    //     query=JSON.parse(query+`}`);
+    //     query.endtime={ $gte: currdate };
+    //     query.starttime={ $lte: currdate };
+    // }else{
+    //     query={};
+    //     query.endtime={ $gte: currdate };
+    //     query.starttime={ $lte: currdate };
+    // }
     console.log(query);
     Saleslist.find(query)
         .populate("product.id")
