@@ -35,8 +35,7 @@ let myorderSchema = new Schema({
     timecreated: { type: Date, default: Date.now },
     // order_time: Date, // when payment portal sends positive ack
     shipping_address: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "myaddresses"
+        type: Schema.Types.Mixed
     },
     shipping_awb: String, // Used for tracking the order
     order_status: String, // When the order is reached this value should be turned to off. What we can do is to implement a system that calls the delivery API every hour and take actions on the orders which have reached.

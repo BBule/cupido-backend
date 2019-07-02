@@ -9,53 +9,65 @@ const nodemailer = require("nodemailer");
 const { SendMail, getEJSTemplate } = require("../helpers/mailHelper");
 
 router.patch("/update",(req,res,next)=>{
+    console.log("Hello")
     const userId=req.user._id;
-    User.findOneAndUpdate({_id:userId},req.body).then(user=>{
-        return res.send(user);
+    let updateObj={};
+    if(req.body.hasOwnProperty("email")){
+        updateObj["email.email"]=req.body.email;
+    }
+    if(req.body.hasOwnProperty("mobile")){
+        updateObj["contact.contact"]=req.body.mobile;
+    }
+    delete req.body.mobile;
+    delete req.body.email;
+    for(var item in req.body){
+        updateObj[item]=req.body[item];
+    }
+    console.log(updateObj);
+    User.updateOne({
+        _id:userId
+    },{$set:updateObj}).exec().then((user)=>{
+        return res.send(user)
     }).catch(err=>{
-        return next({
-            stack: err,
-            status: 400,
-            message: "bad request!"
-        });
+        console.log(err);
     })
 })
 
 router.post("/edit", async function(req, res, next) {
     let query = { $set: {} };
     if (req.body.hasOwnProperty("mobile")) {
-        query.$set = { contact: req.body.mobile, verified: true };
+        query.$set = { contact: req.body.mobile,verified:true};
     }
-    if (req.body.hasOwnProperty("email")) {
-        var email_token = jwt
-            .sign(
-                { _id: req.user._id, email: req.body.email },
-                config.JWT_SECRET
-            )
-            .toString();
-        var verification_link =
-            config.FRONT_HOST + "/gp/sales/verifyemail/" + email_token;
-        var emailtoken = new EmailToken({ token: email_token, used: false });
-        emailtoken.save();
-        //send verification
-        // console.log(verification_link);
-        const ejsTemplate = await getEJSTemplate({
-            fileName: "signup.ejs"
-        });
-        const finalHTML = ejsTemplate({
-            time: moment().format("lll"),
-            username: req.user.username
-                ? req.user.username.split(" ")[0]
-                : "Dear",
-            link: verification_link
-        });
-        const message = {
-            to: req.body.email,
-            subject: "Please verify your email!",
-            body: finalHTML
-        };
-        await SendMail(message);
-    }
+    // if (req.body.hasOwnProperty("email")) {
+    //     var email_token = jwt
+    //         .sign(
+    //             { _id: req.user._id, email: req.body.email },
+    //             config.JWT_SECRET
+    //         )
+    //         .toString();
+    //     var verification_link =
+    //         config.FRONT_HOST + "/gp/sales/verifyemail/" + email_token;
+    //     var emailtoken = new EmailToken({ token: email_token, used: false });
+    //     emailtoken.save();
+    //     //send verification
+    //     // console.log(verification_link);
+    //     const ejsTemplate = await getEJSTemplate({
+    //         fileName: "signup.ejs"
+    //     });
+    //     const finalHTML = ejsTemplate({
+    //         time: moment().format("lll"),
+    //         username: req.user.username
+    //             ? req.user.username.split(" ")[0]
+    //             : "Dear",
+    //         link: verification_link
+    //     });
+    //     const message = {
+    //         to: req.body.email,
+    //         subject: "Please verify your email!",
+    //         body: finalHTML
+    //     };
+    //     await SendMail(message);
+    // }
 
     if (req.body.hasOwnProperty("full_name")) {
         query.$set = { username: req.body.full_name };
