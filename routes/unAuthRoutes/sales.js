@@ -78,7 +78,7 @@ router.get("/presentsales", (req, res, next) => {
     //     query.starttime={ $lte: currdate };
     // }
     console.log(query);
-    Saleslist.find(query)
+    Saleslist.find(query,{"product.category":0,"product.filters":0})
         .populate("product.id")
         .limit(Number(limit))
         .skip(Number(skip))

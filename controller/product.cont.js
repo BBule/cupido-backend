@@ -20,7 +20,6 @@ const searchWithKeyword = async key => {
 
 const getProductById = async id => {
     return await Products.findOne({ _id: id })
-        .select({ "likedlist.meta": 0 })
         .exec();
 };
 

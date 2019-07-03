@@ -31,6 +31,7 @@ router.get("/", function(req, res, next) {
  * Get Product By Id
  */
 router.get("/getDetails/:id", (req, res, next) => {
+    console.log(req.params.id)
     return productCont
         .getProductById(req.params.id)
         .then(productholder => {
