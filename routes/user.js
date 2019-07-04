@@ -219,7 +219,7 @@ router.post("/add_referral_code", (req, res, next) => {
 
 router.get("/myprofile",(req,res,next)=>{
     const userId=req.user._id;
-    User.findOne({_id:userId},{username:1,email:1,contact:1,cupidCoins:1,myaddresses:1}).then(user=>{
+    User.findOne({_id:userId},{username:1,email:1,contact:1,cupidCoins:1,myaddresses:1,gender:1}).then(user=>{
         return res.send(user);
     })
 })
