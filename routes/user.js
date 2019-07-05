@@ -26,12 +26,12 @@ router.patch("/update",(req,res,next)=>{
     console.log(updateObj);
     User.updateOne({
         _id:userId
-    },{$set:updateObj}).exec().then((user)=>{
+    },{$set:updateObj},{new:false}).exec().then((user)=>{
         return res.send(user)
     }).catch(err=>{
         console.log(err);
     })
-})
+});
 
 router.post("/edit", async function(req, res, next) {
     let query = { $set: {} };
@@ -211,7 +211,7 @@ router.post("/add_referral_code", (req, res, next) => {
             return next({
                 stack: ex,
                 status: 400,
-                message: "unknown error odcured"
+                message: "unknown error occured"
             });
         }
     });

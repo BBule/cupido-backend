@@ -149,93 +149,97 @@ router.post("/verifyotp", (req, res, next) => {
         async function(error, response, body) {
             if (!error) {
                 if (body.type === "success") {
-                    var user = await User.findOne({ "contact.contact": phone });
-                    if (user) {
-                        const token = jwt.sign(
-                            {
-                                _id: user._id,
-                                email: user.email,
-                                username: user.username,
-                                contact: user.contact
-                            },
-                            config.JWT_SECRET
-                        );
-                        return res.json({ token, user, new: false });
-                    } else {
-                        user = new User({
-                            username: username,
-                            email: {
-                                email: email,
-                                verified: false
-                            },
-                            gender: gender, //Male/Female
-                            contact: {
-                                contact: phone,
-                                verified: true
-                            }
-                        });
-
-                        if (req.body.referral_code) {
-                            const referedBy = await User.findOneAndUpdate(
+                    await User.findOne({ "contact.contact": phone }).then(async user=>{
+                        // console.log(user);
+                        if (user) {
+                            const token = jwt.sign(
                                 {
-                                    refer_code: req.body.referral_code
+                                    _id: user._id,
+                                    email: user.email,
+                                    username: user.username,
+                                    contact: user.contact
                                 },
-                                { $push: { my_referrals: data._id } }
-                            )
-                                .select("_id")
-                                .exec();
-                            user["referred_by"] = {
-                                user: referedBy._id,
-                                code: req.body.referral_code
-                            };
+                                config.JWT_SECRET
+                            );
+                            return res.json({ token, user, new: false });
+                        } else {
+                            user = new User({
+                                username: username,
+                                email: {
+                                    email: email,
+                                    verified: false
+                                },
+                                gender: gender, //Male/Female
+                                contact: {
+                                    contact: phone,
+                                    verified: true
+                                }
+                            });
+    
+                            // if (req.body.referral_code) {
+                            //     const referedBy = await User.findOneAndUpdate(
+                            //         {
+                            //             refer_code: req.body.referral_code
+                            //         },
+                            //         { $push: { my_referrals: data._id } }
+                            //     )
+                            //         .select("_id")
+                            //         .exec();
+                            //     user["referred_by"] = {
+                            //         user: referedBy._id,
+                            //         code: req.body.referral_code
+                            //     };
+                            // }
+    
+                            await user.save();
+                            if (email) {
+                                var email_token = jwt
+                                    .sign(
+                                        { _id: user._id, email: user.email },
+                                        config.JWT_SECRET
+                                    )
+                                    .toString();
+                                var verification_link =
+                                    config.FRONT_HOST +
+                                    "/verifyemail/" +
+                                    email_token;
+                                var emailtoken = new EmailToken({
+                                    token: email_token,
+                                    used: false
+                                });
+                                emailtoken.save();
+                                //send verification
+                                const ejsTemplate = await getEJSTemplate({
+                                    fileName: "signup.ejs"
+                                });
+                                const finalHTML = ejsTemplate({
+                                    time: moment().format("lll"),
+                                    username: user.username
+                                        ? user.username.split(" ")[0]
+                                        : "Dear",
+                                    link: verification_link //may be format properly before passing it
+                                });
+                                const message = {
+                                    to: req.body.email,
+                                    subject: "Please verify your email!",
+                                    body: finalHTML
+                                };
+                                await SendMail(message);
+                            }
+                            const token = jwt.sign(
+                                {
+                                    _id: user._id,
+                                    email: user.email,
+                                    username: user.username,
+                                    contact: user.contact
+                                },
+                                config.JWT_SECRET
+                            );
+                            return res.json({ token, user, new: true });
                         }
-
-                        await user.save();
-                        if (email) {
-                            var email_token = jwt
-                                .sign(
-                                    { _id: user._id, email: user.email },
-                                    config.JWT_SECRET
-                                )
-                                .toString();
-                            var verification_link =
-                                config.FRONT_HOST +
-                                "/verifyemail/" +
-                                email_token;
-                            var emailtoken = new EmailToken({
-                                token: email_token,
-                                used: false
-                            });
-                            emailtoken.save();
-                            //send verification
-                            const ejsTemplate = await getEJSTemplate({
-                                fileName: "signup.ejs"
-                            });
-                            const finalHTML = ejsTemplate({
-                                time: moment().format("lll"),
-                                username: user.username
-                                    ? user.username.split(" ")[0]
-                                    : "Dear",
-                                link: verification_link //may be format properly before passing it
-                            });
-                            const message = {
-                                to: req.body.email,
-                                subject: "Please verify your email!",
-                                body: finalHTML
-                            };
-                            await SendMail(message);
-                        }
-                        const token = jwt.sign(
-                            {
-                                _id: user._id,
-                                email: user.email,
-                                username: user.username,
-                                contact: user.contact
-                            },
-                            config.JWT_SECRET
-                        );
-                        return res.json({ token, user, new: true });
-                    }
+                    }).catch(err=>{
+                        console.log(err);
+                    });
                 } else {
                     // res.status(400).send(body);
                     return next({

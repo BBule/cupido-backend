@@ -8,7 +8,7 @@ var UserSchema = new mongoose.Schema(
     {
         username: String,
         email: {
-            email: String,
+            email: {type:String,default:""},
             verified: {
                 type:Boolean,
                 default:false
