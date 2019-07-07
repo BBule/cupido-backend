@@ -44,7 +44,7 @@ router.get("/myorders",async (req, res, next) => {
 });
 
 router.post("/orderOrCommit", async (req, res, next) => {
-    if (req.body.payment) {
+    if (req.body.payment ||cash) {
         const { wholeCart, addressId, payment, cash } = req.body;
         if (!wholeCart || !wholeCart.length) {
             return next({
