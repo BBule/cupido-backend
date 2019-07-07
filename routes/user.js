@@ -8,7 +8,7 @@ const config = require("../config/config");
 const nodemailer = require("nodemailer");
 const { SendMail, getEJSTemplate } = require("../helpers/mailHelper");
 
-router.patch("/update",(req,res,next)=>{
+router.patch("/update",async (req,res,next)=>{
     console.log("Hello")
     const userId=req.user._id;
     let updateObj={};
@@ -16,7 +16,12 @@ router.patch("/update",(req,res,next)=>{
         updateObj["email.email"]=req.body.email;
     }
     if(req.body.hasOwnProperty("mobile")){
+        const user=await User.findOne({"contact.contact":req.body.mobile})
+        if(user){
+            return res.json({msg:"Mobile number already in use."})
+        }else{
         updateObj["contact.contact"]=req.body.mobile;
+        }
     }
     delete req.body.mobile;
     delete req.body.email;
