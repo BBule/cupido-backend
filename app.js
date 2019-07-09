@@ -5,7 +5,7 @@ const bodyParser = require("body-parser");
 
 const apiRoutes = require("./routes");
 
-// const agenda = require("./agenda");
+const agenda = require("./agenda");
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -50,15 +50,15 @@ app.use((err, req, res, next) => {
     return res.status(err.status || 500).json(errorObj);
 });
 
-// process.on("SIGTERM", () => {
-//     console.log("Stopping Wroker safely");
-//     agenda.stop();
-//     process.exit(0);
-// });
-// process.on("SIGINT", () => {
-//     console.log("Stopping wroker safely");
-//     agenda.stop();
-//     process.exit(0);
-// });
+process.on("SIGTERM", () => {
+    console.log("Stopping Wroker safely");
+    agenda.stop();
+    process.exit(0);
+});
+process.on("SIGINT", () => {
+    console.log("Stopping wroker safely");
+    agenda.stop();
+    process.exit(0);
+});
 
 module.exports = app;

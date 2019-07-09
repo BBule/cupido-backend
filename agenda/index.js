@@ -1,126 +1,163 @@
-// var Agenda = require("agenda");
-// const moment = require("moment");
-// //import all necessery dependencies , middlewaresscripts .
-// //Models
-// const Commits = require("../models/mycommits");
-// const Sales = require("../models/saleslist");
-// const User = require("../models/user");
+var Agenda = require("agenda");
+const moment = require("moment");
+//import all necessery dependencies , middlewaresscripts .
+//Models
+const Commits = require("../models/mycommits");
+const Orders = require("../models/myorders");
+const Sales = require("../models/saleslist");
+const User = require("../models/user");
 
-// //helpers
+//helpers
 // const { SendMail, getEJSTemplate } = require("../helpers/mailHelper");
 
-// const config = require("../config/config");
+const config = require("../config/config");
 
-// const agenda = new Agenda({
-//     db: {
-//         address: config.MONGO_URL
-//     },
-//     collection: "agendaJobs"
-// });
+const agenda = new Agenda({
+    db: {
+        address: config.MONGO_URL
+    },
+    collection: "agendaJobs"
+});
+
+async function asyncForEach(array, callback) {
+    for (let index = 0; index < array.length; index++) {
+        await callback(array[index], index, array);
+    }
+}
+
+agenda.define("Converting commits to orders", function(job, done) {
+    console.log("hello");
+    Sales.find({
+        $expr: { $gt: ["$quantity_committed", "$cupidLove.quantity"] }
+    })
+        .then(async sales => {
+            if (!sales) {
+                done();
+            } else {
+                asyncForEach(sales, async sale => {
+                    await Commits.find({ "sale.id": sale._id })
+                        .then(commits => {
+                            if (!commits) {
+                                done();
+                            } else {
+                                asyncForEach(commits, async commit => {
+                                    order1 = new Orders({
+                                        "Product.id": commit.Product.id,
+                                        "sale.id": commit.sale.id,
+                                        "User.id": commit.User.id,
+                                        shipping_address:
+                                            commit.shipping_address,
+                                        payment_details: commit.payment_details,
+                                        order_amount:
+                                            sale.salePrice -
+                                            sale.cupidLove.cupidLove,
+                                        order_status: "Processed"
+                                    });
+                                    await order1
+                                        .save()
+                                        .then(async order => {
+                                            console.log("order saved");
+                                            Commits.deleteMany({
+                                                _id: commit._id
+                                            })
+                                                .then(async () => {
+                                                    Sales.findOneAndUpdate(
+                                                        {
+                                                            _id: sale.id
+                                                        },
+                                                        {
+                                                            $inc: {
+                                                                quantity_sold: 1
+                                                            },
+                                                            quantity_committed: 0
+                                                        },
+                                                        {
+                                                            useFindAndModify: false
+                                                        }
+                                                    )
+                                                        .then(sale => {
+                                                            console.log(
+                                                                "Sale Updated"
+                                                            );
+                                                            done();
+                                                        })
+                                                        .catch(err => {
+                                                            console.log(
+                                                                "Scheduler Error sale update"
+                                                            );
+                                                            // done(err);
+                                                        });
+                                                    console.log(
+                                                        "Commit Deleted"
+                                                    );
+                                                })
+                                                .catch(err => {
+                                                    console.log(
+                                                        "Scheduler Error Commit Deletion"
+                                                    );
+                                                    // done(err);
+                                                });
+                                        })
+                                        .catch(err => {
+                                            console.log(
+                                                "Scheduler Error Order"
+                                            );
+                                            // done(err);
+                                        });
+                                });
+                            }
+                        })
+                        .catch(err => {
+                            console.log("Scheduler Error Commit");
+                            // done(err);
+                        });
+                });
+            }
+        })
+        .catch(err => {
+            console.log("Scheduler Error Sale");
+            // done(err);
+        });
+    done();
+});
+
+agenda.on("ready", function() {
+    console.log("hdgf")
+    agenda.every("*/1 * * * *", "Converting commits to orders");
+    agenda.start();
+})
 
 // var start = async () => {
 //     await agenda._ready;
 
 //     await agenda.start();
 
-//     agenda.define("on start sale all user", (job, done) => {
-//         /**
-//          *  [PROMOTIONAL]
-//          * Notification level for this should be made 1 from 0
-//          * start time should be less and end time should be more ,
-//          * in that above case it comes under when its started.
-//          * notification_level represents how many times it sent notiifcation.
-//          */
-//         const salesQuery = {
-//             notification_level: 0,
-//             starttime: {
-//                 $lte: moment()
-//                     .utcOffset(330)
-//                     .toDate()
-//             },
-//             endtime: {
-//                 $gte: moment()
-//                     .utcOffset(330)
-//                     .toDate()
-//             }
-//         };
+// agenda.define("on start sale all user", (job, done) => {
+//     /**
+//      *  [PROMOTIONAL]
+//      * Notification level for this should be made 1 from 0
+//      * start time should be less and end time should be more ,
+//      * in that above case it comes under when its started.
+//      * notification_level represents how many times it sent notiifcation.
+//      */
+// const salesQuery = {
+//     notification_level: 0,
+//     starttime: {
+//         $lte: moment()
+//             .utcOffset(330)
+//             .toDate()
+//     },
+//     endtime: {
+//         $gte: moment()
+//             .utcOffset(330)
+//             .toDate()
+//     }
+// };
 
-//         return Sales.findOne(salesQuery)
-//             .exec()
-//             .then(salesDoc => {
-//                 if (salesDoc) {
-//                     /**
-//                      * Use cursor to loop over all users
-//                      */
-//                     return User.find({
-//                         notif_subscribe: true
-//                     })
-//                         .select({ username: 1, email: 1 })
-//                         .cursor()
-//                         .on("data", async user => {
-//                             const ejsTemplate = await getEJSTemplate({
-//                                 fileName: "sale_is_live.ejs"
-//                             });
-//                             const finalHTML = ejsTemplate({
-//                                 time: moment().format("lll"),
-//                                 username: user.name,
-//                                 saleDetails: salesDoc //may be format properly before passing it
-//                             });
-//                             const message = {
-//                                 to: user.email,
-//                                 subject:
-//                                     "Sale is now live! check out whats there for you.",
-//                                 body: finalHTML
-//                             };
-//                             return await SendMail(message);
-//                         })
-//                         .on("error", err => {
-//                             done(err);
-//                         })
-//                         .on("end", () => {
-//                             salesDoc.notification_level = 1;
-//                             salesDoc.save();
-//                             return true;
-//                         });
-//                 } else {
-//                     return false;
-//                 }
-//             })
-//             .catch(error => {
-//                 done(error);
-//             });
-//     });
-//     agenda.define("before end sale all user", (job, done) => {
-//         /**
-//          *  [PROMOTIONAL]
-//          * Notification level for this should be made 1 from 2
-//          * start time should be less and end time should be more ,
-//          * in that above case it comes under when its about to end.
-//          * notification_level represents how many times it sent notiifcation.
-//          */
-//         const salesQuery = {
-//             notification_level: 1,
-//             starttime: {
-//                 $lte: moment()
-//                     .utcOffset(330)
-//                     .toDate()
-//             },
-//             endtime: {
-//                 $gte: moment()
-//                     .utcOffset(330)
-//                     .toDate()
-//             }
-//         };
-
-//         return Sales.findOne(salesQuery)
-//             .exec()
-//             .then(salesDoc => {
-//                 const durationLeft = moment()
-//                     .utcOffset(330)
-//                     .diff(moment(salesDoc.end));
-//                 if (durationLeft <= !3.1) {
-//                     return done({ error: "duration is" + durationLeft });
-//                 }
+//     return Sales.findOne(salesQuery)
+//         .exec()
+//         .then(salesDoc => {
+//             if (salesDoc) {
 //                 /**
 //                  * Use cursor to loop over all users
 //                  */
@@ -131,7 +168,7 @@
 //                     .cursor()
 //                     .on("data", async user => {
 //                         const ejsTemplate = await getEJSTemplate({
-//                             fileName: "sale_about_end.ejs"
+//                             fileName: "sale_is_live.ejs"
 //                         });
 //                         const finalHTML = ejsTemplate({
 //                             time: moment().format("lll"),
@@ -141,7 +178,7 @@
 //                         const message = {
 //                             to: user.email,
 //                             subject:
-//                                 "Sale is now live! pick it before you miss.",
+//                                 "Sale is now live! check out whats there for you.",
 //                             body: finalHTML
 //                         };
 //                         return await SendMail(message);
@@ -150,129 +187,201 @@
 //                         done(err);
 //                     })
 //                     .on("end", () => {
-//                         salesDoc.notification_level = 2;
+//                         salesDoc.notification_level = 1;
 //                         salesDoc.save();
 //                         return true;
 //                     });
-//             })
-//             .catch(error => {
-//                 done(error);
-//             });
-//     });
-
-//     agenda.define("pay_full_sellBuffer_end", (job, done) => {
-//         /**
-//          * This should be invoked to ask committers to pay the full amount now.
-//          * and only be invoked when buffer time started and not yet ended.
-//          */
-//         Commits.find({
-//             is_active: true,
-//             notification_level: 1,
-//             "sale.endtime": {
-//                 $lte: moment()
-//                     .utcOffset(330)
-//                     .toDate()
+//             } else {
+//                 return false;
 //             }
 //         })
-//             .cursor()
-//             .on("data", async commitDoc => {
-//                 const bufferTriggerable =
-//                     moment()
-//                         .utcOffset(330)
-//                         .diff(
-//                             moment(commitDoc.sale.endtime)
-//                                 .utcOffset(330)
-//                                 .add(commitDoc.sale.sale_buffer_time, "h"),
-//                             "h"
-//                         ) < 3.1;
-//                 if (bufferTriggerable) {
-//                     return done();
-//                 }
-//                 //send mail here
+//         .catch(error => {
+//             done(error);
+//         });
+// });
+// agenda.define("before end sale all user", (job, done) => {
+//     /**
+//      *  [PROMOTIONAL]
+//      * Notification level for this should be made 1 from 2
+//      * start time should be less and end time should be more ,
+//      * in that above case it comes under when its about to end.
+//      * notification_level represents how many times it sent notiifcation.
+//      */
+//     const salesQuery = {
+//         notification_level: 1,
+//         starttime: {
+//             $lte: moment()
+//                 .utcOffset(330)
+//                 .toDate()
+//         },
+//         endtime: {
+//             $gte: moment()
+//                 .utcOffset(330)
+//                 .toDate()
+//         }
+//     };
 
-//                 const ejsTemplate = await getEJSTemplate({
-//                     fileName: "pay_full_sellBuffer_end.ejs"
-//                 });
-//                 const finalHTML = ejsTemplate({
-//                     time: moment().format("lll"),
-//                     commitDetails: commitDoc //may be format properly before passing it
-//                 });
-//                 const message = {
-//                     to: commitDoc.User.email,
-//                     subject:
-//                         "[REMINDER] Sale has ended! pay the rest amount before it goes.",
-//                     body: finalHTML
-//                 };
-//                 await SendMail(message);
-//                 commitDoc.notification_level = 2;
-//                 commitDoc.save();
-//                 return true;
-//             })
-//             .on("error", error => {
-//                 done(error);
-//             })
-//             .on("end", () => {
-//                 return done();
-//             });
-//     });
-
-//     agenda.define("pay_full_sellBuffer_start", (job, done) => {
-//         /**
-//          * This should be invoked to ask committers to pay the full amount now.
-//          * and only be invoked when buffer time started and not yet ended.
-//          */
-//         Commits.find({
-//             is_active: true,
-//             notification_level: 0,
-//             "sale.endtime": {
-//                 $lte: moment()
-//                     .utcOffset(330)
-//                     .toDate()
+//     return Sales.findOne(salesQuery)
+//         .exec()
+//         .then(salesDoc => {
+//             const durationLeft = moment()
+//                 .utcOffset(330)
+//                 .diff(moment(salesDoc.end));
+//             if (durationLeft <= !3.1) {
+//                 return done({ error: "duration is" + durationLeft });
 //             }
+//             /**
+//              * Use cursor to loop over all users
+//              */
+//             return User.find({
+//                 notif_subscribe: true
+//             })
+//                 .select({ username: 1, email: 1 })
+//                 .cursor()
+//                 .on("data", async user => {
+//                     const ejsTemplate = await getEJSTemplate({
+//                         fileName: "sale_about_end.ejs"
+//                     });
+//                     const finalHTML = ejsTemplate({
+//                         time: moment().format("lll"),
+//                         username: user.name,
+//                         saleDetails: salesDoc //may be format properly before passing it
+//                     });
+//                     const message = {
+//                         to: user.email,
+//                         subject:
+//                             "Sale is now live! pick it before you miss.",
+//                         body: finalHTML
+//                     };
+//                     return await SendMail(message);
+//                 })
+//                 .on("error", err => {
+//                     done(err);
+//                 })
+//                 .on("end", () => {
+//                     salesDoc.notification_level = 2;
+//                     salesDoc.save();
+//                     return true;
+//                 });
 //         })
-//             .cursor()
-//             .on("data", async commitDoc => {
-//                 const bufferTimeExpired =
-//                     moment().utcOffset(330) <
-//                     moment(commitDoc.sale.endtime)
-//                         .utcOffset(330)
-//                         .add(commitDoc.sale.sale_buffer_time, "h");
-//                 if (bufferTimeExpired) {
-//                     return done();
-//                 }
-//                 //send mail here
+//         .catch(error => {
+//             done(error);
+//         });
+// });
 
-//                 const ejsTemplate = await getEJSTemplate({
-//                     fileName: "pay_full_sellBuffer_start.ejs"
-//                 });
-//                 const finalHTML = ejsTemplate({
-//                     time: moment().format("lll"),
-//                     commitDetails: commitDoc //may be format properly before passing it
-//                 });
-//                 const message = {
-//                     to: commitDoc.User.email,
-//                     subject:
-//                         "Sale has ended! pay the rest amount before it goes.",
-//                     body: finalHTML
-//                 };
-//                 await SendMail(message);
-//                 commitDoc.notification_level = 1;
-//                 commitDoc.save();
-//                 return true;
-//             })
-//             .on("error", error => {
-//                 done(error);
-//             })
-//             .on("end", () => {
+// agenda.define("pay_full_sellBuffer_end", (job, done) => {
+//     /**
+//      * This should be invoked to ask committers to pay the full amount now.
+//      * and only be invoked when buffer time started and not yet ended.
+//      */
+//     Commits.find({
+//         is_active: true,
+//         notification_level: 1,
+//         "sale.endtime": {
+//             $lte: moment()
+//                 .utcOffset(330)
+//                 .toDate()
+//         }
+//     })
+//         .cursor()
+//         .on("data", async commitDoc => {
+//             const bufferTriggerable =
+//                 moment()
+//                     .utcOffset(330)
+//                     .diff(
+//                         moment(commitDoc.sale.endtime)
+//                             .utcOffset(330)
+//                             .add(commitDoc.sale.sale_buffer_time, "h"),
+//                         "h"
+//                     ) < 3.1;
+//             if (bufferTriggerable) {
 //                 return done();
+//             }
+//             //send mail here
+
+//             const ejsTemplate = await getEJSTemplate({
+//                 fileName: "pay_full_sellBuffer_end.ejs"
 //             });
-//     });
-    
-//     await agenda.schedule("in 20 seconds", "on start sale all user");
-//     await agenda.schedule("in 20 seconds", "before end sale all user");
-//     await agenda.schedule("in 20 seconds", "pay_full_sellBuffer_end");
-//     await agenda.schedule("in 20 seconds", "pay_full_sellBuffer_start");
+//             const finalHTML = ejsTemplate({
+//                 time: moment().format("lll"),
+//                 commitDetails: commitDoc //may be format properly before passing it
+//             });
+//             const message = {
+//                 to: commitDoc.User.email,
+//                 subject:
+//                     "[REMINDER] Sale has ended! pay the rest amount before it goes.",
+//                 body: finalHTML
+//             };
+//             await SendMail(message);
+//             commitDoc.notification_level = 2;
+//             commitDoc.save();
+//             return true;
+//         })
+//         .on("error", error => {
+//             done(error);
+//         })
+//         .on("end", () => {
+//             return done();
+//         });
+// });
+
+// agenda.define("pay_full_sellBuffer_start", (job, done) => {
+//     /**
+//      * This should be invoked to ask committers to pay the full amount now.
+//      * and only be invoked when buffer time started and not yet ended.
+//      */
+//     Commits.find({
+//         is_active: true,
+//         notification_level: 0,
+//         "sale.endtime": {
+//             $lte: moment()
+//                 .utcOffset(330)
+//                 .toDate()
+//         }
+//     })
+//         .cursor()
+//         .on("data", async commitDoc => {
+//             const bufferTimeExpired =
+//                 moment().utcOffset(330) <
+//                 moment(commitDoc.sale.endtime)
+//                     .utcOffset(330)
+//                     .add(commitDoc.sale.sale_buffer_time, "h");
+//             if (bufferTimeExpired) {
+//                 return done();
+//             }
+//             //send mail here
+
+//             const ejsTemplate = await getEJSTemplate({
+//                 fileName: "pay_full_sellBuffer_start.ejs"
+//             });
+//             const finalHTML = ejsTemplate({
+//                 time: moment().format("lll"),
+//                 commitDetails: commitDoc //may be format properly before passing it
+//             });
+//             const message = {
+//                 to: commitDoc.User.email,
+//                 subject:
+//                     "Sale has ended! pay the rest amount before it goes.",
+//                 body: finalHTML
+//             };
+//             await SendMail(message);
+//             commitDoc.notification_level = 1;
+//             commitDoc.save();
+//             return true;
+//         })
+//         .on("error", error => {
+//             done(error);
+//         })
+//         .on("end", () => {
+//             return done();
+//         });
+// });
+// await agenda.every("in 3 minutes", "Converting commits to orders");
+// await agenda.schedule("in 20 seconds", "on start sale all user");
+// await agenda.schedule("in 20 seconds", "before end sale all user");
+// await agenda.schedule("in 20 seconds", "pay_full_sellBuffer_end");
+// await agenda.schedule("in 20 seconds", "pay_full_sellBuffer_start");
 // };
 
 // start();
-// module.exports = agenda;
+module.exports = agenda;

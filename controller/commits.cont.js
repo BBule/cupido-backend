@@ -105,7 +105,6 @@ const createOrder = async (
     addressId,
     payment,
     orderStatus,
-    commitId,
     amount
 ) => {
     order1 = new myOrders({
@@ -115,7 +114,6 @@ const createOrder = async (
         shipping_address: addressId,
         payment_details: payment,
         order_amount: amount,
-        commitId:commitId,
         order_status: orderStatus
     });
     return order1.save();
@@ -128,7 +126,7 @@ const updateSaleCommit = async saleId => {
         },
         {
             $inc: {
-                quantity_committed: await getCommitCountBySale(saleId)
+                quantity_committed: 1
             }
         },
         {
@@ -144,7 +142,7 @@ const updateSaleOrder = async saleId => {
         },
         {
             $inc: {
-                quantity_sold: await getOrderCountBySale(saleId)
+                quantity_sold: 1
             }
         },
         {
@@ -203,23 +201,23 @@ const createCupidLove = async (saleId, earned, UserId, cupidCoins) => {
     }
 };
 
-const createCommitOrOrder = async (
+const createCommitOrOrder=async(
     wholeCart,
     addressId,
     payment,
     userId,
     cash
-) => {
+)=>{
     var itemsProcessed = 0;
     cal_amount = 0;
-    asyncForEach(wholeCart, async element => {
+    asyncForEach(wholeCart,async element=>{
         itemsProcessed++;
         let commit_count = await getCommitCountBySale(element.sale.id);
         let order_count = await getOrderCountBySale(element.sale.id);
         console.log(commit_count, order_count);
         let sale = await Saleslist.findById(element.sale.id);
         cal_amount += sale.salePrice;
-        if (element.is_commit) {
+        if(element.is_commit){
             cal_amount -= sale.cupidLove.cupidLove;
         }
         console.log(sale.cupidLove.quantity);
@@ -278,10 +276,7 @@ const createCommitOrOrder = async (
                 .catch(err => {
                     console.log(err);
                 });
-        } else if (
-            element.is_commit &&
-            commit_count + order_count >= sale.cupidLove.quantity
-        ) {
+        }else{
             createOrder(
                 element.Product.id,
                 element.sale.id,
@@ -289,134 +284,6 @@ const createCommitOrOrder = async (
                 addressId,
                 payment,
                 "Processed",
-                "",
-                sale.salePrice - element.cupidCoins
-            )
-                .then(async order => {
-                    updateSaleOrder(element.sale.id)
-                        .then(async () => {
-                            await createCupidLove(
-                                element.sale.id,
-                                false,
-                                userId,
-                                sale.cupidLove.cupidLove
-                            )
-                                .then(async () => {
-                                    await mycommits
-                                        .find({
-                                            "sale.id": element.sale.id
-                                        })
-                                        .then(async commits => {
-                                            console.log("done1");
-                                            asyncForEach(
-                                                commits,
-                                                async commit => {
-                                                    console.log("done3");
-                                                    await mycommits
-                                                        .findByIdAndRemove(
-                                                            commit._id
-                                                        )
-                                                        .then(async () => {
-                                                            // delete commit._id;
-                                                            await createOrder(
-                                                                commit.Product
-                                                                    .id,
-                                                                commit.sale.id,
-                                                                commit.User.id,
-                                                                commit.shipping_address,
-                                                                commit.payment_details,
-                                                                "Processed",
-                                                                commit._id,
-                                                                sale.salePrice -
-                                                                    element.cupidCoins
-                                                            )
-                                                                .then(
-                                                                    async order => {
-                                                                        await updateSaleOrder(
-                                                                            element
-                                                                                .sale
-                                                                                .id
-                                                                        )
-                                                                            .then(
-                                                                                async () => {
-                                                                                    console.log(
-                                                                                        "done2"
-                                                                                    );
-                                                                                }
-                                                                            )
-                                                                            .catch(
-                                                                                err => {
-                                                                                    console.log(
-                                                                                        err
-                                                                                    );
-                                                                                }
-                                                                            );
-                                                                    }
-                                                                )
-                                                                .catch(err => {
-                                                                    console.log(
-                                                                        err
-                                                                    );
-                                                                });
-                                                        })
-                                                        .catch(err => {
-                                                            console.log(err);
-                                                        });
-                                                }
-                                            );
-                                        })
-                                        .catch(err => {
-                                            console.log(err);
-                                        });
-                                    if (itemsProcessed == wholeCart.length) {
-                                        if (!cash) {
-                                            await instance.payments
-                                                .fetch(payment.id)
-                                                .then(response =>
-                                                    checkandcapturePayments(
-                                                        response.id,
-                                                        response.amount / 100,
-                                                        cal_amount,
-                                                        response.status
-                                                    )
-                                                )
-                                                .catch(error =>
-                                                    console.log(error)
-                                                );
-                                        }
-                                        await cart
-                                            .deleteMany({
-                                                "User.id": userId
-                                            })
-                                            .then(() => {
-                                                console.log("Deleted");
-                                                // return { status: true };                                             
-                                            })
-                                            .catch(err => {
-                                                console.log(err);
-                                            });
-                                    }
-                                })
-                                .catch(err => {
-                                    console.log(err);
-                                });
-                        })
-                        .catch(err => {
-                            console.log(err);
-                        });
-                })
-                .catch(err => {
-                    console.log(err);
-                });
-        } else {
-            createOrder(
-                element.Product.id,
-                element.sale.id,
-                element.User.id,
-                addressId,
-                payment,
-                "Processed",
-                "",
                 sale.salePrice - element.cupidCoins
             )
                 .then(async order => {
@@ -440,7 +307,7 @@ const createCommitOrOrder = async (
                                     .deleteMany({ "User.id": userId })
                                     .then(() => {
                                         console.log("Deleted");
-                                        // return { status: true };
+                                        return { status: true };
                                     })
                                     .catch(err => {
                                         console.log(err);
@@ -455,10 +322,263 @@ const createCommitOrOrder = async (
                     console.log(err);
                 });
         }
-    });
-    console.log("Finished");
-    return { status: true };
-};
+    })
+    // console.log("Finished");
+    // return { status: true };
+}
+
+// const createCommitOrOrder = async (
+//     wholeCart,
+//     addressId,
+//     payment,
+//     userId,
+//     cash
+// ) => {
+//     var itemsProcessed = 0;
+//     cal_amount = 0;
+//     asyncForEach(wholeCart, async element => {
+//         itemsProcessed++;
+//         let commit_count = await getCommitCountBySale(element.sale.id);
+//         let order_count = await getOrderCountBySale(element.sale.id);
+//         console.log(commit_count, order_count);
+//         let sale = await Saleslist.findById(element.sale.id);
+//         cal_amount += sale.salePrice;
+//         if (element.is_commit) {
+//             cal_amount -= sale.cupidLove.cupidLove;
+//         }
+//         console.log(sale.cupidLove.quantity);
+//         if (
+//             element.is_commit &&
+//             commit_count + order_count < sale.cupidLove.quantity
+//         ) {
+//             createCommit(
+//                 element.Product.id,
+//                 element.sale.id,
+//                 element.User.id,
+//                 addressId,
+//                 payment,
+//                 sale.salePrice - element.cupidCoins
+//             )
+//                 .then(async commit => {
+//                     await updateSaleCommit(element.sale.id)
+//                         .then(async sale => {
+//                             await createCupidLove(
+//                                 element.sale.id,
+//                                 false,
+//                                 userId,
+//                                 sale.cupidLove.cupidLove
+//                             ).then(async () => {
+//                                 if (itemsProcessed == wholeCart.length) {
+//                                     if (!cash) {
+//                                         instance.payments
+//                                             .fetch(payment.id)
+//                                             .then(response =>
+//                                                 checkandcapturePayments(
+//                                                     response.id,
+//                                                     response.amount / 100,
+//                                                     cal_amount,
+//                                                     response.status
+//                                                 )
+//                                             )
+//                                             .catch(error => console.log(error));
+//                                     }
+//                                     await cart
+//                                         .deleteMany({ "User.id": userId })
+//                                         .then(() => {
+//                                             console.log("Deleted");
+//                                             // return { status: true };                                           
+//                                         })
+//                                         .catch(err => {
+//                                             console.log(err);
+//                                         });
+//                                 }
+//                             });
+//                         })
+//                         .catch(err => {
+//                             console.log(err);
+//                         });
+//                 })
+//                 .catch(err => {
+//                     console.log(err);
+//                 });
+//         } else if (
+//             element.is_commit &&
+//             commit_count + order_count >= sale.cupidLove.quantity
+//         ) {
+//             createOrder(
+//                 element.Product.id,
+//                 element.sale.id,
+//                 element.User.id,
+//                 addressId,
+//                 payment,
+//                 "Processed",
+//                 sale.salePrice - element.cupidCoins
+//             )
+//                 .then(async order => {
+//                     updateSaleOrder(element.sale.id)
+//                         .then(async () => {
+//                             await createCupidLove(
+//                                 element.sale.id,
+//                                 false,
+//                                 userId,
+//                                 sale.cupidLove.cupidLove
+//                             )
+//                                 .then(async () => {
+//                                     await mycommits
+//                                         .find({
+//                                             "sale.id": element.sale.id
+//                                         })
+//                                         .then(async commits => {
+//                                             console.log("done1");
+//                                             asyncForEach(
+//                                                 commits,
+//                                                 async commit => {
+//                                                     console.log("done3");
+//                                                     await mycommits
+//                                                         .findByIdAndRemove(
+//                                                             commit._id
+//                                                         )
+//                                                         .then(async () => {
+//                                                             // delete commit._id;
+//                                                             await createOrder(
+//                                                                 commit.Product
+//                                                                     .id,
+//                                                                 commit.sale.id,
+//                                                                 commit.User.id,
+//                                                                 commit.shipping_address,
+//                                                                 commit.payment_details,
+//                                                                 "Processed",
+//                                                                 sale.salePrice -
+//                                                                     element.cupidCoins
+//                                                             )
+//                                                                 .then(
+//                                                                     async order => {
+//                                                                         await updateSaleOrder(
+//                                                                             element
+//                                                                                 .sale
+//                                                                                 .id
+//                                                                         )
+//                                                                             .then(
+//                                                                                 async () => {
+//                                                                                     console.log(
+//                                                                                         "done2"
+//                                                                                     );
+//                                                                                 }
+//                                                                             )
+//                                                                             .catch(
+//                                                                                 err => {
+//                                                                                     console.log(
+//                                                                                         err
+//                                                                                     );
+//                                                                                 }
+//                                                                             );
+//                                                                     }
+//                                                                 )
+//                                                                 .catch(err => {
+//                                                                     console.log(
+//                                                                         err
+//                                                                     );
+//                                                                 });
+//                                                         })
+//                                                         .catch(err => {
+//                                                             console.log(err);
+//                                                         });
+//                                                 }
+//                                             );
+//                                         })
+//                                         .catch(err => {
+//                                             console.log(err);
+//                                         });
+//                                     if (itemsProcessed == wholeCart.length) {
+//                                         if (!cash) {
+//                                             await instance.payments
+//                                                 .fetch(payment.id)
+//                                                 .then(response =>
+//                                                     checkandcapturePayments(
+//                                                         response.id,
+//                                                         response.amount / 100,
+//                                                         cal_amount,
+//                                                         response.status
+//                                                     )
+//                                                 )
+//                                                 .catch(error =>
+//                                                     console.log(error)
+//                                                 );
+//                                         }
+//                                         await cart
+//                                             .deleteMany({
+//                                                 "User.id": userId
+//                                             })
+//                                             .then(() => {
+//                                                 console.log("Deleted");
+//                                                 // return { status: true };                                             
+//                                             })
+//                                             .catch(err => {
+//                                                 console.log(err);
+//                                             });
+//                                     }
+//                                 })
+//                                 .catch(err => {
+//                                     console.log(err);
+//                                 });
+//                         })
+//                         .catch(err => {
+//                             console.log(err);
+//                         });
+//                 })
+//                 .catch(err => {
+//                     console.log(err);
+//                 });
+//         } else {
+//             createOrder(
+//                 element.Product.id,
+//                 element.sale.id,
+//                 element.User.id,
+//                 addressId,
+//                 payment,
+//                 "Processed",
+//                 sale.salePrice - element.cupidCoins
+//             )
+//                 .then(async order => {
+//                     updateSaleOrder(element.sale.id)
+//                         .then(async sale => {
+//                             if (itemsProcessed == wholeCart.length) {
+//                                 if (!cash) {
+//                                     instance.payments
+//                                         .fetch(payment.id)
+//                                         .then(response =>
+//                                             checkandcapturePayments(
+//                                                 response.id,
+//                                                 response.amount / 100,
+//                                                 cal_amount,
+//                                                 response.status
+//                                             )
+//                                         )
+//                                         .catch(error => console.log(error));
+//                                 }
+//                                 await cart
+//                                     .deleteMany({ "User.id": userId })
+//                                     .then(() => {
+//                                         console.log("Deleted");
+//                                         // return { status: true };
+//                                     })
+//                                     .catch(err => {
+//                                         console.log(err);
+//                                     });
+//                             }
+//                         })
+//                         .catch(err => {
+//                             console.log(err);
+//                         });
+//                 })
+//                 .catch(err => {
+//                     console.log(err);
+//                 });
+//         }
+//     });
+//     console.log("Finished");
+//     return { status: true };
+// };
 
 module.exports = {
     createCommitOrOrder,
