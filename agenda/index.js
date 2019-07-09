@@ -122,10 +122,10 @@ agenda.define("Converting commits to orders", function(job, done) {
 });
 
 agenda.on("ready", function() {
-    console.log("hdgf")
-    agenda.every("*/1 * * * *", "Converting commits to orders");
+    console.log("hdgf");
+    agenda.every("*/10 * * * *", "Converting commits to orders");
     agenda.start();
-})
+});
 
 // var start = async () => {
 //     await agenda._ready;
