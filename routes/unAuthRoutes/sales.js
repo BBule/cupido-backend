@@ -6,7 +6,7 @@ var jwt = require("jsonwebtoken");
 const config = require("../../config/config");
 const Saleslist = require("../../models/saleslist");
 const EmailToken = require("../../models/emailtoken");
-const User=require("../../models/user.js")
+const User = require("../../models/user.js");
 const commitCont = require("../../controller/commits.cont");
 // Helper Functions
 function newIndDate() {
@@ -42,22 +42,94 @@ router.get("/getDetails", (req, res, next) => {
 
 router.get("/getSalesById", (req, res, next) => {});
 
+router.get("/sales/Price-Low-to-High", (req, res, next) => {
+    const query = {
+        endtime: { $gte: currdate },
+        starttime: { $lte: currdate }
+    };
+    Saleslist.find(query, { "product.category": 0, "product.filters": 0 })
+        .sort({ salePrice: 1 })
+        .populate("product.id")
+        .lean()
+        .then(sales => {
+            return res.send(sales);
+        })
+        .catch(err => {
+            console.log(err);
+            return next({ status: 400, message: "unknown error occured" });
+        });
+});
+
+router.get("/sales/Price-High-to-Low", (req, res, next) => {
+    const query = {
+        endtime: { $gte: currdate },
+        starttime: { $lte: currdate }
+    };
+    Saleslist.find(query, { "product.category": 0, "product.filters": 0 })
+        .sort({ salePrice: -1 })
+        .populate("product.id")
+        .lean()
+        .then(sales => {
+            return res.send(sales);
+        })
+        .catch(err => {
+            console.log(err);
+            return next({ status: 400, message: "unknown error occured" });
+        });
+});
+
+router.get("/sales/endingSoon", (req, res, next) => {
+    const query = {
+        endtime: { $gte: currdate },
+        starttime: { $lte: currdate }
+    };
+    Saleslist.find(query, { "product.category": 0, "product.filters": 0 })
+        .sort({ endtime: 1 })
+        .populate("product.id")
+        .lean()
+        .then(sales => {
+            return res.send(sales);
+        })
+        .catch(err => {
+            console.log(err);
+            return next({ status: 400, message: "unknown error occured" });
+        });
+});
+
+router.get("/sales/recentlyLaunched", (req, res, next) => {
+    const query = {
+        endtime: { $gte: currdate },
+        starttime: { $lte: currdate }
+    };
+    Saleslist.find(query, { "product.category": 0, "product.filters": 0 })
+        .sort({ timecreated: -1 })
+        .populate("product.id")
+        .lean()
+        .then(sales => {
+            return res.send(sales);
+        })
+        .catch(err => {
+            console.log(err);
+            return next({ status: 400, message: "unknown error occured" });
+        });
+});
+
 // API end point to route traffic of current sales
 router.get("/presentsales", (req, res, next) => {
-    const { limit = 20, skip = 0,cats} = req.query;
-    query1=req.query;
+    const { limit = 20, skip = 0, cats } = req.query;
+    query1 = req.query;
     delete query1.limit;
     delete query1.skip;
     var currdate = newIndDate();
-    let query
-    if(cats){
-        query= {
+    let query;
+    if (cats) {
+        query = {
             endtime: { $gte: currdate },
             starttime: { $lte: currdate },
-            "product.category":cats
+            "product.category": cats
         };
-    }else{
-        query= {
+    } else {
+        query = {
             endtime: { $gte: currdate },
             starttime: { $lte: currdate }
         };
@@ -78,7 +150,7 @@ router.get("/presentsales", (req, res, next) => {
     //     query.starttime={ $lte: currdate };
     // }
     // console.log(query);
-    Saleslist.find(query,{"product.category":0,"product.filters":0})
+    Saleslist.find(query, { "product.category": 0, "product.filters": 0 })
         .populate("product.id")
         .limit(Number(limit))
         .skip(Number(skip))
@@ -86,7 +158,7 @@ router.get("/presentsales", (req, res, next) => {
         .lean()
         .exec()
         .then(result => {
-            return res.send(result)
+            return res.send(result);
             // if (result && result.length) {
             //     const a = result.map(async i => {
             //         i.total_commit =
@@ -101,7 +173,7 @@ router.get("/presentsales", (req, res, next) => {
             //                     (i.product.id.marketPrice || 0) -
             //                     element.cupidLove
             //             };
-            //         }); 
+            //         });
             //         i.cupid_summery = c;
             //         return i;
             //     });
@@ -145,11 +217,11 @@ router.get("/futuresales", (req, res, next) => {
         });
 });
 
-router.get("/verifyemail/:token",async function(req, res,next) {
+router.get("/verifyemail/:token", async function(req, res, next) {
     console.log(req.params.token);
     var token = req.params.token;
     try {
-        var emailtoken = await EmailToken.findOne({ token:token });
+        var emailtoken = await EmailToken.findOne({ token: token });
         if (emailtoken.used) {
         } else {
             var decoded;

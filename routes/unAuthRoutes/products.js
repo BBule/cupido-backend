@@ -68,4 +68,20 @@ router.get("/s", (req, res, next) => {
         });
 });
 
+router.get("/product/:brandName",(req,res,next)=>{
+    const brandName=req.params.brandName;
+    Products.find({brandName:brandName}).then(products=>{
+        if(!products.length){
+            return res.send([]);
+        }
+        return res.send(products);
+    }).catch(err=>{
+        return next({
+            message: err.message,
+            status: 400,
+            stack: err
+        });
+    });
+})
+
 module.exports = router;
