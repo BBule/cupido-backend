@@ -20,6 +20,11 @@ let SalesListSchema = new Schema({
     timecreated: { type: Date, default: Date.now },
     starttime: Date,
     endtime: Date,
+    variant:[{
+        label:String,
+        image:String,
+        salesId:String
+    }],
     // customer_emails: [Schema.Types.Mixed], // To those who have paid
     // commits_for_this_sale: [
     //     {
