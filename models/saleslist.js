@@ -25,6 +25,7 @@ let SalesListSchema = new Schema({
         image:String,
         salesId:String
     }],
+    copy:Boolean,
     variantLabel:String,
     // customer_emails: [Schema.Types.Mixed], // To those who have paid
     // commits_for_this_sale: [
