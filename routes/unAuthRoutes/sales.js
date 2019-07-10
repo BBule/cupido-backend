@@ -43,10 +43,24 @@ router.get("/getDetails", (req, res, next) => {
 router.get("/getSalesById", (req, res, next) => {});
 
 router.get("/sales/Price-Low-to-High", (req, res, next) => {
-    const query = {
-        endtime: { $gte: currdate },
-        starttime: { $lte: currdate }
-    };
+    const { limit = 20, skip = 0, cats } = req.query;
+    query1 = req.query;
+    delete query1.limit;
+    delete query1.skip;
+    var currdate = newIndDate();
+    let query;
+    if (cats) {
+        query = {
+            endtime: { $gte: currdate },
+            starttime: { $lte: currdate },
+            "product.category": cats
+        };
+    } else {
+        query = {
+            endtime: { $gte: currdate },
+            starttime: { $lte: currdate }
+        };
+    }
     Saleslist.find(query, { "product.category": 0, "product.filters": 0 })
         .sort({ salePrice: 1 })
         .populate("product.id")
@@ -61,10 +75,24 @@ router.get("/sales/Price-Low-to-High", (req, res, next) => {
 });
 
 router.get("/sales/Price-High-to-Low", (req, res, next) => {
-    const query = {
-        endtime: { $gte: currdate },
-        starttime: { $lte: currdate }
-    };
+    const { limit = 20, skip = 0, cats } = req.query;
+    query1 = req.query;
+    delete query1.limit;
+    delete query1.skip;
+    var currdate = newIndDate();
+    let query;
+    if (cats) {
+        query = {
+            endtime: { $gte: currdate },
+            starttime: { $lte: currdate },
+            "product.category": cats
+        };
+    } else {
+        query = {
+            endtime: { $gte: currdate },
+            starttime: { $lte: currdate }
+        };
+    }
     Saleslist.find(query, { "product.category": 0, "product.filters": 0 })
         .sort({ salePrice: -1 })
         .populate("product.id")
@@ -79,10 +107,24 @@ router.get("/sales/Price-High-to-Low", (req, res, next) => {
 });
 
 router.get("/sales/endingSoon", (req, res, next) => {
-    const query = {
-        endtime: { $gte: currdate },
-        starttime: { $lte: currdate }
-    };
+    const { limit = 20, skip = 0, cats } = req.query;
+    query1 = req.query;
+    delete query1.limit;
+    delete query1.skip;
+    var currdate = newIndDate();
+    let query;
+    if (cats) {
+        query = {
+            endtime: { $gte: currdate },
+            starttime: { $lte: currdate },
+            "product.category": cats
+        };
+    } else {
+        query = {
+            endtime: { $gte: currdate },
+            starttime: { $lte: currdate }
+        };
+    }
     Saleslist.find(query, { "product.category": 0, "product.filters": 0 })
         .sort({ endtime: 1 })
         .populate("product.id")
@@ -97,10 +139,24 @@ router.get("/sales/endingSoon", (req, res, next) => {
 });
 
 router.get("/sales/recentlyLaunched", (req, res, next) => {
-    const query = {
-        endtime: { $gte: currdate },
-        starttime: { $lte: currdate }
-    };
+    const { limit = 20, skip = 0, cats } = req.query;
+    query1 = req.query;
+    delete query1.limit;
+    delete query1.skip;
+    var currdate = newIndDate();
+    let query;
+    if (cats) {
+        query = {
+            endtime: { $gte: currdate },
+            starttime: { $lte: currdate },
+            "product.category": cats
+        };
+    } else {
+        query = {
+            endtime: { $gte: currdate },
+            starttime: { $lte: currdate }
+        };
+    }
     Saleslist.find(query, { "product.category": 0, "product.filters": 0 })
         .sort({ timecreated: -1 })
         .populate("product.id")
