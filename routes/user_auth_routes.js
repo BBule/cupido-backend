@@ -98,22 +98,24 @@ router.route("/phone/verifyotp").post(async function(req, res, next) {
         }
     );
 });
-router.route("/verifyemail/:token").post(async function(req, res) {
+router.route("/verifyemail/:token").get(async function(req, res,next) {
+    console.log("Hello");
     var token = req.params.token;
     try {
         var emailtoken = await EmailToken.findOne({ token });
         if (emailtoken.used) {
         } else {
             var decoded;
-
             try {
                 decoded = jwt.verify(token, config.JWT_SECRET);
                 var user = await User.findOne({
                     _id: decoded._id,
-                    "email.email": decoded.email
+                    "email.email": decoded.email.email
                 });
+                console.log(user);
                 user.email.verified = true;
                 await user.save();
+                console.log(user)
                 res.send({
                     type: "auth",
                     message: "Email verified successfully"
@@ -201,7 +203,7 @@ router.post("/verifyotp", (req, res, next) => {
                                     .toString();
                                 var verification_link =
                                     config.FRONT_HOST +
-                                    "/verifyemail/" +
+                                    "/auth/verifyemail/" +
                                     email_token;
                                 var emailtoken = new EmailToken({
                                     token: email_token,
