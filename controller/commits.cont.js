@@ -286,13 +286,13 @@ const createCommitOrOrder = async (
                                 element.sale.id,
                                 false,
                                 userId,
-                                sale.cupidLove.cupidLove
+                                element.cupidCoins
                             );
                             await createCupidLove(
                                 element.sale.id,
                                 true,
                                 userId,
-                                sale.cupidLove.cupidLove
+                                element.cupidCoins
                             );
                         })
                         .catch(err => {
@@ -343,13 +343,13 @@ const createCommitOrOrder = async (
                                 element.sale.id,
                                 false,
                                 userId,
-                                sale.cupidLove.cupidLove
+                                element.cupidCoinselement.cupidCoins
                             );
                             await createCupidLove(
                                 element.sale.id,
                                 true,
                                 userId,
-                                sale.cupidLove.cupidLove
+                                element.cupidCoins
                             );
                         })
                         .catch(err => {
