@@ -18,7 +18,7 @@ const getUserCommits = async userId => {
                 },
                 { commit_amount: 1, shipping_address: 1, timecreated: 1 }
             )
-            .populate("Product.id", "images brandName title")
+            .populate("Product.id", "images brandName title marketPrice")
             .populate("sale.id", "quantity_sold quantity_committed cupidLove")
             .sort({ timecreated: -1 })
             // .limit(limit)
@@ -44,7 +44,7 @@ const getUserOrders = async userId => {
                     timecreated: 1
                 }
             )
-            .populate("Product.id", "images brandName title")
+            .populate("Product.id", "images brandName title marketPrice")
             .populate("sale.id", "salePrice")
             .sort({ timecreated: -1 })
             // .limit(limit)

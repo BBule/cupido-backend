@@ -45,17 +45,17 @@ router.patch("/edit", (req, res, next) => {
     //         { new: true }
     //     )
     //     .exec();
-    // const b = 
-    const uniqueId=req.body.uniqueId;
+    // const b =
+    const uniqueId = req.body.uniqueId;
     delete req.body.uniqueId;
-    let updateObj={};
-    for(var item in req.body){
-        updateObj["myaddresses.$."+item]=req.body[item];
+    let updateObj = {};
+    for (var item in req.body) {
+        updateObj["myaddresses.$." + item] = req.body[item];
     }
-    
+
     User.updateOne(
         {
-            "myaddresses.uniqueId":uniqueId
+            "myaddresses.uniqueId": uniqueId
         },
         {
             $set: updateObj
@@ -68,8 +68,9 @@ router.patch("/edit", (req, res, next) => {
             //     // "myaddresses.$.country":req.body.country
             // }
         }
-    ).exec()
-    // return Promise.all([a, b])
+    )
+        .exec()
+        // return Promise.all([a, b])
         .then(data => {
             return res.json(data);
         })
@@ -126,7 +127,8 @@ router.post("/add", (req, res) => {
     console.log("Posting address to the user");
     let curruser = req.user;
     User.findOne({ _id: req.user._id })
-        .select("myaddresses").then((user)=>{
+        .select("myaddresses")
+        .then(user => {
             // console.log(user.myaddresses.length);
             let newaddress = {
                 username: req.body.username,
@@ -136,11 +138,12 @@ router.post("/add", (req, res) => {
                 city: req.body.city,
                 state: req.body.state,
                 country: req.body.country,
-                uniqueId:user.myaddresses.length+1
+                pincode: req.body.pincode,
+                uniqueId: user.myaddresses.length + 1
             };
             User.findOneAndUpdate(
                 { _id: curruser._id },
-                { $push: {myaddresses: newaddress } }
+                { $push: { myaddresses: newaddress } }
             )
                 .then(() => {
                     return res.json({
@@ -155,7 +158,6 @@ router.post("/add", (req, res) => {
                     });
                 });
         });
-        
 });
 
 router.post("/remove", (req, res, next) => {
@@ -165,7 +167,7 @@ router.post("/remove", (req, res, next) => {
             status: 400
         });
     }
-    // const a = 
+    // const a =
     User.findOneAndUpdate(
         {
             _id: req.user._id,
@@ -179,11 +181,12 @@ router.post("/remove", (req, res, next) => {
             }
         },
         { new: true }
-    ).exec()
-    // const b = myaddresses
-    //     .findByIdAndRemove({ _id: mongoose.Types.ObjectId(req.body.addressId) })
-    //     .exec();
-    // return Promise.all([a, b])
+    )
+        .exec()
+        // const b = myaddresses
+        //     .findByIdAndRemove({ _id: mongoose.Types.ObjectId(req.body.addressId) })
+        //     .exec();
+        // return Promise.all([a, b])
         .then(data => {
             return res.json(data[0]);
         })
