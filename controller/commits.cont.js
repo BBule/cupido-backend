@@ -284,13 +284,13 @@ const createCommitOrOrder = async (
                             }
                             await createCupidLove(
                                 element.sale.id,
-                                false,
+                                true,
                                 userId,
                                 element.cupidCoins
                             );
                             await createCupidLove(
                                 element.sale.id,
-                                true,
+                                false,
                                 userId,
                                 element.cupidCoins
                             );
@@ -341,13 +341,13 @@ const createCommitOrOrder = async (
                             }
                             await createCupidLove(
                                 element.sale.id,
-                                false,
+                                true,
                                 userId,
                                 element.cupidCoinselement.cupidCoins
                             );
                             await createCupidLove(
                                 element.sale.id,
-                                true,
+                                false,
                                 userId,
                                 element.cupidCoins
                             );
