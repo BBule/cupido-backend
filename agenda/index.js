@@ -25,15 +25,17 @@ async function asyncForEach(array, callback) {
     }
 }
 
-agenda.define("Converting commits to orders", function(job, done) {
+agenda.define("Deleting commits", function(job, done) {
     console.log("hello");
     Sales.find({
-        $expr: { $gt: ["$quantity_committed", "$cupidLove.quantity"] }
+        $expr: { $gte: ["$quantity_committed", "$cupidLove.quantity"] }
     })
         .then(async sales => {
-            if (!sales) {
+            if (sales.length == 0) {
+                //console.log("No Sale Found!");
                 done();
             } else {
+                console.log("sales", sales);
                 asyncForEach(sales, async sale => {
                     await Commits.find({ "sale.id": sale._id })
                         .then(commits => {
@@ -121,9 +123,15 @@ agenda.define("Converting commits to orders", function(job, done) {
     done();
 });
 
+// agenda.define("Hello", (job, done) => {
+//     console.log("Hello");
+//     done();
+// });
+
 agenda.on("ready", function() {
     console.log("hdgf");
-    agenda.every("*/10 * * * *", "Converting commits to orders");
+    agenda.every("30 minutes", "Deleting commits");
+    //agenda.every("*/10 * * * * *", "Hello");
     agenda.start();
 });
 

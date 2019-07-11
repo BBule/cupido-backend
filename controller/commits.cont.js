@@ -351,7 +351,7 @@ const createCommitOrOrder = async (
                                 element.sale.id,
                                 true,
                                 userId,
-                                element.cupidCoinselement.cupidCoins
+                                element.cupidCoins
                             );
                             await createCupidLove(
                                 element.sale.id,
