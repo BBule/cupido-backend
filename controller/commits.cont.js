@@ -16,11 +16,11 @@ const getUserCommits = async userId => {
                 {
                     "User.id": userId
                 },
-                { commit_amount: 1,shipping_address:1}
+                { commit_amount: 1,shipping_address:1,timecreated:1}
             )
             .populate("Product.id", "images brandName title")
             .populate("sale.id", "quantity_sold quantity_committed cupidLove")
-            .sort({timecrteated:-1})
+            .sort({timecreated:-1})
             // .limit(limit)
             // .skip(skip)
             .exec()
@@ -40,12 +40,13 @@ const getUserOrders = async userId => {
                     timecreated: 1,
                     shipping_awb: 1,
                     order_status: 1,
-                    shipping_address:1
+                    shipping_address:1,
+                    timecreated:1
                 }
             )
             .populate("Product.id", "images brandName title")
             .populate("sale.id", "salePrice")
-            .sort({timecrteated:-1})
+            .sort({timecreated:-1})
             // .limit(limit)
             // .skip(skip)
             .exec()
