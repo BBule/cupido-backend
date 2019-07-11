@@ -194,10 +194,19 @@ const createCupidLove = async (saleId, earned, UserId, cupidCoins) => {
                 "User.id": UserId,
                 amount: cupidCoins,
                 balance: earnedSum[0].sum - redeemedSum[0].sum + cupidCoins,
-                source: "sale",
-                earned: true
+                source: "sale"
             });
             await cupidlove1.save();
+            await updateUser(
+                UserId,
+                earnedSum[0].sum - redeemedSum[0].sum + cupidCoins
+            )
+                .then(() => {
+                    return console.log("success");
+                })
+                .catch(err => {
+                    console.log(err);
+                });
         } else {
             const cupidlove1 = new cupidLove({
                 "Sale.id": saleId,
@@ -205,21 +214,20 @@ const createCupidLove = async (saleId, earned, UserId, cupidCoins) => {
                 "User.id": UserId,
                 amount: cupidCoins,
                 balance: earnedSum[0].sum - redeemedSum[0].sum - cupidCoins,
-                source: "sale",
-                earned: true
+                source: "sale"
             });
             await cupidlove1.save();
+            await updateUser(
+                UserId,
+                earnedSum[0].sum - redeemedSum[0].sum - cupidCoins
+            )
+                .then(() => {
+                    return console.log("success");
+                })
+                .catch(err => {
+                    console.log(err);
+                });
         }
-        await updateUser(
-            UserId,
-            earnedSum[0].sum - redeemedSum[0].sum + cupidCoins
-        )
-            .then(() => {
-                return console.log("success");
-            })
-            .catch(err => {
-                console.log(err);
-            });
     }
 };
 
