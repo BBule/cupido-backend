@@ -27,9 +27,9 @@ let cupidLoveSchema = new Schema({
             type: mongoose.Schema.Types.ObjectId
         }
     },
-    amount:Number,
+    amount:{type:Number,default:0},
     referralId:mongoose.Schema.Types.ObjectId,
-    balance:Number,
+    balance:{type:Number,default:0},
     source:String
 
 });

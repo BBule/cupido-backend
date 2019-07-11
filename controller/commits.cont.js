@@ -165,7 +165,8 @@ const createCupidLove = async (saleId, earned, UserId, cupidCoins) => {
         earnedSum = await cupidLove.aggregate([
             {
                 $match: {
-                    earned: true
+                    earned: true,
+                    "User.id":UserId
                 }
             },
             { $group: { _id: null, sum: { $sum: "$amount" } } }
@@ -174,7 +175,8 @@ const createCupidLove = async (saleId, earned, UserId, cupidCoins) => {
         redeemedSum = await cupidLove.aggregate([
             {
                 $match: {
-                    earned: false
+                    earned: false,
+                    "User.id":UserId
                 }
             },
             { $group: { _id: null, sum: { $sum: "$amount" } } }
