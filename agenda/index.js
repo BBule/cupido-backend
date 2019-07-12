@@ -25,7 +25,7 @@ async function asyncForEach(array, callback) {
     }
 }
 
-agenda.define("Deleting commits", function(job, done) {
+agenda.define("Converting commits to orders", function(job, done) {
     console.log("hello");
     Sales.find({
         $expr: { $gte: ["$quantity_committed", "$cupidLove.quantity"] }
@@ -123,15 +123,17 @@ agenda.define("Deleting commits", function(job, done) {
     done();
 });
 
-// agenda.define("Hello", (job, done) => {
-//     console.log("Hello");
+// agenda.define("XYZ", (job, done) => {
+//     console.log("Hello with schedule");
 //     done();
 // });
 
 agenda.on("ready", function() {
-    console.log("hdgf");
-    agenda.every("30 minutes", "Deleting commits");
-    //agenda.every("*/10 * * * * *", "Hello");
+    console.log("Agenda Started");
+    agenda.schedule(
+        "2 seconds",
+        agenda.every("30 minutes", "Converting commits to orders")
+    );
     agenda.start();
 });
 
