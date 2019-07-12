@@ -2,10 +2,17 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 const bodyParser = require("body-parser");
+const Sentry = require("@sentry/node");
 
 const apiRoutes = require("./routes");
 
 const agenda = require("./agenda");
+
+Sentry.init({
+    dsn: "https://c4ad3326ae6d46f3a2d4e7991f160788@sentry.io/1503881"
+});
+app.use(Sentry.Handlers.requestHandler());
+app.use(Sentry.Handlers.errorHandler()); 
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
