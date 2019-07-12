@@ -50,15 +50,24 @@ app.use((err, req, res, next) => {
     return res.status(err.status || 500).json(errorObj);
 });
 
-process.on("SIGTERM", () => {
-    console.log("Stopping Wroker safely");
-    agenda.stop();
+// process.on("SIGTERM", () => {
+//     console.log("Stopping Wroker safely");
+//     agenda.stop();
+//     process.exit(0);
+// });
+// process.on("SIGINT", () => {
+//     console.log("Stopping wroker safely");
+//     agenda.stop();
+//     process.exit(0);
+// });
+
+async function graceful() {
+    console.log("Stopping worker safely");
+    await agenda.stop();
     process.exit(0);
-});
-process.on("SIGINT", () => {
-    console.log("Stopping wroker safely");
-    agenda.stop();
-    process.exit(0);
-});
+}
+
+process.on("SIGTERM", graceful);
+process.on("SIGINT", graceful);
 
 module.exports = app;
