@@ -8,10 +8,10 @@ var UserSchema = new mongoose.Schema(
     {
         username: String,
         email: {
-            email: {type:String,default:""},
+            email: { type: String, default: "" },
             verified: {
-                type:Boolean,
-                default:false
+                type: Boolean,
+                default: false
             }
         },
         contact: {
@@ -24,11 +24,11 @@ var UserSchema = new mongoose.Schema(
         },
         gender: {
             type: String,
-            enum: ["Male", "Female"]
+            enum: ["male", "female"]
         },
-        cupidCoins:{
-            type:Number,
-            default:0
+        cupidCoins: {
+            type: Number,
+            default: 0
         },
         // googleId: String,
         // facebookId: String,
@@ -36,7 +36,7 @@ var UserSchema = new mongoose.Schema(
         mycarts: [Schema.Types.Mixed], //To be embedded
         // mycommits: [Schema.Types.Mixed], //To be referenced ["ID001","ID002"]
         // mygifts: [Schema.Types.Mixed], //To be embedded
-        myaddresses: {type:[Schema.Types.Mixed],default:[]}//To be embedded
+        myaddresses: { type: [Schema.Types.Mixed], default: [] } //To be embedded
         // mynotifications: [Schema.Types.Mixed], //To be embedded
         // refer_code: {
         //     type: String,
