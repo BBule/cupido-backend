@@ -57,7 +57,8 @@ router.post("/orderOrCommit", async (req, res, next) => {
             addressId,
             payment,
             req.user._id,
-            cash
+            cash,
+            size
         )
             .then(data => {
                 return res.status(200).json(data);

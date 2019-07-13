@@ -31,6 +31,7 @@ let myorderSchema = new Schema({
             ref: "User"
         }
     },
+    size:String,
     payment_details: [Schema.Types.Mixed],
     timecreated: { type: Date, default: Date.now },
     // order_time: Date, // when payment portal sends positive ack

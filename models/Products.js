@@ -25,6 +25,8 @@ let ProductsSchema = new Schema(
         whyweloveit_title: String,
         whyweloveit_content: String,
         brand_image: Array,
+        size:[String],
+        sizeChart:String,
         // specifications_title: String,
         // specifications_content: String,
         brand_title: String,

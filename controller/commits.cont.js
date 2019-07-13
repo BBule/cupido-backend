@@ -18,7 +18,7 @@ const getUserCommits = async userId => {
                 },
                 { commit_amount: 1, shipping_address: 1, timecreated: 1 }
             )
-            .populate("Product.id", "images brandName title marketPrice")
+            .populate("Product.id", "images brandName title marketPrice size sizeChart")
             .populate("sale.id", "quantity_sold quantity_committed cupidLove")
             .sort({ timecreated: -1 })
             // .limit(limit)
@@ -44,7 +44,7 @@ const getUserOrders = async userId => {
                     timecreated: 1
                 }
             )
-            .populate("Product.id", "images brandName title marketPrice")
+            .populate("Product.id", "images brandName title marketPrice size sizeChart")
             .populate("sale.id", "salePrice")
             .sort({ timecreated: -1 })
             // .limit(limit)
@@ -86,7 +86,8 @@ const createCommit = async (
     userId,
     addressId,
     payment,
-    amount
+    amount,
+    size
 ) => {
     commit1 = new mycommits({
         "Product.id": productId,
@@ -94,7 +95,8 @@ const createCommit = async (
         "User.id": userId,
         shipping_address: addressId,
         payment_details: payment,
-        commit_amount: amount
+        commit_amount: amount,
+        size:size
     });
     return commit1.save();
 };
@@ -106,7 +108,8 @@ const createOrder = async (
     addressId,
     payment,
     orderStatus,
-    amount
+    amount,
+    size
 ) => {
     order1 = new myOrders({
         "Product.id": productId,
@@ -115,7 +118,8 @@ const createOrder = async (
         shipping_address: addressId,
         payment_details: payment,
         order_amount: amount,
-        order_status: orderStatus
+        order_status: orderStatus,
+        size:size
     });
     return order1.save();
 };
@@ -236,7 +240,8 @@ const createCommitOrOrder = async (
     addressId,
     payment,
     userId,
-    cash
+    cash,
+    size
 ) => {
     var itemsProcessed = 0;
     cal_amount = 0;
@@ -261,7 +266,8 @@ const createCommitOrOrder = async (
                 element.User.id,
                 addressId,
                 payment,
-                sale.salePrice - element.cupidCoins
+                sale.salePrice - element.cupidCoins,
+                size
             )
                 .then(async commit => {
                     await updateSaleCommit(element.sale.id)
@@ -318,7 +324,8 @@ const createCommitOrOrder = async (
                 addressId,
                 payment,
                 "Processed",
-                sale.salePrice - element.cupidCoins
+                sale.salePrice - element.cupidCoins,
+                size
             )
                 .then(async order => {
                     updateSaleOrder(element.sale.id)
@@ -369,8 +376,8 @@ const createCommitOrOrder = async (
                 });
         }
     });
-    // console.log("Finished");
-    // return { status: true };
+    console.log("Finished");
+    return { status: true };
 };
 
 // const createCommitOrOrder = async (
