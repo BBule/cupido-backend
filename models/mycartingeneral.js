@@ -30,11 +30,12 @@ let mycartSchema = new Schema({
     },
     timecreated: { type: Date, default: Date.now },
     is_commit: Boolean,
-    // referral_code:String,                     
+    size: String,
+    // referral_code:String,
     cupidCoins: Number,
-    // referralCupidCoins:Number,                    
-    quantity: { type: Number, default: 1 },
-    // total_expected_price: Number // price_committed_at*quantity-referral                   
+    // referralCupidCoins:Number,
+    quantity: { type: Number, default: 1 }
+    // total_expected_price: Number // price_committed_at*quantity-referral
 });
 
 module.exports = mongoose.model("mycartingeneral", mycartSchema);
