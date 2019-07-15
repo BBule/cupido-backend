@@ -26,7 +26,7 @@ router.get("/getDetails", (req, res, next) => {
     return Saleslist.find({
         _id: { $in: req.query.id ? req.query.id.split(",") : [] }
     })
-        .populate("product.id","size sizeChart")
+        .populate("product.id", "size sizeChart")
         .then(result => {
             return res.json(result);
         })
@@ -63,8 +63,28 @@ router.get("/sales/Price-Low-to-High", (req, res, next) => {
     }
     Saleslist.find(query, { "product.category": 0, "product.filters": 0 })
         .sort({ salePrice: 1 })
-        .populate("product.id","size sizeChart")
+        .populate("product.id", "size sizeChart")
         .lean()
+        .then(sales => {
+            return res.send(sales);
+        })
+        .catch(err => {
+            console.log(err);
+            return next({ status: 400, message: "unknown error occured" });
+        });
+});
+
+router.get("/bestSellers", (req, res, next) => {
+    var currdate = newIndDate();
+    const query = {
+        endtime: { $gte: currdate },
+        starttime: { $lte: currdate },
+        "product.category": {
+            $not: { $in: ["mensclothing", "womensclothing"] }
+        }
+    };
+    // console.log(query)
+    Saleslist.find({ query })
         .then(sales => {
             return res.send(sales);
         })
@@ -95,7 +115,7 @@ router.get("/sales/Price-High-to-Low", (req, res, next) => {
     }
     Saleslist.find(query, { "product.category": 0, "product.filters": 0 })
         .sort({ salePrice: -1 })
-        .populate("product.id","size sizeChart")
+        .populate("product.id", "size sizeChart")
         .lean()
         .then(sales => {
             return res.send(sales);
@@ -127,7 +147,7 @@ router.get("/sales/endingSoon", (req, res, next) => {
     }
     Saleslist.find(query, { "product.category": 0, "product.filters": 0 })
         .sort({ endtime: 1 })
-        .populate("product.id","size sizeChart")
+        .populate("product.id", "size sizeChart")
         .lean()
         .then(sales => {
             return res.send(sales);
@@ -159,7 +179,7 @@ router.get("/sales/recentlyLaunched", (req, res, next) => {
     }
     Saleslist.find(query, { "product.category": 0, "product.filters": 0 })
         .sort({ timecreated: -1 })
-        .populate("product.id","size sizeChart")
+        .populate("product.id", "size sizeChart")
         .lean()
         .then(sales => {
             return res.send(sales);
@@ -207,7 +227,7 @@ router.get("/presentsales", (req, res, next) => {
     // }
     // console.log(query);
     Saleslist.find(query, { "product.category": 0, "product.filters": 0 })
-        .populate("product.id","size sizeChart")
+        .populate("product.id", "size sizeChart")
         .limit(Number(limit))
         .skip(Number(skip))
         .sort({ endtime: 1 })
@@ -249,7 +269,7 @@ router.get("/futuresales", (req, res, next) => {
     var currdate = newIndDate();
     var salesholder;
     Saleslist.find({ starttime: { $gte: currdate } })
-        .populate("product.id","size sizeChart")
+        .populate("product.id", "size sizeChart")
         .sort({ startpoint: 1 })
         .then(result => {
             salesholder = result;
