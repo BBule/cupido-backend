@@ -67,13 +67,13 @@ router.get("/sales/Price-Low-to-High", (req, res, next) => {
             endtime: { $gte: currdate },
             starttime: { $lte: currdate },
             "product.category": cats,
-            copy: {$ne:true}
+            copy: { $ne: true }
         };
     } else {
         query = {
             endtime: { $gte: currdate },
             starttime: { $lte: currdate },
-            copy: {$ne:true}
+            copy: { $ne: true }
         };
     }
     Saleslist.find(query, { "product.category": 0, "product.filters": 0 })
@@ -94,13 +94,13 @@ router.get("/bestSellers", (req, res, next) => {
     let query = {
         endtime: { $gte: currdate },
         starttime: { $lte: currdate },
-        copy: {$ne:true},
+        copy: { $ne: true },
         "product.category": {
             $not: { $in: ["mensclothing", "womensclothing"] }
         }
     };
     // console.log(query)
-    Saleslist.find(query )
+    Saleslist.find(query)
         .then(sales => {
             return res.send(sales);
         })
@@ -122,13 +122,13 @@ router.get("/sales/Price-High-to-Low", (req, res, next) => {
             endtime: { $gte: currdate },
             starttime: { $lte: currdate },
             "product.category": cats,
-            copy: {$ne:true}
+            copy: { $ne: true }
         };
     } else {
         query = {
             endtime: { $gte: currdate },
             starttime: { $lte: currdate },
-            copy: {$ne:true}
+            copy: { $ne: true }
         };
     }
     Saleslist.find(query, { "product.category": 0, "product.filters": 0 })
@@ -156,13 +156,13 @@ router.get("/sales/endingSoon", (req, res, next) => {
             endtime: { $gte: currdate },
             starttime: { $lte: currdate },
             "product.category": cats,
-            copy: {$ne:true}
+            copy: { $ne: true }
         };
     } else {
         query = {
             endtime: { $gte: currdate },
             starttime: { $lte: currdate },
-            copy: {$ne:true}
+            copy: { $ne: true }
         };
     }
     Saleslist.find(query, { "product.category": 0, "product.filters": 0 })
@@ -190,13 +190,13 @@ router.get("/sales/recentlyLaunched", (req, res, next) => {
             endtime: { $gte: currdate },
             starttime: { $lte: currdate },
             "product.category": cats,
-            copy: {$ne:true}
+            copy: { $ne: true }
         };
     } else {
         query = {
             endtime: { $gte: currdate },
             starttime: { $lte: currdate },
-            copy: {$ne:true}
+            copy: { $ne: true }
         };
     }
     Saleslist.find(query, { "product.category": 0, "product.filters": 0 })
@@ -225,13 +225,13 @@ router.get("/presentsales", (req, res, next) => {
             endtime: { $gte: currdate },
             starttime: { $lte: currdate },
             "product.category": cats,
-            copy: {$ne:true}
+            copy: { $ne: true }
         };
     } else {
         query = {
             endtime: { $gte: currdate },
             starttime: { $lte: currdate },
-            copy: {$ne:true}
+            copy: { $ne: true }
         };
     }
     // let category=(req.query.category?req.query.category:null);

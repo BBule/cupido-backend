@@ -15,18 +15,21 @@ let SalesListSchema = new Schema({
         title: String,
         brandName: String,
         category: String,
-        filters:Schema.Types.Mixed
+        filters: Schema.Types.Mixed
     },
     timecreated: { type: Date, default: Date.now },
     starttime: Date,
     endtime: Date,
-    variant:[{
-        label:String,
-        image:String,
-        salesId:String
-    }],
-    copy:{type:Boolean,default:false},
-    variantLabel:String,
+    variant: [
+        {
+            label: String,
+            image: String,
+            salesId: String,
+            productId: String
+        }
+    ],
+    copy: { type: Boolean, default: false },
+    variantLabel: String,
     // customer_emails: [Schema.Types.Mixed], // To those who have paid
     // commits_for_this_sale: [
     //     {
@@ -41,7 +44,7 @@ let SalesListSchema = new Schema({
         ref: "Admins",
         required: true
     },
-    referralPercent:Number,
+    referralPercent: Number,
     cupidLove: {
         quantity: Number,
         cupidLove: Number
@@ -56,7 +59,7 @@ let SalesListSchema = new Schema({
     // sale_buffer_time: Number, // in hours
     gender: Boolean, // 0 for male (Target Audience)
     // sale_visits: { type: Number, default: 5 },
-    salePrice: Number,
+    salePrice: Number
     // macho_factor: Number,
     // notif2over3: { type: Boolean, default: false },
     // notifcartlasthour: { type: Boolean, default: false },
