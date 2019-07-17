@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const lodash = require("lodash");
 var jwt = require("jsonwebtoken");
+const csv = require("csvtojson");
 // Models
 const config = require("../../config/config");
 const Saleslist = require("../../models/saleslist");
@@ -15,6 +16,18 @@ function newIndDate() {
     });
     return nDate;
 }
+
+router.get("/convert", (req, res, next) => {
+    const csvFilePath = "/home/yash/git/cupido-backend/routes/file1.csv";
+    csv()
+        .fromFile(csvFilePath)
+        .then(jsonObj => {
+            res.send(jsonObj);
+        })
+        .catch(err => {
+            console.log(err);
+        });
+});
 
 router.get("/getDetails", (req, res, next) => {
     if (!req.query.id) {
@@ -53,12 +66,14 @@ router.get("/sales/Price-Low-to-High", (req, res, next) => {
         query = {
             endtime: { $gte: currdate },
             starttime: { $lte: currdate },
-            "product.category": cats
+            "product.category": cats,
+            copy: false
         };
     } else {
         query = {
             endtime: { $gte: currdate },
-            starttime: { $lte: currdate }
+            starttime: { $lte: currdate },
+            copy: false
         };
     }
     Saleslist.find(query, { "product.category": 0, "product.filters": 0 })
@@ -79,6 +94,7 @@ router.get("/bestSellers", (req, res, next) => {
     const query = {
         endtime: { $gte: currdate },
         starttime: { $lte: currdate },
+        copy: false,
         "product.category": {
             $not: { $in: ["mensclothing", "womensclothing"] }
         }
@@ -105,12 +121,14 @@ router.get("/sales/Price-High-to-Low", (req, res, next) => {
         query = {
             endtime: { $gte: currdate },
             starttime: { $lte: currdate },
-            "product.category": cats
+            "product.category": cats,
+            copy: false
         };
     } else {
         query = {
             endtime: { $gte: currdate },
-            starttime: { $lte: currdate }
+            starttime: { $lte: currdate },
+            copy: false
         };
     }
     Saleslist.find(query, { "product.category": 0, "product.filters": 0 })
@@ -137,12 +155,14 @@ router.get("/sales/endingSoon", (req, res, next) => {
         query = {
             endtime: { $gte: currdate },
             starttime: { $lte: currdate },
-            "product.category": cats
+            "product.category": cats,
+            copy: false
         };
     } else {
         query = {
             endtime: { $gte: currdate },
-            starttime: { $lte: currdate }
+            starttime: { $lte: currdate },
+            copy: false
         };
     }
     Saleslist.find(query, { "product.category": 0, "product.filters": 0 })
@@ -169,12 +189,14 @@ router.get("/sales/recentlyLaunched", (req, res, next) => {
         query = {
             endtime: { $gte: currdate },
             starttime: { $lte: currdate },
-            "product.category": cats
+            "product.category": cats,
+            copy: false
         };
     } else {
         query = {
             endtime: { $gte: currdate },
-            starttime: { $lte: currdate }
+            starttime: { $lte: currdate },
+            copy: false
         };
     }
     Saleslist.find(query, { "product.category": 0, "product.filters": 0 })
@@ -202,12 +224,14 @@ router.get("/presentsales", (req, res, next) => {
         query = {
             endtime: { $gte: currdate },
             starttime: { $lte: currdate },
-            "product.category": cats
+            "product.category": cats,
+            copy: false
         };
     } else {
         query = {
             endtime: { $gte: currdate },
-            starttime: { $lte: currdate }
+            starttime: { $lte: currdate },
+            copy: false
         };
     }
     // let category=(req.query.category?req.query.category:null);
@@ -268,7 +292,7 @@ router.get("/presentsales", (req, res, next) => {
 router.get("/futuresales", (req, res, next) => {
     var currdate = newIndDate();
     var salesholder;
-    Saleslist.find({ starttime: { $gte: currdate } })
+    Saleslist.find({ starttime: { $gte: currdate }, copy: false })
         .populate("product.id", "size sizeChart")
         .sort({ startpoint: 1 })
         .then(result => {
