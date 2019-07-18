@@ -39,7 +39,7 @@ router.get("/getDetails", (req, res, next) => {
     return Saleslist.find({
         _id: { $in: req.query.id ? req.query.id.split(",") : [] }
     })
-        .populate("product.id", "size sizeChart")
+        .populate("product.id")
         .then(result => {
             return res.json(result);
         })
