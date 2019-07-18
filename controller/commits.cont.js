@@ -247,7 +247,7 @@ const createCommitOrOrder = async (
     payment,
     userId,
     cash,
-    size = "L"
+    size = ""
 ) => {
     console.log("Entered into Function");
     var itemsProcessed = 0;
