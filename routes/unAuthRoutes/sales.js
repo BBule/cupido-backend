@@ -78,7 +78,7 @@ router.get("/sales/Price-Low-to-High", (req, res, next) => {
     }
     Saleslist.find(query, { "product.category": 0, "product.filters": 0 })
         .sort({ salePrice: 1 })
-        .populate("product.id", "size sizeChart")
+        .populate("product.id")
         .lean()
         .then(sales => {
             return res.send(sales);
@@ -137,7 +137,7 @@ router.get("/sales/Price-High-to-Low", (req, res, next) => {
     }
     Saleslist.find(query, { "product.category": 0, "product.filters": 0 })
         .sort({ salePrice: -1 })
-        .populate("product.id", "size sizeChart")
+        .populate("product.id")
         .lean()
         .then(sales => {
             return res.send(sales);
@@ -171,7 +171,7 @@ router.get("/sales/endingSoon", (req, res, next) => {
     }
     Saleslist.find(query, { "product.category": 0, "product.filters": 0 })
         .sort({ endtime: 1 })
-        .populate("product.id", "size sizeChart")
+        .populate("product.id")
         .lean()
         .then(sales => {
             return res.send(sales);
@@ -205,7 +205,7 @@ router.get("/sales/recentlyLaunched", (req, res, next) => {
     }
     Saleslist.find(query, { "product.category": 0, "product.filters": 0 })
         .sort({ timecreated: -1 })
-        .populate("product.id", "size sizeChart")
+        .populate("product.id")
         .lean()
         .then(sales => {
             return res.send(sales);
@@ -255,7 +255,7 @@ router.get("/presentsales", (req, res, next) => {
     // }
     // console.log(query);
     Saleslist.find(query, { "product.category": 0, "product.filters": 0 })
-        .populate("product.id", "size sizeChart")
+        .populate("product.id")
         .limit(Number(limit))
         .skip(Number(skip))
         .sort({ endtime: 1 })
@@ -297,7 +297,7 @@ router.get("/futuresales", (req, res, next) => {
     var currdate = newIndDate();
     var salesholder;
     Saleslist.find({ starttime: { $gte: currdate }, copy: false })
-        .populate("product.id", "size sizeChart")
+        .populate("product.id")
         .sort({ startpoint: 1 })
         .then(result => {
             salesholder = result;
