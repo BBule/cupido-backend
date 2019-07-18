@@ -18,7 +18,10 @@ const getUserCommits = async userId => {
                 },
                 { commit_amount: 1, shipping_address: 1, timecreated: 1 }
             )
-            .populate("Product.id", "images brandName title marketPrice size sizeChart")
+            .populate(
+                "Product.id",
+                "images brandName title marketPrice size sizeChart"
+            )
             .populate("sale.id", "quantity_sold quantity_committed cupidLove")
             .sort({ timecreated: -1 })
             // .limit(limit)
@@ -44,7 +47,10 @@ const getUserOrders = async userId => {
                     timecreated: 1
                 }
             )
-            .populate("Product.id", "images brandName title marketPrice size sizeChart")
+            .populate(
+                "Product.id",
+                "images brandName title marketPrice size sizeChart"
+            )
             .populate("sale.id", "salePrice")
             .sort({ timecreated: -1 })
             // .limit(limit)
@@ -96,7 +102,7 @@ const createCommit = async (
         shipping_address: addressId,
         payment_details: payment,
         commit_amount: amount,
-        size:size
+        size: size
     });
     return commit1.save();
 };
@@ -119,7 +125,7 @@ const createOrder = async (
         payment_details: payment,
         order_amount: amount,
         order_status: orderStatus,
-        size:size
+        size: size
     });
     return order1.save();
 };
@@ -241,8 +247,9 @@ const createCommitOrOrder = async (
     payment,
     userId,
     cash,
-    size
+    size = "L"
 ) => {
+    console.log("Entered into Function");
     var itemsProcessed = 0;
     cal_amount = 0;
     asyncForEach(wholeCart, async element => {

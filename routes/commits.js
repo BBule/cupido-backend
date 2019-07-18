@@ -10,7 +10,7 @@ const {
     getUserOrders
 } = require("../controller/commits.cont");
 
-router.get("/mycommits",async (req, res, next) => {
+router.get("/mycommits", async (req, res, next) => {
     // console.log("Hello")
     // const { type = true, skip = 0, limit = 10 } = req.query;
     return await getUserCommits(req.user._id)
@@ -27,7 +27,7 @@ router.get("/mycommits",async (req, res, next) => {
         });
 });
 
-router.get("/myorders",async (req, res, next) => {
+router.get("/myorders", async (req, res, next) => {
     // const { type = true, skip = 0, limit = 10 } = req.query;
     return await getUserOrders(req.user._id)
         .then(data => {
@@ -44,7 +44,8 @@ router.get("/myorders",async (req, res, next) => {
 });
 
 router.post("/orderOrCommit", async (req, res, next) => {
-    if (req.body.payment ||cash) {
+    console.log("API Called");
+    if (req.body.payment || cash) {
         const { wholeCart, addressId, payment, cash } = req.body;
         if (!wholeCart || !wholeCart.length) {
             return next({
@@ -58,7 +59,7 @@ router.post("/orderOrCommit", async (req, res, next) => {
             payment,
             req.user._id,
             cash,
-            size
+            (size = "L")
         )
             .then(data => {
                 return res.status(200).json(data);
