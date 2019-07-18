@@ -101,6 +101,10 @@ router.get("/bestSellers", (req, res, next) => {
     };
     // console.log(query)
     Saleslist.find(query)
+        .populate("product.id")
+        .sort({ endtime: 1 })
+        .lean()
+        .exec()
         .then(sales => {
             return res.send(sales);
         })
