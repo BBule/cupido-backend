@@ -292,6 +292,42 @@ router.get("/presentsales", (req, res, next) => {
         });
 });
 
+// API end point to route traffic of current sales for mobile app with no copy filter
+router.get("/presentsalescopy", (req, res, next) => {
+    const { limit = 20, skip = 0, cats } = req.query;
+    query1 = req.query;
+    delete query1.limit;
+    delete query1.skip;
+    var currdate = newIndDate();
+    let query;
+    if (cats) {
+        query = {
+            endtime: { $gte: currdate },
+            starttime: { $lte: currdate },
+            "product.category": cats
+        };
+    } else {
+        query = {
+            endtime: { $gte: currdate },
+            starttime: { $lte: currdate }
+        };
+    }
+    Saleslist.find(query, { "product.category": 0, "product.filters": 0 })
+        .populate("product.id")
+        .limit(Number(limit))
+        .skip(Number(skip))
+        .sort({ endtime: 1 })
+        .lean()
+        .exec()
+        .then(result => {
+            return res.send(result);
+        })
+        .catch(err => {
+            console.log(err);
+            return next({ status: 400, message: "unknown error occured" });
+        });
+});
+
 // API end point to route traffic of future sales
 router.get("/futuresales", (req, res, next) => {
     var currdate = newIndDate();
