@@ -165,7 +165,7 @@ const updateSaleOrder = async saleId => {
 const updateUser = async (userId, balance) => {
     return User.findOneAndUpdate(
         { _id: userId },
-        { cupidCoins: balance },
+        { $inc: { cupidCoins: balance } },
         { useFindOneAndModify: false }
     );
 };
