@@ -102,7 +102,7 @@ router.get("/bestSellers", (req, res, next) => {
     // console.log(query)
     Saleslist.find(query)
         .populate("product.id")
-        .sort({ endtime: 1 })
+        .sort({ timecreated: -1 })
         .lean()
         .exec()
         .then(sales => {
@@ -258,7 +258,7 @@ router.get("/presentsales", (req, res, next) => {
         .populate("product.id")
         .limit(Number(limit))
         .skip(Number(skip))
-        .sort({ endtime: 1 })
+        .sort({ timecreated: -1 })
         .lean()
         .exec()
         .then(result => {
@@ -316,7 +316,7 @@ router.get("/presentsalescopy", (req, res, next) => {
         .populate("product.id")
         .limit(Number(limit))
         .skip(Number(skip))
-        .sort({ endtime: 1 })
+        .sort({ timecreated: -1 })
         .lean()
         .exec()
         .then(result => {
