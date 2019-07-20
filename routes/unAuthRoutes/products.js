@@ -84,4 +84,34 @@ router.get("/product/:brandName",(req,res,next)=>{
     });
 })
 
+router.get("/allOrders", (req, res, next) => {
+    Orders.find(
+        {},
+        {
+            order_amount: 1,
+            "sale.id": 1,
+            timecreated: 1,
+            shipping_awb: 1,
+            order_status: 1,
+            shipping_address: 1,
+            timecreated: 1
+        }
+    ).populate(
+            "Product.id",
+            "images brandName title marketPrice size sizeChart"
+        )
+        .populate("sale.id", "salePrice")
+        .sort({ timecreated: -1 })
+        .then(orders => {
+            return res.send(orders);
+        })
+        .catch(err => {
+            return next({
+                message: err.message,
+                status: 400,
+                stack: err
+            });
+        });
+});
+
 module.exports = router;
