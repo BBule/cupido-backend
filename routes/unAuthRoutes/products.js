@@ -4,6 +4,7 @@ const router = express.Router();
 const productCont = require("../../controller/product.cont");
 
 const Products = require("../../models/Products");
+const Orders = require("../../models/myorders");
 
 /**
  * Get all products pagination and partial filerts
@@ -31,7 +32,7 @@ router.get("/", function(req, res, next) {
  * Get Product By Id
  */
 router.get("/getDetails/:id", (req, res, next) => {
-    console.log(req.params.id)
+    console.log(req.params.id);
     return productCont
         .getProductById(req.params.id)
         .then(productholder => {
@@ -68,20 +69,52 @@ router.get("/s", (req, res, next) => {
         });
 });
 
-router.get("/product/:brandName",(req,res,next)=>{
-    const brandName=req.params.brandName;
-    Products.find({brandName:brandName}).then(products=>{
-        if(!products.length){
-            return res.send([]);
-        }
-        return res.send(products);
-    }).catch(err=>{
-        return next({
-            message: err.message,
-            status: 400,
-            stack: err
+router.get("/product/:brandName", (req, res, next) => {
+    const brandName = req.params.brandName;
+    Products.find({ brandName: brandName })
+        .then(products => {
+            if (!products.length) {
+                return res.send([]);
+            }
+            return res.send(products);
+        })
+        .catch(err => {
+            return next({
+                message: err.message,
+                status: 400,
+                stack: err
+            });
         });
-    });
-})
+});
+
+router.get("/allOrders", (req, res, next) => {
+    Orders.find(
+        {},
+        {
+            order_amount: 1,
+            "sale.id": 1,
+            timecreated: 1,
+            shipping_awb: 1,
+            order_status: 1,
+            shipping_address: 1,
+            timecreated: 1
+        }
+    ).populate(
+            "Product.id",
+            "images brandName title marketPrice size sizeChart"
+        )
+        .populate("sale.id", "salePrice")
+        .sort({ timecreated: -1 })
+        .then(orders => {
+            return res.send(orders);
+        })
+        .catch(err => {
+            return next({
+                message: err.message,
+                status: 400,
+                stack: err
+            });
+        });
+});
 
 module.exports = router;
