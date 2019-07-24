@@ -5,7 +5,6 @@ const Orders = require("../../models/myorders");
 const productCont = require("../../controller/product.cont");
 
 const Products = require("../../models/Products");
-const Orders = require("../../models/myorders");
 
 /**
  * Get all products pagination and partial filerts
