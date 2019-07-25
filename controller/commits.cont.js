@@ -6,6 +6,7 @@ const Saleslist = require("../models/saleslist");
 const cart = require("../models/mycartingeneral");
 const User = require("../models/user");
 const config = require("../config/config");
+const request = require("request");
 
 const Razorpay = require("razorpay");
 
@@ -58,6 +59,23 @@ const getUserOrders = async userId => {
             .exec()
     );
 };
+
+async function sendOrderDetails(message = "New%20Order%20arrived%20in%20list") {
+    request.post(
+        `https://api.msg91.com/api/sendhttp.php?authkey=${
+            config.SMS.AUTH_KEY
+        }&mobiles=9641222292&message=${message}&route=4&sender=TESTIN&country=91`,
+        { json: true },
+        async function(error, response, body) {
+            if (!error) {
+                console.log(body);
+                return body;
+            } else {
+                return Promise.reject(error);
+            }
+        }
+    );
+}
 
 async function asyncForEach(array, callback) {
     for (let index = 0; index < array.length; index++) {
@@ -127,6 +145,7 @@ const createOrder = async (
         order_status: orderStatus,
         size: size
     });
+    await sendOrderDetails()
     return order1.save();
 };
 

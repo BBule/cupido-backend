@@ -11,6 +11,7 @@ async function sendSMS(
         }&message=${message}&sender=${config.SMS.SENDER_ID}&mobile=` + phone,
         { json: true },
         async function(error, response, body) {
+            PI;
             if (!error) {
                 console.log(body);
                 return body;
@@ -21,10 +22,7 @@ async function sendSMS(
     );
 }
 
-async function verifyOTP(
-    phone,
-    otp
-) {
+async function verifyOTP(phone, otp) {
     request.post(
         `https://control.msg91.com/api/verifyRequestOTP.php?authkey=${
             config.SMS.AUTH_KEY
@@ -41,4 +39,4 @@ async function verifyOTP(
     );
 }
 
-module.exports = { sendSMS,verifyOTP };
+module.exports = { sendSMS, verifyOTP };
