@@ -60,7 +60,9 @@ const getUserOrders = async userId => {
     );
 };
 
-async function sendOrderDetailsToAdmin(message = "New%20Order%20arrived%20in%20list") {
+async function sendOrderDetailsToAdmin(
+    message = "New%20Order%20arrived%20in%20list"
+) {
     request.post(
         `https://api.msg91.com/api/sendhttp.php?authkey=${
             config.SMS.AUTH_KEY
@@ -77,12 +79,17 @@ async function sendOrderDetailsToAdmin(message = "New%20Order%20arrived%20in%20l
     );
 }
 
-async function sendOrderDetailsToUser(userId,message = "New%20Order%20placed%20successfully,%20keep%20checking%20your%20email%20for%20further%20updates.") {
-    User.findOne({_id:userId}).then(user=>{
+async function sendOrderDetailsToUser(
+    userId,
+    message = "New%20Order%20placed%20successfully,%20keep%20checking%20your%20email%20for%20further%20updates."
+) {
+    User.findOne({ _id: userId }).then(user => {
         request.post(
             `https://api.msg91.com/api/sendhttp.php?authkey=${
                 config.SMS.AUTH_KEY
-            }&mobiles=${user.contact.contact}&message=${message}&route=4&sender=TESTIN&country=91`,
+            }&mobiles=${
+                user.contact.contact
+            }&message=${message}&route=4&sender=TESTIN&country=91`,
             { json: true },
             async function(error, response, body) {
                 if (!error) {
@@ -93,7 +100,7 @@ async function sendOrderDetailsToUser(userId,message = "New%20Order%20placed%20s
                 }
             }
         );
-    })
+    });
 }
 
 async function asyncForEach(array, callback) {
@@ -285,8 +292,8 @@ const createCommitOrOrder = async (
     addressId,
     payment,
     userId,
-    cash,
-    size = ""
+    cash
+    //size = ""
 ) => {
     console.log("Entered into Function");
     var itemsProcessed = 0;
