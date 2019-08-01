@@ -50,9 +50,7 @@ router.post("/orderOrCommit", async (req, res, next) => {
             wholeCart,
             addressId,
             payment,
-            cash,
-            referralAmount,
-            size
+            cash
         } = req.body;
         if (!wholeCart || !wholeCart.length) {
             return next({
@@ -65,9 +63,7 @@ router.post("/orderOrCommit", async (req, res, next) => {
             addressId,
             payment,
             req.user._id,
-            cash,
-            referralAmount,
-            size
+            cash
         )
             .then(data => {
                 return res.status(200).json(data);

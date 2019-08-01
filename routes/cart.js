@@ -20,6 +20,12 @@ const cartCont = require("../controller/cart.cont");
 const Products = require("../models/Products");
 const myorders = require("../models/myorders");
 
+async function asyncForEach(array, callback) {
+    for (let index = 0; index < array.length; index++) {
+        await callback(array[index], index, array);
+    }
+}
+
 // POST Route to send cart entry of an individual
 // Create a new object and then embed data into the array
 // User can send this route
@@ -47,7 +53,8 @@ router.post("/add", async (req, res, next) => {
                     referralCupidCoins: req.body.referralCupidCoins,
                     quantity: req.body.quantity,
                     total_expected_price:
-                        req.body.cupidCoins * req.body.quantity
+                        req.body.cupidCoins * req.body.quantity,
+                    size: req.body.size
                 });
 
                 if (req.body.referral_code) {
@@ -71,7 +78,7 @@ router.post("/add", async (req, res, next) => {
                 newcartitem
                     .save()
                     .then(async cartitem => {
-                        return res.json({msg:"Item added to cart"});
+                        return res.json({ msg: "Item added to cart" });
                         // await User.findOneAndUpdate(
                         //     { _id: curruser._id },
                         //     { $push: { mycarts: newcartitem } }
@@ -187,9 +194,9 @@ router.get("/view", (req, res, next) => {
                 // if (typeofcart == "commit") {
                 //     cupidLove = await getEstimateCupidLove(cartsholder);
                 // }
-                return res.json({
-                    cartsdata: result //.splice(startpoint, howmany)
-                });
+                // return res.json({
+                //     cartsdata: result //.splice(startpoint, howmany)
+                // });
                 // var itemprocessed=0;
                 // result1=[];
                 // asyncForEach(result,async element=>{
@@ -205,6 +212,38 @@ router.get("/view", (req, res, next) => {
                 //         }
                 //     }).catch(err=>console.log(err))
                 // })
+                var itemsProcessed = 0;
+                asyncForEach(result, async element => {
+                    itemsProcessed++;
+                    let result1;
+                    try {
+                        result1 = await Referral.aggregate([
+                            {
+                                $match: {
+                                    sale: element.sale.id,
+                                    createdBy: { $ne: req.user._id }
+                                    // used: false
+                                }
+                            },
+                            {
+                                $group: {
+                                    _id: "$code",
+                                    amount: { $sum: "$amount" }
+                                }
+                            }
+                        ]);
+                    } catch (err) {
+                        console.log(err);
+                    }
+                    if(result1.length==0){
+                        result1.push({"amount":0});
+                    }
+                    element.referralCupidCoins = result1[0].amount;
+                    console.log(itemsProcessed,result.length)
+                    if (itemsProcessed == result.length) {
+                        return res.send(result);
+                    }
+                });
             } else {
                 return res.json({ cartsdata: [] });
             }
@@ -234,13 +273,18 @@ async function getEstimateCupidLove(cart) {
 router.get("/track/;orderId", (req, res, next) => {
     const orderId = req.params.orderId;
     myorders.findOne({ _id: orderId }).then(order => {
-        Request.get(`https://app.shiprocket.in/v1/external/track/awb/${order.shipping_awb}`, (error, response, body) => {
-            if (error) {
-                return console.dir(error);
+        Request.get(
+            `https://app.shiprocket.in/v1/external/track/awb/${
+                order.shipping_awb
+            }`,
+            (error, response, body) => {
+                if (error) {
+                    return console.dir(error);
+                }
+                console.dir(JSON.parse(body));
+                res.send(JSON);
             }
-            console.dir(JSON.parse(body));
-            res.send(JSON);
-        });
+        );
     });
 });
 
