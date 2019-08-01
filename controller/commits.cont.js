@@ -319,8 +319,8 @@ const createCommitOrOrder = async (
                 element.User.id,
                 addressId,
                 payment,
-                sale.salePrice - element.cupidCoins,
-                size
+                sale.salePrice - element.cupidCoins
+                //size
             )
                 .then(async commit => {
                     await updateSaleCommit(element.sale.id)
@@ -377,8 +377,8 @@ const createCommitOrOrder = async (
                 addressId,
                 payment,
                 "Processed",
-                sale.salePrice - element.cupidCoins,
-                size
+                sale.salePrice - element.cupidCoins
+                //size
             )
                 .then(async order => {
                     updateSaleOrder(element.sale.id)
