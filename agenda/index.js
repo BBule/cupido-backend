@@ -54,7 +54,8 @@ agenda.define("Converting commits to orders", function(job, done) {
                                             sale.salePrice -
                                             sale.cupidLove.cupidLove,
                                         order_status: "Processed",
-                                        size:commit.size
+                                        referralAmount: commit.referralAmount,
+                                        size: commit.size
                                     });
                                     await order1
                                         .save()

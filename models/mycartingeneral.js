@@ -33,7 +33,7 @@ let mycartSchema = new Schema({
     size: String,
     // referral_code:String,
     cupidCoins: Number,
-    // referralCupidCoins:Number,
+    referralCupidCoins:Number,
     quantity: { type: Number, default: 1 }
     // total_expected_price: Number // price_committed_at*quantity-referral
 });

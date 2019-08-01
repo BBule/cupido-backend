@@ -46,7 +46,14 @@ router.get("/myorders", async (req, res, next) => {
 router.post("/orderOrCommit", async (req, res, next) => {
     console.log("API Called");
     if (req.body.payment || cash) {
-        const { wholeCart, addressId, payment, cash } = req.body;
+        const {
+            wholeCart,
+            addressId,
+            payment,
+            cash,
+            referralAmount,
+            size
+        } = req.body;
         if (!wholeCart || !wholeCart.length) {
             return next({
                 status: 400,
@@ -58,8 +65,9 @@ router.post("/orderOrCommit", async (req, res, next) => {
             addressId,
             payment,
             req.user._id,
-            cash
-            //(size = "")
+            cash,
+            referralAmount,
+            size
         )
             .then(data => {
                 return res.status(200).json(data);

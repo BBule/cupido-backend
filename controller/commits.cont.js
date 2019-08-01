@@ -130,6 +130,7 @@ const createCommit = async (
     addressId,
     payment,
     amount,
+    referralAmount,
     size
 ) => {
     commit1 = new mycommits({
@@ -139,6 +140,7 @@ const createCommit = async (
         shipping_address: addressId,
         payment_details: payment,
         commit_amount: amount,
+        referralAmount:referralAmount,
         size: size
     });
     return commit1.save();
@@ -152,6 +154,7 @@ const createOrder = async (
     payment,
     orderStatus,
     amount,
+    referralAmount,
     size
 ) => {
     order1 = new myOrders({
@@ -162,6 +165,7 @@ const createOrder = async (
         payment_details: payment,
         order_amount: amount,
         order_status: orderStatus,
+        referralAmount:referralAmount,
         size: size
     });
     await sendOrderDetailsToAdmin();
@@ -286,7 +290,8 @@ const createCommitOrOrder = async (
     payment,
     userId,
     cash,
-    size = ""
+    referralAmount,
+    size
 ) => {
     console.log("Entered into Function");
     var itemsProcessed = 0;
@@ -313,6 +318,7 @@ const createCommitOrOrder = async (
                 addressId,
                 payment,
                 sale.salePrice - element.cupidCoins,
+                referralAmount,
                 size
             )
                 .then(async commit => {
@@ -371,6 +377,7 @@ const createCommitOrOrder = async (
                 payment,
                 "Processed",
                 sale.salePrice - element.cupidCoins,
+                referralAmount,
                 size
             )
                 .then(async order => {

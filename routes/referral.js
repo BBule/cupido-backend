@@ -12,7 +12,7 @@ router.post("/send", async (req, res, next) => {
     await Saleslist.findOne({ _id: req.body.sale }).then(async sale => {
         const salePrice = sale.salePrice;
         const referralPercent = sale.referralPercent;
-        const amount = (referralPercent * salePrice) / 100;
+        const amount = (referralPercent * salePrice) / 200;
         var tokens = await Referral.find()
             .select("code")
             .then(async referral => {
