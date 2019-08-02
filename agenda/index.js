@@ -133,7 +133,7 @@ agenda.on("ready", function() {
     console.log("Agenda Started");
     agenda.schedule(
         "2 seconds",
-        agenda.every("10 seconds", "Converting commits to orders v2.0")
+        agenda.every("30 minutes", "Converting commits to orders v2.0")
     );
     agenda.start();
 });
