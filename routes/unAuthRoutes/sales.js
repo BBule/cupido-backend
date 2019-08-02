@@ -294,10 +294,8 @@ router.get("/presentsales", (req, res, next) => {
 
 // API end point to route traffic of current sales for mobile app with no copy filter
 router.get("/presentsalescopy", (req, res, next) => {
-    const { limit = 20, skip = 0, cats } = req.query;
+    const { cats } = req.query;
     query1 = req.query;
-    delete query1.limit;
-    delete query1.skip;
     var currdate = newIndDate();
     let query;
     if (cats) {
@@ -314,8 +312,6 @@ router.get("/presentsalescopy", (req, res, next) => {
     }
     Saleslist.find(query, { "product.category": 0, "product.filters": 0 })
         .populate("product.id")
-        .limit(Number(limit))
-        .skip(Number(skip))
         .sort({ timecreated: -1 })
         .lean()
         .exec()

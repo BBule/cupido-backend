@@ -37,6 +37,9 @@ let ProductsSchema = new Schema(
         featuresAtGlance: [{ title: String, icon: String }],
         avrg_rating: { type: Number, default: 2.5 },
         video: String,
+        subCategory:Number,
+        productModel:Number,
+        productVariant:String,
         // Relevent Details
         // addedBy: {
         //     type: mongoose.Schema.Types.ObjectId,

@@ -50,30 +50,31 @@ router.post("/add", async (req, res, next) => {
                     timecreated: newIndDate(),
                     is_commit: req.body.is_commit,
                     cupidCoins: req.body.cupidCoins,
-                    referralCupidCoins: req.body.referralCupidCoins,
+                    // referralAmount: req.body.referralAmount,
                     quantity: req.body.quantity,
                     total_expected_price:
-                        req.body.cupidCoins * req.body.quantity,
+                        (req.body.salePrice * req.body.quantity) -
+                        (req.body.cupidCoins * req.body.quantity),
                     size: req.body.size
                 });
 
-                if (req.body.referral_code) {
-                    var token = await Referral.findOne({
-                        code: req.query.code,
-                        used: false,
-                        sale: req.query.sale,
-                        createdBy: { $ne: req.user._id }
-                    });
-                    if (token) {
-                        newcartitem.referral_code = req.body.referral_code;
-                        newcartitem.total_expected_price -= 50;
-                    } else {
-                        return next({
-                            status: 400,
-                            message: "Invalid Token"
-                        });
-                    }
-                }
+                // if (req.body.referral_code) {
+                //     var token = await Referral.findOne({
+                //         code: req.query.code,
+                //         used: false,
+                //         sale: req.query.sale,
+                //         createdBy: { $ne: req.user._id }
+                //     });
+                //     if (token) {
+                //         newcartitem.referral_code = req.body.referral_code;
+                //         newcartitem.total_expected_price -= 50;
+                //     } else {
+                //         return next({
+                //             status: 400,
+                //             message: "Invalid Token"
+                //         });
+                //     }
+                // }
 
                 newcartitem
                     .save()
@@ -235,11 +236,18 @@ router.get("/view", (req, res, next) => {
                     } catch (err) {
                         console.log(err);
                     }
-                    if(result1.length==0){
-                        result1.push({"amount":0});
+                    if (result1.length == 0) {
+                        result1.push({ amount: 0 });
                     }
-                    element.referralCupidCoins = result1[0].amount;
-                    console.log(itemsProcessed,result.length)
+                    element.referralAmount = result1[0].amount;
+                    if (
+                        result1[0].amount >=
+                        element.Product.salePrice - element.cupidCoins
+                    ) {
+                        element.referralAmount =
+                            element.Product.salePrice - element.cupidCoins;
+                    }
+                    console.log(itemsProcessed, result.length);
                     if (itemsProcessed == result.length) {
                         return res.send(result);
                     }

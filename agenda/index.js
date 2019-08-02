@@ -25,7 +25,7 @@ async function asyncForEach(array, callback) {
     }
 }
 
-agenda.define("Converting commits to orders", function(job, done) {
+agenda.define("Converting commits to orders v1.0", function(job, done) {
     console.log("hello");
     Sales.find({
         $expr: { $gte: ["$quantity_committed", "$cupidLove.quantity"] }
@@ -51,11 +51,13 @@ agenda.define("Converting commits to orders", function(job, done) {
                                             commit.shipping_address,
                                         payment_details: commit.payment_details,
                                         order_amount:
-                                            sale.salePrice -
-                                            sale.cupidLove.cupidLove,
+                                            (sale.salePrice -
+                                                sale.cupidLove.cupidLove) *
+                                            commit.quantity,
                                         order_status: "Processed",
                                         referralAmount: commit.referralAmount,
-                                        size: commit.size
+                                        size: commit.size,
+                                        quantity: commit.quantity
                                     });
                                     await order1
                                         .save()
@@ -71,7 +73,8 @@ agenda.define("Converting commits to orders", function(job, done) {
                                                         },
                                                         {
                                                             $inc: {
-                                                                quantity_sold: 1
+                                                                quantity_sold:
+                                                                    commit.quantity
                                                             },
                                                             quantity_committed: 0
                                                         },
@@ -134,7 +137,7 @@ agenda.on("ready", function() {
     console.log("Agenda Started");
     agenda.schedule(
         "2 seconds",
-        agenda.every("30 minutes", "Converting commits to orders")
+        agenda.every("30 minutes", "Converting commits to orders v1.0")
     );
     agenda.start();
 });
