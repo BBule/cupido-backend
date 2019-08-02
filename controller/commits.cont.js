@@ -64,11 +64,11 @@ async function sendOrderDetailsToAdmin(message = "New%20Order%20arrived%20in%20l
     request.post(
         `https://api.msg91.com/api/sendhttp.php?authkey=${
             config.SMS.AUTH_KEY
-        }&mobiles=9641222292&message=${message}&route=4&sender=TESTIN&country=91`,
+        }&mobiles=9641222292&message=${message}&route=4&sender=CUPIDO&country=91`,
         { json: true },
         async function(error, response, body) {
             if (!error) {
-                console.log(body);
+                // console.log(body);
                 return body;
             } else {
                 return Promise.reject(error);
@@ -82,11 +82,11 @@ async function sendOrderDetailsToUser(userId,message = "New%20Order%20placed%20s
         request.post(
             `https://api.msg91.com/api/sendhttp.php?authkey=${
                 config.SMS.AUTH_KEY
-            }&mobiles=${user.contact.contact}&message=${message}&route=4&sender=TESTIN&country=91`,
+            }&mobiles=${user.contact.contact}&message=${message}&route=4&sender=CUPIDO&country=91`,
             { json: true },
             async function(error, response, body) {
                 if (!error) {
-                    console.log(body);
+                    // console.log(body);
                     return body;
                 } else {
                     return Promise.reject(error);
@@ -289,9 +289,7 @@ const createCommitOrOrder = async (
     addressId,
     payment,
     userId,
-    cash,
-    referralAmount,
-    size
+    cash
 ) => {
     console.log("Entered into Function");
     var itemsProcessed = 0;
