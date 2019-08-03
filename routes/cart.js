@@ -53,8 +53,8 @@ router.post("/add", async (req, res, next) => {
                     // referralAmount: req.body.referralAmount,
                     quantity: req.body.quantity,
                     total_expected_price:
-                        (req.body.salePrice * req.body.quantity) -
-                        (req.body.cupidCoins * req.body.quantity),
+                        req.body.salePrice * req.body.quantity -
+                        req.body.cupidCoins * req.body.quantity,
                     size: req.body.size
                 });
 
@@ -249,7 +249,7 @@ router.get("/view", (req, res, next) => {
                     }
                     console.log(itemsProcessed, result.length);
                     if (itemsProcessed == result.length) {
-                        return res.send(result);
+                        return res.send({ cartsdata: result });
                     }
                 });
             } else {
