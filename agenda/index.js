@@ -25,24 +25,25 @@ async function asyncForEach(array, callback) {
     }
 }
 
-agenda.define("Converting commits to orders", function(job, done) {
+agenda.define("Converting commits to orders v3.0", function(job, done) {
     console.log("hello");
     Sales.find({
         $expr: { $gte: ["$quantity_committed", "$cupidLove.quantity"] }
     })
         .then(async sales => {
             if (sales.length == 0) {
-                //console.log("No Sale Found!");
+                console.log("No Sale Found!");
                 done();
             } else {
-                console.log("sales", sales);
                 asyncForEach(sales, async sale => {
+                    console.log("sales Id", sale._id);
                     await Commits.find({ "sale.id": sale._id })
                         .then(commits => {
-                            if (!commits) {
-                                done();
-                            } else {
+                            console.log("commits length", commits.length);
+                            if (commits.length != 0) {
+                                //console.log("Entered into if block");
                                 asyncForEach(commits, async commit => {
+                                    //console.log(commit);
                                     order1 = new Orders({
                                         "Product.id": commit.Product.id,
                                         "sale.id": commit.sale.id,
@@ -50,12 +51,13 @@ agenda.define("Converting commits to orders", function(job, done) {
                                         shipping_address:
                                             commit.shipping_address,
                                         payment_details: commit.payment_details,
-                                        order_amount:
-                                            sale.salePrice -
-                                            sale.cupidLove.cupidLove,
+                                        order_amount: commit.commit_amount,
                                         order_status: "Processed",
-                                        size:commit.size
+                                        referralAmount: commit.referralAmount,
+                                        size: commit.size,
+                                        quantity: commit.quantity
                                     });
+                                    //console.log(order1);
                                     await order1
                                         .save()
                                         .then(async order => {
@@ -70,7 +72,8 @@ agenda.define("Converting commits to orders", function(job, done) {
                                                         },
                                                         {
                                                             $inc: {
-                                                                quantity_sold: 1
+                                                                quantity_sold:
+                                                                    commit.quantity
                                                             },
                                                             quantity_committed: 0
                                                         },
@@ -82,7 +85,7 @@ agenda.define("Converting commits to orders", function(job, done) {
                                                             console.log(
                                                                 "Sale Updated"
                                                             );
-                                                            done();
+                                                            //done();
                                                         })
                                                         .catch(err => {
                                                             console.log(
@@ -115,13 +118,14 @@ agenda.define("Converting commits to orders", function(job, done) {
                             // done(err);
                         });
                 });
+                done();
             }
         })
         .catch(err => {
             console.log("Scheduler Error Sale");
-            // done(err);
+            done();
         });
-    done();
+    //done();
 });
 
 // agenda.define("XYZ", (job, done) => {
@@ -133,7 +137,7 @@ agenda.on("ready", function() {
     console.log("Agenda Started");
     agenda.schedule(
         "2 seconds",
-        agenda.every("30 minutes", "Converting commits to orders")
+        agenda.every("30 minutes", "Converting commits to orders v3.0")
     );
     agenda.start();
 });

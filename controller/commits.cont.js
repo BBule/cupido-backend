@@ -17,7 +17,14 @@ const getUserCommits = async userId => {
                 {
                     "User.id": userId
                 },
-                { commit_amount: 1, shipping_address: 1, timecreated: 1 }
+                {
+                    commit_amount: 1,
+                    shipping_address: 1,
+                    timecreated: 1,
+                    referralAmount: 1,
+                    size: 1,
+                    quantity: 1
+                }
             )
             .populate(
                 "Product.id",
@@ -45,7 +52,10 @@ const getUserOrders = async userId => {
                     shipping_awb: 1,
                     order_status: 1,
                     shipping_address: 1,
-                    timecreated: 1
+                    timecreated: 1,
+                    referralAmount: 1,
+                    size: 1,
+                    quantity: 1
                 }
             )
             .populate(
@@ -66,11 +76,11 @@ async function sendOrderDetailsToAdmin(
     request.post(
         `https://api.msg91.com/api/sendhttp.php?authkey=${
             config.SMS.AUTH_KEY
-        }&mobiles=9641222292&message=${message}&route=4&sender=TESTIN&country=91`,
+        }&mobiles=9641222292&message=${message}&route=4&sender=CUPIDO&country=91`,
         { json: true },
         async function(error, response, body) {
             if (!error) {
-                console.log(body);
+                // console.log(body);
                 return body;
             } else {
                 return Promise.reject(error);
@@ -89,11 +99,15 @@ async function sendOrderDetailsToUser(
                 config.SMS.AUTH_KEY
             }&mobiles=${
                 user.contact.contact
+<<<<<<< HEAD
             }&message=${message}&route=4&sender=TESTIN&country=91`,
+=======
+            }&message=${message}&route=4&sender=CUPIDO&country=91`,
+>>>>>>> cupido-backend-dev
             { json: true },
             async function(error, response, body) {
                 if (!error) {
-                    console.log(body);
+                    // console.log(body);
                     return body;
                 } else {
                     return Promise.reject(error);
@@ -109,11 +123,57 @@ async function asyncForEach(array, callback) {
     }
 }
 const getCommitCountBySale = async id => {
-    return mycommits.countDocuments({ "sale.id": id }).exec();
+    return mycommits
+        .aggregate([
+            {
+                $match: {
+                    "sale.id": id
+                }
+            },
+            {
+                $group: {
+                    _id: "$sale.id",
+                    sum: { $sum: "$quantity" }
+                }
+            }
+        ])
+        .then(result => {
+            console.log(result);
+            if (result.length == 0) {
+                result.push({ sum: 0 });
+            }
+            return result[0].sum;
+        })
+        .catch(err => {
+            console.log(err);
+        });
 };
 
 const getOrderCountBySale = async id => {
-    return myOrders.countDocuments({ "sale.id": id }).exec();
+    return myOrders
+        .aggregate([
+            {
+                $match: {
+                    "sale.id": id
+                }
+            },
+            {
+                $group: {
+                    _id: "$sale.id",
+                    count: { $sum: "$quantity" }
+                }
+            }
+        ])
+        .then(result => {
+            console.log(result);
+            if (result.length == 0) {
+                result.push({ count: 0 });
+            }
+            return result[0].count;
+        })
+        .catch(err => {
+            console.log(err);
+        });
 };
 
 var instance = new Razorpay({
@@ -137,7 +197,9 @@ const createCommit = async (
     addressId,
     payment,
     amount,
-    size
+    referralAmount,
+    size,
+    quantity
 ) => {
     commit1 = new mycommits({
         "Product.id": productId,
@@ -146,7 +208,9 @@ const createCommit = async (
         shipping_address: addressId,
         payment_details: payment,
         commit_amount: amount,
-        size: size
+        referralAmount: referralAmount,
+        size: size,
+        quantity: quantity
     });
     return commit1.save();
 };
@@ -159,7 +223,9 @@ const createOrder = async (
     payment,
     orderStatus,
     amount,
-    size
+    referralAmount,
+    size,
+    quantity
 ) => {
     order1 = new myOrders({
         "Product.id": productId,
@@ -169,21 +235,23 @@ const createOrder = async (
         payment_details: payment,
         order_amount: amount,
         order_status: orderStatus,
-        size: size
+        referralAmount: referralAmount,
+        size: size,
+        quantity: quantity
     });
     await sendOrderDetailsToAdmin();
     await sendOrderDetailsToUser(userId);
     return order1.save();
 };
 
-const updateSaleCommit = async saleId => {
+const updateSaleCommit = async (saleId, quantity) => {
     return Saleslist.findOneAndUpdate(
         {
             _id: saleId
         },
         {
             $inc: {
-                quantity_committed: 1
+                quantity_committed: quantity
             }
         },
         {
@@ -192,14 +260,14 @@ const updateSaleCommit = async saleId => {
     );
 };
 
-const updateSaleOrder = async saleId => {
+const updateSaleOrder = async (saleId, quantity) => {
     return Saleslist.findOneAndUpdate(
         {
             _id: saleId
         },
         {
             $inc: {
-                quantity_sold: 1
+                quantity_sold: quantity
             }
         },
         {
@@ -207,7 +275,7 @@ const updateSaleOrder = async saleId => {
         }
     );
 };
-
+1;
 const updateUser = async (userId, balance) => {
     return User.findOneAndUpdate(
         { _id: userId },
@@ -293,20 +361,26 @@ const createCommitOrOrder = async (
     payment,
     userId,
     cash
+<<<<<<< HEAD
     //size = ""
+=======
+>>>>>>> cupido-backend-dev
 ) => {
     console.log("Entered into Function");
     var itemsProcessed = 0;
     cal_amount = 0;
     asyncForEach(wholeCart, async element => {
         itemsProcessed++;
-        let commit_count = await getCommitCountBySale(element.sale.id);
-        let order_count = await getOrderCountBySale(element.sale.id);
-        console.log(commit_count, order_count);
+        // let commit_count = await getCommitCountBySale(element.sale.id);
+        // let order_count = await getOrderCountBySale(element.sale.id);
+        // console.log(commit_count, order_count);
         let sale = await Saleslist.findById(element.sale.id);
-        cal_amount += sale.salePrice;
+        let commit_count=sale.quantity_committed;
+        let order_count=sale.quantity_sold;
+        console.log(commit_count, order_count);
+        cal_amount += sale.salePrice * element.quantity;
         if (element.is_commit) {
-            cal_amount -= sale.cupidLove.cupidLove;
+            cal_amount -= element.quantity * sale.cupidLove.cupidLove;
         }
         console.log(sale.cupidLove.quantity);
         if (
@@ -319,11 +393,18 @@ const createCommitOrOrder = async (
                 element.User.id,
                 addressId,
                 payment,
+<<<<<<< HEAD
                 sale.salePrice - element.cupidCoins
                 //size
+=======
+                (sale.salePrice - element.cupidCoins) * element.quantity,
+                element.referralAmount,
+                element.size,
+                element.quantity
+>>>>>>> cupido-backend-dev
             )
                 .then(async commit => {
-                    await updateSaleCommit(element.sale.id)
+                    await updateSaleCommit(element.sale.id, element.quantity)
                         .then(async sale => {
                             if (itemsProcessed == wholeCart.length) {
                                 if (!cash) {
@@ -353,13 +434,13 @@ const createCommitOrOrder = async (
                                 element.sale.id,
                                 true,
                                 userId,
-                                element.cupidCoins
+                                element.cupidCoins * element.quantity
                             );
                             await createCupidLove(
                                 element.sale.id,
                                 false,
                                 userId,
-                                element.cupidCoins
+                                element.cupidCoins * element.quantity
                             );
                         })
                         .catch(err => {
@@ -377,11 +458,18 @@ const createCommitOrOrder = async (
                 addressId,
                 payment,
                 "Processed",
+<<<<<<< HEAD
                 sale.salePrice - element.cupidCoins
                 //size
+=======
+                (sale.salePrice - element.cupidCoins) * element.quantity,
+                element.referralAmount,
+                element.size,
+                element.quantity
+>>>>>>> cupido-backend-dev
             )
                 .then(async order => {
-                    updateSaleOrder(element.sale.id)
+                    updateSaleOrder(element.sale.id, element.quantity)
                         .then(async sale => {
                             if (itemsProcessed == wholeCart.length) {
                                 if (!cash) {
@@ -411,13 +499,13 @@ const createCommitOrOrder = async (
                                 element.sale.id,
                                 true,
                                 userId,
-                                element.cupidCoins
+                                element.cupidCoins * element.quantity
                             );
                             await createCupidLove(
                                 element.sale.id,
                                 false,
                                 userId,
-                                element.cupidCoins
+                                element.cupidCoins * element.quantity
                             );
                         })
                         .catch(err => {

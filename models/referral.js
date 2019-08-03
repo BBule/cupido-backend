@@ -10,7 +10,7 @@ let referralSchema = new Schema({
     sale:Schema.ObjectId,
     usedBy:[Schema.ObjectId],
     timecreated: { type: Date, default: Date.now },
-    // used: Boolean,
+    used: {type:Boolean,default:false},
     amount:Number
 });
 

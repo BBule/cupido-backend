@@ -30,10 +30,10 @@ let mycartSchema = new Schema({
     },
     timecreated: { type: Date, default: Date.now },
     is_commit: Boolean,
-    size: String,
+    size: { type: String, default: null },
     // referral_code:String,
-    cupidCoins: Number,
-    // referralCupidCoins:Number,
+    cupidCoins: { type: Number, default: 0 },
+    referralAmount: { type: Number, default: 0 },
     quantity: { type: Number, default: 1 }
     // total_expected_price: Number // price_committed_at*quantity-referral
 });

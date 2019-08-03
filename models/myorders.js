@@ -41,7 +41,8 @@ let myorderSchema = new Schema({
     shipping_awb: String, // Used for tracking the order
     order_status: String, // When the order is reached this value should be turned to off. What we can do is to implement a system that calls the delivery API every hour and take actions on the orders which have reached.
     order_amount: Number, // At what amount the user placed the order
-    // order_quantity: Number,
+    referralAmount:Number,
+    quantity: { type: Number, default: 1 }
     // worth_coupons_applied: Number,
     // coupon_code: [Schema.Types.Mixed], // List of strings of coupon_codes applied
     // amount_paid: Number, // order_amount*quantity - coupons // What if coupon value is more than the price to be paid
