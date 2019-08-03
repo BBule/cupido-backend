@@ -23,7 +23,7 @@ const getUserCommits = async userId => {
                     timecreated: 1,
                     referralAmount: 1,
                     size: 1,
-                    quantity:1
+                    quantity: 1
                 }
             )
             .populate(
@@ -55,7 +55,7 @@ const getUserOrders = async userId => {
                     timecreated: 1,
                     referralAmount: 1,
                     size: 1,
-                    quantity:1
+                    quantity: 1
                 }
             )
             .populate(
@@ -119,7 +119,7 @@ async function asyncForEach(array, callback) {
     }
 }
 const getCommitCountBySale = async id => {
-    const result = await mycommits
+    return mycommits
         .aggregate([
             {
                 $match: {
@@ -133,15 +133,20 @@ const getCommitCountBySale = async id => {
                 }
             }
         ])
-        .exec();
-    if (result.length == 0) {
-        result.push({ sum: 0 });
-    }
-    return result[0].sum;
+        .then(result => {
+            console.log(result);
+            if (result.length == 0) {
+                result.push({ sum: 0 });
+            }
+            return result[0].sum;
+        })
+        .catch(err => {
+            console.log(err);
+        });
 };
 
 const getOrderCountBySale = async id => {
-    const result = await myOrders
+    return myOrders
         .aggregate([
             {
                 $match: {
@@ -151,15 +156,20 @@ const getOrderCountBySale = async id => {
             {
                 $group: {
                     _id: "$sale.id",
-                    sum: { $sum: "$quantity" }
+                    count: { $sum: "$quantity" }
                 }
             }
         ])
-        .exec();
-    if (result.length == 0) {
-        result.push({ sum: 0 });
-    }
-    return result[0].sum;
+        .then(result => {
+            console.log(result);
+            if (result.length == 0) {
+                result.push({ count: 0 });
+            }
+            return result[0].count;
+        })
+        .catch(err => {
+            console.log(err);
+        });
 };
 
 var instance = new Razorpay({
@@ -353,13 +363,16 @@ const createCommitOrOrder = async (
     cal_amount = 0;
     asyncForEach(wholeCart, async element => {
         itemsProcessed++;
-        let commit_count = await getCommitCountBySale(element.sale.id);
-        let order_count = await getOrderCountBySale(element.sale.id);
-        console.log(commit_count, order_count);
+        // let commit_count = await getCommitCountBySale(element.sale.id);
+        // let order_count = await getOrderCountBySale(element.sale.id);
+        // console.log(commit_count, order_count);
         let sale = await Saleslist.findById(element.sale.id);
-        cal_amount += (sale.salePrice * element.quantity);
+        let commit_count=sale.quantity_committed;
+        let order_count=sale.quantity_sold;
+        console.log(commit_count, order_count);
+        cal_amount += sale.salePrice * element.quantity;
         if (element.is_commit) {
-            cal_amount -= (element.quantity * sale.cupidLove.cupidLove);
+            cal_amount -= element.quantity * sale.cupidLove.cupidLove;
         }
         console.log(sale.cupidLove.quantity);
         if (
