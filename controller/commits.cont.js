@@ -99,11 +99,7 @@ async function sendOrderDetailsToUser(
                 config.SMS.AUTH_KEY
             }&mobiles=${
                 user.contact.contact
-<<<<<<< HEAD
-            }&message=${message}&route=4&sender=TESTIN&country=91`,
-=======
             }&message=${message}&route=4&sender=CUPIDO&country=91`,
->>>>>>> cupido-backend-dev
             { json: true },
             async function(error, response, body) {
                 if (!error) {
@@ -361,10 +357,6 @@ const createCommitOrOrder = async (
     payment,
     userId,
     cash
-<<<<<<< HEAD
-    //size = ""
-=======
->>>>>>> cupido-backend-dev
 ) => {
     console.log("Entered into Function");
     var itemsProcessed = 0;
@@ -375,8 +367,8 @@ const createCommitOrOrder = async (
         // let order_count = await getOrderCountBySale(element.sale.id);
         // console.log(commit_count, order_count);
         let sale = await Saleslist.findById(element.sale.id);
-        let commit_count=sale.quantity_committed;
-        let order_count=sale.quantity_sold;
+        let commit_count = sale.quantity_committed;
+        let order_count = sale.quantity_sold;
         console.log(commit_count, order_count);
         cal_amount += sale.salePrice * element.quantity;
         if (element.is_commit) {
@@ -393,15 +385,10 @@ const createCommitOrOrder = async (
                 element.User.id,
                 addressId,
                 payment,
-<<<<<<< HEAD
-                sale.salePrice - element.cupidCoins
-                //size
-=======
                 (sale.salePrice - element.cupidCoins) * element.quantity,
                 element.referralAmount,
                 element.size,
                 element.quantity
->>>>>>> cupido-backend-dev
             )
                 .then(async commit => {
                     await updateSaleCommit(element.sale.id, element.quantity)
@@ -458,15 +445,10 @@ const createCommitOrOrder = async (
                 addressId,
                 payment,
                 "Processed",
-<<<<<<< HEAD
-                sale.salePrice - element.cupidCoins
-                //size
-=======
                 (sale.salePrice - element.cupidCoins) * element.quantity,
                 element.referralAmount,
                 element.size,
                 element.quantity
->>>>>>> cupido-backend-dev
             )
                 .then(async order => {
                     updateSaleOrder(element.sale.id, element.quantity)
