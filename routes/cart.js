@@ -278,6 +278,17 @@ async function getEstimateCupidLove(cart) {
     return totalCupidLove;
 }
 
+router.patch("/update/:cartId",(req,res,next)=>{
+    const cartId=req.params.cartId;
+    mycartingeneral.updateOne({
+        _id:cartId
+    },{$set:req.body},{new:false}).exec().then((cart)=>{
+        return res.send(cart);
+    }).catch(err=>{
+        console.log(err);
+    });
+});
+
 router.get("/track/;orderId", (req, res, next) => {
     const orderId = req.params.orderId;
     myorders.findOne({ _id: orderId }).then(order => {
