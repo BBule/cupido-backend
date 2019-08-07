@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const Orders = require("../../models/myorders");
+const Commits = require("../../models/mycommits");
+const Sales = require("../../models/saleslist");
 
 const productCont = require("../../controller/product.cont");
 
@@ -93,7 +95,6 @@ router.get("/allOrders", (req, res, next) => {
         {
             order_amount: 1,
             "sale.id": 1,
-            timecreated: 1,
             shipping_awb: 1,
             order_status: 1,
             shipping_address: 1,
@@ -117,13 +118,52 @@ router.get("/allOrders", (req, res, next) => {
         });
 });
 
+router.get("/allSales",(req,res,next)=>{
+    Sales.find().then(sales=>{
+        return res.send(sales);
+    }).catch(err=>{
+        return next({
+            message: err.message,
+            status: 400,
+            stack: err
+        });
+    })
+})
+
+router.get("/allCommits", (req, res, next) => {
+    Commits.find(
+        {},
+        {
+            commit_amount: 1,
+            "sale.id": 1,
+            timecreated: 1,
+            shipping_address: 1
+        }
+    ).populate(
+            "Product.id",
+            "images brandName title marketPrice size sizeChart"
+        )
+        .populate("User.id","email.email contact.contact username gender")
+        .populate("sale.id", "salePrice")
+        .sort({ timecreated: -1 })
+        .then(orders => {
+            return res.send(orders);
+        })
+        .catch(err => {
+            return next({
+                message: err.message,
+                status: 400,
+                stack: err
+            });
+        });
+});
+
 router.get("/allOrders", (req, res, next) => {
     Orders.find(
         {},
         {
             order_amount: 1,
             "sale.id": 1,
-            timecreated: 1,
             shipping_awb: 1,
             order_status: 1,
             shipping_address: 1,

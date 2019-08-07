@@ -98,13 +98,13 @@ router.post("/apply", async (req, res, next) => {
                                 amount: referral.amount,
                                 referralId: referral._id
                             });
-                            cupidlove2 = new Cupidlove({
-                                "Sale.id": req.body.sale,
-                                earned: true,
-                                "User.id": referral.createdBy,
-                                amount: referral.amount,
-                                referralId: referral._id
-                            });
+                            // cupidlove2 = new Cupidlove({
+                            //     "Sale.id": req.body.sale,
+                            //     earned: true,
+                            //     "User.id": referral.createdBy,
+                            //     amount: referral.amount,
+                            //     referralId: referral._id
+                            // });
                             cupidlove3 = new Cupidlove({
                                 "Sale.id": req.body.sale,
                                 earned: false,
@@ -112,7 +112,7 @@ router.post("/apply", async (req, res, next) => {
                                 amount: referral.amount,
                                 referralId: referral._id
                             });
-                            const arr = [cupidlove1, cupidlove2, cupidlove3];
+                            const arr = [cupidlove1, cupidlove3];
                             Cupidlove.insertMany(arr, function(err, result) {
                                 if (err) {
                                     console.log(err);

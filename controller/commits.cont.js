@@ -7,6 +7,7 @@ const cart = require("../models/mycartingeneral");
 const User = require("../models/user");
 const config = require("../config/config");
 const request = require("request");
+const Referral = require("../models/referral");
 
 const Razorpay = require("razorpay");
 
@@ -351,6 +352,21 @@ const createCupidLove = async (saleId, earned, UserId, cupidCoins) => {
     }
 };
 
+const createCouponReward=async(list,saleId)=>{
+    asyncForEach(list,async item=>{
+        Referral.findOne({_id:item}).then(async referral=>{
+            cupidlove = new Cupidlove({
+                "Sale.id": saleId,
+                earned: true,
+                "User.id": referral.createdBy,
+                amount: referral.amount,
+                referralId: referral._id
+            });
+            await cupidLove.save();
+        })
+    })
+}
+
 const createCommitOrOrder = async (
     wholeCart,
     addressId,
@@ -498,6 +514,7 @@ const createCommitOrOrder = async (
                     console.log(err);
                 });
         }
+        await createCouponReward(element.referralList,element.sale.id);
     });
     console.log("Finished");
     return { status: true };
