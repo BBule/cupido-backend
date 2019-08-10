@@ -223,13 +223,13 @@ router.get("/view", (req, res, next) => {
                                 $match: {
                                     sale: element.sale.id,
                                     createdBy: { $ne: req.user._id },
-                                    usedBy: { $ne: userId }
+                                    usedBy: { $ne: req.user._id }
                                     // used: false
                                 }
                             },
                             {
                                 $group: {
-                                    _id: "$code",
+                                    _id: "$sale",
                                     amount: { $sum: "$amount" }
                                 }
                             }
@@ -244,20 +244,21 @@ router.get("/view", (req, res, next) => {
                                 $match: {
                                     sale: element.sale.id,
                                     createdBy: { $ne: req.user._id },
-                                    usedBy: { $ne: userId }
+                                    usedBy: { $ne: req.user._id }
                                 }
                             },
                             {
                                 $group: {
                                     _id: "$_id",
-                                    amount: "$amount"
+                                    code: { $sum: "$code" },
+                                    amount: { $sum: "$amount" }
                                 }
                             }
                         ]);
                     } catch (err) {
                         console.log(err);
                     }
-                    element.referralList=referralList;
+                    element.referralList = referralList;
                     if (result1.length == 0) {
                         result1.push({ amount: 0 });
                     }
