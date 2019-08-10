@@ -34,7 +34,15 @@ let mycartSchema = new Schema({
     // referral_code:String,
     cupidCoins: { type: Number, default: 0 },
     referralAmount: { type: Number, default: 0 },
-    quantity: { type: Number, default: 1 }
+    quantity: { type: Number, default: 1 },
+    referralList: [
+        {
+            id: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Referral"
+            }
+        }
+    ]
     // total_expected_price: Number // price_committed_at*quantity-referral
 });
 

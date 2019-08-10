@@ -89,6 +89,24 @@ router.get("/product/:brandName", (req, res, next) => {
         });
 });
 
+router.get("/brandNames", (req, res, next) => {
+    const category = req.query.category;
+    Products.distinct("brandName", { category: category })
+        .then(result => {
+            if(!result){
+                return res.send([]);
+            }
+            return res.send(result);
+        })
+        .catch(err => {
+            return next({
+                message: err.message,
+                status: 400,
+                stack: err
+            });
+        });
+});
+
 router.get("/allOrders", (req, res, next) => {
     Orders.find(
         {},
@@ -100,10 +118,12 @@ router.get("/allOrders", (req, res, next) => {
             shipping_address: 1,
             timecreated: 1
         }
-    ).populate(
+    )
+        .populate(
             "Product.id",
             "images brandName title marketPrice size sizeChart"
         )
+        .populate("User.id", "email.email contact.contact username gender")
         .populate("sale.id", "salePrice")
         .sort({ timecreated: -1 })
         .then(orders => {
@@ -118,17 +138,19 @@ router.get("/allOrders", (req, res, next) => {
         });
 });
 
-router.get("/allSales",(req,res,next)=>{
-    Sales.find().then(sales=>{
-        return res.send(sales);
-    }).catch(err=>{
-        return next({
-            message: err.message,
-            status: 400,
-            stack: err
+router.get("/allSales", (req, res, next) => {
+    Sales.find()
+        .then(sales => {
+            return res.send(sales);
+        })
+        .catch(err => {
+            return next({
+                message: err.message,
+                status: 400,
+                stack: err
+            });
         });
-    })
-})
+});
 
 router.get("/allCommits", (req, res, next) => {
     Commits.find(
@@ -139,11 +161,12 @@ router.get("/allCommits", (req, res, next) => {
             timecreated: 1,
             shipping_address: 1
         }
-    ).populate(
+    )
+        .populate(
             "Product.id",
             "images brandName title marketPrice size sizeChart"
         )
-        .populate("User.id","email.email contact.contact username gender")
+        .populate("User.id", "email.email contact.contact username gender")
         .populate("sale.id", "salePrice")
         .sort({ timecreated: -1 })
         .then(orders => {
@@ -169,7 +192,8 @@ router.get("/allOrders", (req, res, next) => {
             shipping_address: 1,
             timecreated: 1
         }
-    ).populate(
+    )
+        .populate(
             "Product.id",
             "images brandName title marketPrice size sizeChart"
         )

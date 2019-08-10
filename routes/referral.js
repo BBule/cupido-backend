@@ -91,13 +91,13 @@ router.post("/apply", async (req, res, next) => {
                         }
                     )
                         .then(referral => {
-                            cupidlove1 = new Cupidlove({
-                                "Sale.id": req.body.sale,
-                                earned: true,
-                                "User.id": req.user._id,
-                                amount: referral.amount,
-                                referralId: referral._id
-                            });
+                            // cupidlove1 = new Cupidlove({
+                            //     "Sale.id": req.body.sale,
+                            //     earned: true,
+                            //     "User.id": req.user._id,
+                            //     amount: referral.amount,
+                            //     referralId: referral._id
+                            // });
                             // cupidlove2 = new Cupidlove({
                             //     "Sale.id": req.body.sale,
                             //     earned: true,
@@ -105,23 +105,24 @@ router.post("/apply", async (req, res, next) => {
                             //     amount: referral.amount,
                             //     referralId: referral._id
                             // });
-                            cupidlove3 = new Cupidlove({
-                                "Sale.id": req.body.sale,
-                                earned: false,
-                                "User.id": req.user._id,
-                                amount: referral.amount,
-                                referralId: referral._id
-                            });
-                            const arr = [cupidlove1, cupidlove3];
-                            Cupidlove.insertMany(arr, function(err, result) {
-                                if (err) {
-                                    console.log(err);
-                                    return next({
-                                        status: 400,
-                                        message: "Unable to add CupidLove"
-                                    });
-                                } else res.send(referral);
-                            });
+                            // cupidlove3 = new Cupidlove({
+                            //     "Sale.id": req.body.sale,
+                            //     earned: false,
+                            //     "User.id": req.user._id,
+                            //     amount: referral.amount,
+                            //     referralId: referral._id
+                            // });
+                            // const arr = [cupidlove1,cupidLove2,cupidlove3];
+                            // Cupidlove.insertMany(arr, function(err, result) {
+                            //     if (err) {
+                            //         console.log(err);
+                            //         return next({
+                            //             status: 400,
+                            //             message: "Unable to add CupidLove"
+                            //         });
+                            //     } else res.send(referral);
+                            // });
+                            res.send(referral);
                         })
                         .catch(err => {
                             console.log(err);

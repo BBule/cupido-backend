@@ -352,17 +352,32 @@ const createCupidLove = async (saleId, earned, UserId, cupidCoins) => {
     }
 };
 
-const createCouponReward=async(list,saleId)=>{
+const createCouponReward=async(list,saleId,userId)=>{
     asyncForEach(list,async item=>{
         Referral.findOne({_id:item}).then(async referral=>{
-            cupidlove = new Cupidlove({
+            cupidlove1 = new Cupidlove({
+                "Sale.id": saleId,
+                earned: true,
+                "User.id": userId,
+                amount: referral.amount,
+                referralId: referral._id
+            });
+            cupidlove2 = new Cupidlove({
                 "Sale.id": saleId,
                 earned: true,
                 "User.id": referral.createdBy,
                 amount: referral.amount,
                 referralId: referral._id
             });
-            await cupidLove.save();
+            cupidlove3 = new Cupidlove({
+                "Sale.id": saleId,
+                earned: false,
+                "User.id": userId,
+                amount: referral.amount,
+                referralId: referral._id
+            });
+            const arr = [cupidlove1,cupidLove2,cupidlove3];
+            await cupidLove.insertMany(arr);
         })
     })
 }
@@ -514,7 +529,7 @@ const createCommitOrOrder = async (
                     console.log(err);
                 });
         }
-        await createCouponReward(element.referralList,element.sale.id);
+        await createCouponReward(element.referralList,element.sale.id,userId);
     });
     console.log("Finished");
     return { status: true };
