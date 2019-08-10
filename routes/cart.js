@@ -222,7 +222,8 @@ router.get("/view", (req, res, next) => {
                             {
                                 $match: {
                                     sale: element.sale.id,
-                                    createdBy: { $ne: req.user._id }
+                                    createdBy: { $ne: req.user._id },
+                                    usedBy: { $ne: userId }
                                     // used: false
                                 }
                             },
@@ -236,6 +237,27 @@ router.get("/view", (req, res, next) => {
                     } catch (err) {
                         console.log(err);
                     }
+                    let referralList;
+                    try {
+                        referralList = await Referral.aggregate([
+                            {
+                                $match: {
+                                    sale: element.sale.id,
+                                    createdBy: { $ne: req.user._id },
+                                    usedBy: { $ne: userId }
+                                }
+                            },
+                            {
+                                $group: {
+                                    _id: "$_id",
+                                    amount: "$amount"
+                                }
+                            }
+                        ]);
+                    } catch (err) {
+                        console.log(err);
+                    }
+                    element.referralList=referralList;
                     if (result1.length == 0) {
                         result1.push({ amount: 0 });
                     }
@@ -278,15 +300,23 @@ async function getEstimateCupidLove(cart) {
     return totalCupidLove;
 }
 
-router.patch("/update/:cartId",(req,res,next)=>{
-    const cartId=req.params.cartId;
-    mycartingeneral.updateOne({
-        _id:cartId
-    },{$set:req.body},{new:false}).exec().then((cart)=>{
-        return res.send(cart);
-    }).catch(err=>{
-        console.log(err);
-    });
+router.patch("/update/:cartId", (req, res, next) => {
+    const cartId = req.params.cartId;
+    mycartingeneral
+        .updateOne(
+            {
+                _id: cartId
+            },
+            { $set: req.body },
+            { new: false }
+        )
+        .exec()
+        .then(cart => {
+            return res.send(cart);
+        })
+        .catch(err => {
+            console.log(err);
+        });
 });
 
 router.get("/track/;orderId", (req, res, next) => {

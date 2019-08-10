@@ -352,9 +352,9 @@ const createCupidLove = async (saleId, earned, UserId, cupidCoins) => {
     }
 };
 
-const createCouponReward=async(list,saleId,userId)=>{
-    asyncForEach(list,async item=>{
-        Referral.findOne({_id:item}).then(async referral=>{
+const createCouponReward = async (list, saleId, userId) => {
+    asyncForEach(list, async item => {
+        Referral.findOne({ _id: item }).then(async referral => {
             cupidlove1 = new Cupidlove({
                 "Sale.id": saleId,
                 earned: true,
@@ -376,11 +376,21 @@ const createCouponReward=async(list,saleId,userId)=>{
                 amount: referral.amount,
                 referralId: referral._id
             });
-            const arr = [cupidlove1,cupidLove2,cupidlove3];
+            const arr = [cupidlove1, cupidLove2, cupidlove3];
             await cupidLove.insertMany(arr);
-        })
-    })
-}
+            await Referral.findByIdAndUpdate(
+                referral._id,
+                { $push: { usedBy: userId } },
+                { new: true }
+            );
+            await Referral.findOne({createdBy:userId,sale:saleId}).then(async referral=>{
+                if(referral){
+                    await Cupidlove.findOneAndUpdate({referralId:referral._id},{earned:false},{new:true});
+                }
+            });
+        });
+    });
+};
 
 const createCommitOrOrder = async (
     wholeCart,
@@ -398,8 +408,8 @@ const createCommitOrOrder = async (
         // let order_count = await getOrderCountBySale(element.sale.id);
         // console.log(commit_count, order_count);
         let sale = await Saleslist.findById(element.sale.id);
-        let commit_count=sale.quantity_committed;
-        let order_count=sale.quantity_sold;
+        let commit_count = sale.quantity_committed;
+        let order_count = sale.quantity_sold;
         console.log(commit_count, order_count);
         cal_amount += sale.salePrice * element.quantity;
         if (element.is_commit) {
@@ -529,7 +539,7 @@ const createCommitOrOrder = async (
                     console.log(err);
                 });
         }
-        await createCouponReward(element.referralList,element.sale.id,userId);
+        await createCouponReward(element.referralList, element.sale.id, userId);
     });
     console.log("Finished");
     return { status: true };
