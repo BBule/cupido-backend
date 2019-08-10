@@ -52,6 +52,7 @@ router.post("/apply", async (req, res, next) => {
     await Referral.findOne({
         code: req.body.code,
         // used: false,
+        cart: { $nin: [req.user._id] },
         sale: req.body.sale,
         createdBy: { $ne: req.user._id }
     })
