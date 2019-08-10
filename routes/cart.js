@@ -223,7 +223,8 @@ router.get("/view", (req, res, next) => {
                                 $match: {
                                     sale: element.sale.id,
                                     createdBy: { $ne: req.user._id },
-                                    usedBy: { $ne: req.user._id }
+                                    usedBy: { $ne: req.user._id },
+                                    cart:{ $in: [req.user._id] }
                                     // used: false
                                 }
                             },
@@ -244,7 +245,8 @@ router.get("/view", (req, res, next) => {
                                 $match: {
                                     sale: element.sale.id,
                                     createdBy: { $ne: req.user._id },
-                                    usedBy: { $ne: req.user._id }
+                                    usedBy: { $ne: req.user._id },
+                                    cart:{ $in: [req.user._id] }
                                 }
                             },
                             {

@@ -91,7 +91,13 @@ router.post("/apply", async (req, res, next) => {
                         status: 400
                     });
                 } else {
-                    await Referral.findOne({ _id: referral._id })
+                    await Referral.findByIdAndUpdate(
+                        referral._id,
+                        {
+                            $push: { cart: req.user._id }
+                        },
+                        { new: true }
+                    )
                         .then(referral => {
                             // cupidlove1 = new Cupidlove({
                             //     "Sale.id": req.body.sale,

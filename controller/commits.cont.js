@@ -388,6 +388,7 @@ const createCouponReward = async (list, saleId, userId) => {
                     await Cupidlove.findOneAndUpdate({referralId:referral._id},{earned:false},{new:true});
                 }
             });
+            await Referral.findByIdAndUpdate(referral._id,{$pullAll:{cart:[userId]}});
         });
     });
 };
