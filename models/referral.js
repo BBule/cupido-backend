@@ -12,7 +12,7 @@ let referralSchema = new Schema({
     timecreated: { type: Date, default: Date.now },
     used: {type:Boolean,default:false},
     amount:Number,
-    cart:[Schema.ObjectId]
+    cart:[String]
 });
 
 // referralSchema.index({sale:1,usedBy:1},{unique:true});

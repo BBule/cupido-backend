@@ -224,8 +224,7 @@ router.get("/view", (req, res, next) => {
                                     sale: element.sale.id,
                                     // createdBy: { $ne: req.user._id },
                                     // usedBy: { $ne: req.user._id },
-                                    cart:{ $in: [req.user._id] }
-                                    // used: false
+                                    cart: req.user._id
                                 }
                             },
                             {
@@ -246,13 +245,13 @@ router.get("/view", (req, res, next) => {
                                     sale: element.sale.id,
                                     // createdBy: { $ne: req.user._id },
                                     // usedBy: { $ne: req.user._id },
-                                    cart:{ $in: [req.user._id] }
+                                    cart: req.user._id
                                 }
                             },
                             {
                                 $group: {
                                     _id: "$_id",
-                                    code: { $sum: "$code" },
+                                    // code: { $sum: "$code" },
                                     amount: { $sum: "$amount" }
                                 }
                             }
