@@ -19,6 +19,7 @@ const Referral = require("../models/referral");
 const cartCont = require("../controller/cart.cont");
 const Products = require("../models/Products");
 const myorders = require("../models/myorders");
+const cupidLove=require("../models/CupidLove");
 
 async function asyncForEach(array, callback) {
     for (let index = 0; index < array.length; index++) {
@@ -258,6 +259,33 @@ router.get("/view", (req, res, next) => {
                         ]);
                     } catch (err) {
                         console.log(err);
+                    }
+                    //if user is creater of referrals
+                    if(result1.length==0 && referralList.length==0){
+                        await Referral.findOne({createdBy:req.user._id}).then(async referral=>{
+                            if(referral){
+                                try {
+                                    result1 = await cupidLove.aggregate([
+                                        {
+                                            $match: {
+                                                sale: element.sale.id,
+                                                referralId:referral._id,
+                                                earned:true
+                                            }
+                                        },
+                                        {
+                                            $group: {
+                                                _id: "$referralId",
+                                                amount: { $sum: "$amount" }
+                                            }
+                                        }
+                                    ]);
+                                } catch (err) {
+                                    console.log(err);
+                                }
+                                referralList=[{"referral._id":referral._id,"amount":referral.amount}]
+                            }
+                        })
                     }
                     element.referralList = referralList;
                     if (result1.length == 0) {

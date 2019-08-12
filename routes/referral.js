@@ -58,7 +58,6 @@ router.post("/send", async (req, res, next) => {
 router.post("/apply", async (req, res, next) => {
     await Referral.findOne({
         code: req.body.code,
-        // used: false,
         cart:{$nin:[req.user._id]},
         sale: req.body.sale,
         createdBy: { $ne: req.user._id }
@@ -66,19 +65,19 @@ router.post("/apply", async (req, res, next) => {
         .then(async referral => {
             // console.log(referral)
             if (referral) {
-                // let referral1;
-                // try {
-                //     referral1 = await Referral.findOne({
-                //         createdBy: req.user._id,
-                //         sale: req.body.sale
-                //     });
-                // } catch (err) {
-                //     console.log(err);
-                //     return next({
-                //         message: err || "unknown error",
-                //         status: 400
-                //     });
-                // }
+                let referral1;
+                try {
+                    referral1 = await Referral.findOne({
+                        usedBy:{$in:[req.user._id]},
+                        sale: req.body.sale
+                    });
+                } catch (err) {
+                    console.log(err);
+                    return next({
+                        message: err || "unknown error",
+                        status: 400
+                    });
+                }
                 let referral2;
                 try {
                     referral2 = await Referral.findOne({
@@ -93,7 +92,20 @@ router.post("/apply", async (req, res, next) => {
                         status: 400
                     });
                 }
-                if (referral2) {
+                let referral3;
+                try {
+                    referral3 = await Referral.findOne({
+                        cart:req.user._id,
+                        sale: req.body.sale
+                    });
+                } catch (err) {
+                    console.log(err);
+                    return next({
+                        message: err || "unknown error",
+                        status: 400
+                    });
+                }
+                if (referral1 || referral2 || referral3) {
                     return next({
                         message: "You cannot apply this Coupon Code",
                         status: 400
@@ -107,37 +119,6 @@ router.post("/apply", async (req, res, next) => {
                         { new: true }
                     )
                         .then(referral => {
-                            // cupidlove1 = new Cupidlove({
-                            //     "Sale.id": req.body.sale,
-                            //     earned: true,
-                            //     "User.id": req.user._id,
-                            //     amount: referral.amount,
-                            //     referralId: referral._id
-                            // });
-                            // cupidlove2 = new Cupidlove({
-                            //     "Sale.id": req.body.sale,
-                            //     earned: true,
-                            //     "User.id": referral.createdBy,
-                            //     amount: referral.amount,
-                            //     referralId: referral._id
-                            // });
-                            // cupidlove3 = new Cupidlove({
-                            //     "Sale.id": req.body.sale,
-                            //     earned: false,
-                            //     "User.id": req.user._id,
-                            //     amount: referral.amount,
-                            //     referralId: referral._id
-                            // });
-                            // const arr = [cupidlove1,cupidLove2,cupidlove3];
-                            // Cupidlove.insertMany(arr, function(err, result) {
-                            //     if (err) {
-                            //         console.log(err);
-                            //         return next({
-                            //             status: 400,
-                            //             message: "Unable to add CupidLove"
-                            //         });
-                            //     } else res.send(referral);
-                            // });
                             res.send(referral);
                         })
                         .catch(err => {
