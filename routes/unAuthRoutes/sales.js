@@ -17,17 +17,17 @@ function newIndDate() {
     return nDate;
 }
 
-router.get("/convert", (req, res, next) => {
-    const csvFilePath = "/home/yash/git/cupido-backend/routes/file1.csv";
-    csv()
-        .fromFile(csvFilePath)
-        .then(jsonObj => {
-            res.send(jsonObj);
-        })
-        .catch(err => {
-            console.log(err);
-        });
-});
+// router.get("/convert", (req, res, next) => {
+//     const csvFilePath = "/home/yash/git/cupido-backend/routes/file1.csv";
+//     csv()
+//         .fromFile(csvFilePath)
+//         .then(jsonObj => {
+//             res.send(jsonObj);
+//         })
+//         .catch(err => {
+//             console.log(err);
+//         });
+// });
 
 router.get("/getDetails", (req, res, next) => {
     if (!req.query.id) {
