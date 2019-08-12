@@ -355,40 +355,51 @@ const createCupidLove = async (saleId, earned, UserId, cupidCoins) => {
 const createCouponReward = async (list, saleId, userId) => {
     asyncForEach(list, async item => {
         Referral.findOne({ _id: item }).then(async referral => {
-            cupidlove1 = new Cupidlove({
+            cupidlove1 = new cupidLove({
                 "Sale.id": saleId,
                 earned: true,
                 "User.id": userId,
                 amount: referral.amount,
-                referralId: referral._id
+                referralId: referral._id,
+                source: "referral"
             });
-            cupidlove2 = new Cupidlove({
+            cupidlove2 = new cupidLove({
                 "Sale.id": saleId,
                 earned: true,
                 "User.id": referral.createdBy,
                 amount: referral.amount,
-                referralId: referral._id
+                referralId: referral._id,
+                source: "referral"
             });
-            cupidlove3 = new Cupidlove({
+            cupidlove3 = new cupidLove({
                 "Sale.id": saleId,
                 earned: false,
                 "User.id": userId,
                 amount: referral.amount,
-                referralId: referral._id
+                referralId: referral._id,
+                source: "referral"
             });
-            const arr = [cupidlove1, cupidLove2, cupidlove3];
+            const arr = [cupidlove1, cupidlove2, cupidlove3];
             await cupidLove.insertMany(arr);
             await Referral.findByIdAndUpdate(
                 referral._id,
                 { $push: { usedBy: userId } },
                 { new: true }
             );
-            await Referral.findOne({createdBy:userId,sale:saleId}).then(async referral=>{
-                if(referral){
-                    await Cupidlove.findOneAndUpdate({referralId:referral._id},{earned:false},{new:true});
+            await Referral.findOne({ createdBy: userId, sale: saleId }).then(
+                async referral => {
+                    if (referral) {
+                        await cupidLove.findOneAndUpdate(
+                            { referralId: referral._id },
+                            { earned: false },
+                            { new: true }
+                        );
+                    }
                 }
+            );
+            await Referral.findByIdAndUpdate(referral._id, {
+                $pullAll: { cart: [userId] }
             });
-            await Referral.findByIdAndUpdate(referral._id,{$pullAll:{cart:[userId]}});
         });
     });
 };
@@ -412,9 +423,12 @@ const createCommitOrOrder = async (
         let commit_count = sale.quantity_committed;
         let order_count = sale.quantity_sold;
         console.log(commit_count, order_count);
-        cal_amount += sale.salePrice * element.quantity;
+        cal_amount +=
+            sale.salePrice * element.quantity - element.referralAmount;
         if (element.is_commit) {
-            cal_amount -= element.quantity * sale.cupidLove.cupidLove;
+            cal_amount -=
+                element.quantity * sale.cupidLove.cupidLove -
+                element.referralAmount;
         }
         console.log(sale.cupidLove.quantity);
         if (
