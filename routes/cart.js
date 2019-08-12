@@ -321,7 +321,7 @@ router.patch("/update/:cartId", (req, res, next) => {
         });
 });
 
-router.get("/track/;orderId", (req, res, next) => {
+router.get("/track/:orderId", (req, res, next) => {
     const orderId = req.params.orderId;
     myorders.findOne({ _id: orderId }).then(order => {
         Request.get(
