@@ -554,13 +554,13 @@ const createCommitOrOrder = async (
                     console.log(err);
                 });
         }
-        if (element.referralList.length > 0) {
-            await createCouponReward(
-                element.referralList,
-                element.sale.id,
-                userId
-            );
-        }
+        // if (element.referralList.length > 0) {
+        //     await createCouponReward(
+        //         element.referralList,
+        //         element.sale.id,
+        //         userId
+        //     );
+        // }
     });
     console.log("Finished");
     return { status: true };
