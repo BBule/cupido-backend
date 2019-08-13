@@ -76,7 +76,11 @@ router.get("/sales/Price-Low-to-High", (req, res, next) => {
             copy: { $ne: true }
         };
     }
-    Saleslist.find(query, { "product.category": 0, "product.filters": 0 })
+    Saleslist.find(query, {
+        "product.category": 0,
+        "product.filters": 0,
+        "product.subCategory": 0
+    })
         .sort({ salePrice: 1 })
         .populate("product.id")
         .lean()
@@ -135,7 +139,11 @@ router.get("/sales/Price-High-to-Low", (req, res, next) => {
             copy: { $ne: true }
         };
     }
-    Saleslist.find(query, { "product.category": 0, "product.filters": 0 })
+    Saleslist.find(query, {
+        "product.category": 0,
+        "product.filters": 0,
+        "product.subCategory": 0
+    })
         .sort({ salePrice: -1 })
         .populate("product.id")
         .lean()
@@ -169,7 +177,11 @@ router.get("/sales/endingSoon", (req, res, next) => {
             copy: { $ne: true }
         };
     }
-    Saleslist.find(query, { "product.category": 0, "product.filters": 0 })
+    Saleslist.find(query, {
+        "product.category": 0,
+        "product.filters": 0,
+        "product.subCategory": 0
+    })
         .sort({ endtime: 1 })
         .populate("product.id")
         .lean()
@@ -203,7 +215,11 @@ router.get("/sales/recentlyLaunched", (req, res, next) => {
             copy: { $ne: true }
         };
     }
-    Saleslist.find(query, { "product.category": 0, "product.filters": 0 })
+    Saleslist.find(query, {
+        "product.category": 0,
+        "product.filters": 0,
+        "product.subCategory": 0
+    })
         .sort({ timecreated: -1 })
         .populate("product.id")
         .lean()
@@ -254,7 +270,11 @@ router.get("/presentsales", (req, res, next) => {
     //     query.starttime={ $lte: currdate };
     // }
     // console.log(query);
-    Saleslist.find(query, { "product.category": 0, "product.filters": 0 })
+    Saleslist.find(query, {
+        "product.category": 0,
+        "product.filters": 0,
+        "product.subCategory": 0
+    })
         .populate("product.id")
         .limit(Number(limit))
         .skip(Number(skip))
@@ -310,7 +330,11 @@ router.get("/presentsalescopy", (req, res, next) => {
             starttime: { $lte: currdate }
         };
     }
-    Saleslist.find(query, { "product.category": 0, "product.filters": 0 })
+    Saleslist.find(query, {
+        "product.category": 0,
+        "product.filters": 0,
+        "product.subCategory": 0
+    })
         .populate("product.id")
         .sort({ timecreated: -1 })
         .lean()
