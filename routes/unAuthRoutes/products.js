@@ -107,6 +107,24 @@ router.get("/brandNames", (req, res, next) => {
         });
 });
 
+router.get("/subCategories", (req, res, next) => {
+    const category = req.query.category;
+    Products.distinct("subCategory", { category: category })
+        .then(result => {
+            if(!result){
+                return res.send([]);
+            }
+            return res.send(result);
+        })
+        .catch(err => {
+            return next({
+                message: err.message,
+                status: 400,
+                stack: err
+            });
+        });
+});
+
 router.get("/allOrders", (req, res, next) => {
     Orders.find(
         {},
