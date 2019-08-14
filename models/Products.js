@@ -37,7 +37,7 @@ let ProductsSchema = new Schema(
         featuresAtGlance: [{ title: String, icon: String }],
         avrg_rating: { type: Number, default: 2.5 },
         video: String,
-        subCategory:Number,
+        subCategory:String,
         productModel:Number,
         productVariant:String,
         // Relevent Details
