@@ -25,81 +25,87 @@ router.get("/filters/:id", async (req, res, next) => {
 
 const categories = [
     {
-        "label": "Men's Clothing",
-        "apiCat": "mensclothing",
-        "icon":
-            "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/Shape.jpg"
+        label: "Home Furnitures",
+        apiCat: "furnitures",
+        icon:
+            "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/bedroom.jpg"
     },
     {
-        "label": "Women's Clothing",
-        "apiCat": "womensclothing",
-        "icon":
-            "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/sexy-feminine-dress-in-black.jpg"
-    },
-    {
-        "label": "College Stationary",
-        "apiCat": "collegestationary",
-        "icon":
-            "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/stationery.jpg"
-    },
-    {
-        "label": "Socks",
-        "apiCat": "socks",
-        "icon":
-            "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/socks.jpg"
-    },
-    {
-        "label": "Laptops",
-        "apiCat": "laptops",
-        "icon":
-            "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/laptop.jpg"
-    },
-    {
-        "label": "Backpacks",
-        "apiCat": "backpack",
-        "icon":
-            "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/school-book-bag.jpg"
-    },
-    {
-        "label": "Audio",
-        "apiCat": "audio",
-        "icon":
-            "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/headphone-symbol.jpg"
-    },
-    {
-        "label": "Men's Grooming",
-        "apiCat": "mensgrooming",
-        "icon":
-            "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/hairstyle.jpg"
-    },
-    {
-        "label": "Women's Beauty",
-        "apiCat": "womensbeauty",
-        "icon":
-            "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/make-up.jpg"
-    },
-    {
-        "label": "Bicycles",
-        "apiCat": "bicycle",
-        "icon":
-            "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/man-cycling.jpg"
-    },
-    {
-        "label": "Mattresses",
-        "apiCat": "mattress",
-        "icon":
+        label: "Mattresses",
+        apiCat: "mattress",
+        icon:
             "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/mattress.jpg"
     },
     {
-        "label": "Men's Footwear",
-        "apiCat": "mensfootwear",
-        "icon":
+        label: "Men's Clothing",
+        apiCat: "mensclothing",
+        icon:
+            "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/Shape.jpg"
+    },
+    {
+        label: "Women's Clothing",
+        apiCat: "womensclothing",
+        icon:
+            "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/sexy-feminine-dress-in-black.jpg"
+    },
+    {
+        label: "College Stationary",
+        apiCat: "collegestationary",
+        icon:
+            "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/stationery.jpg"
+    },
+    {
+        label: "Socks",
+        apiCat: "socks",
+        icon:
+            "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/socks.jpg"
+    },
+    {
+        label: "Laptops",
+        apiCat: "laptops",
+        icon:
+            "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/laptop.jpg"
+    },
+    {
+        label: "Backpacks",
+        apiCat: "backpack",
+        icon:
+            "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/school-book-bag.jpg"
+    },
+    {
+        label: "Audio",
+        apiCat: "audio",
+        icon:
+            "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/headphone-symbol.jpg"
+    },
+    {
+        label: "Men's Grooming",
+        apiCat: "mensgrooming",
+        icon:
+            "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/hairstyle.jpg"
+    },
+    {
+        label: "Women's Beauty",
+        apiCat: "womensbeauty",
+        icon:
+            "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/make-up.jpg"
+    },
+    {
+        label: "Bicycles",
+        apiCat: "bicycle",
+        icon:
+            "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/man-cycling.jpg"
+    },
+    {
+        label: "Men's Footwear",
+        apiCat: "mensfootwear",
+        icon:
             "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/mensfootwear.jpg"
     },
     {
-        "label": "Women's Footwear",
-        "apiCat": "womensfootwear",
-        "icon":
+        label: "Women's Footwear",
+        apiCat: "womensfootwear",
+        icon:
             "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/high-heel.jpg"
     }
 ];
