@@ -61,8 +61,8 @@ const categories = [
             "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/socks.jpg"
     },
     {
-        label: "Laptops",
-        apiCat: "laptops",
+        label: "Electronics",
+        apiCat: "electronics",
         icon:
             "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/laptop.jpg"
     },
