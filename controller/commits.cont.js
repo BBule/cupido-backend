@@ -3,6 +3,7 @@ const mycommits = require("../models/mycommits");
 const myOrders = require("../models/myorders");
 const cupidLove = require("../models/CupidLove");
 const Saleslist = require("../models/saleslist");
+const Products = require("../models/Products");
 const cart = require("../models/mycartingeneral");
 const User = require("../models/user");
 const config = require("../config/config");
@@ -241,6 +242,22 @@ const createOrder = async (
     return order1.save();
 };
 
+const updateProductOrder = async (productId, quantity) => {
+    return Products.findOneAndUpdate(
+        { _id: productId },
+        { $inc: { quantity_sold: quantity } },
+        { useFindAndModify: false }
+    );
+};
+
+// const updateProductCommit = async (productId, quantity) => {
+//     return Products.findOneAndUpdate(
+//         { _id: productId },
+//         { $inc: { quantity_committed: quantity } },
+//         { useFindAndModify: false }
+//     );
+// };
+
 const updateSaleCommit = async (saleId, quantity) => {
     return Saleslist.findOneAndUpdate(
         {
@@ -446,42 +463,53 @@ const createCommitOrOrder = async (
                 .then(async commit => {
                     await updateSaleCommit(element.sale.id, element.quantity)
                         .then(async sale => {
-                            if (itemsProcessed == wholeCart.length) {
-                                if (!cash) {
-                                    instance.payments
-                                        .fetch(payment.id)
-                                        .then(response =>
-                                            checkandcapturePayments(
-                                                response.id,
-                                                response.amount / 100,
-                                                cal_amount,
-                                                response.status
-                                            )
-                                        )
-                                        .catch(error => console.log(error));
-                                }
-                                await cart
-                                    .deleteMany({ "User.id": userId })
-                                    .then(() => {
-                                        console.log("Deleted");
-                                        // return { status: true };
-                                    })
-                                    .catch(err => {
-                                        console.log(err);
-                                    });
-                            }
-                            await createCupidLove(
-                                element.sale.id,
-                                true,
-                                userId,
-                                element.cupidCoins * element.quantity
-                            );
-                            await createCupidLove(
-                                element.sale.id,
-                                false,
-                                userId,
-                                element.cupidCoins * element.quantity
-                            );
+                            await updateProductOrder(
+                                element.Product.id,
+                                element.quantity
+                            )
+                                .then(async product => {
+                                    if (itemsProcessed == wholeCart.length) {
+                                        if (!cash) {
+                                            instance.payments
+                                                .fetch(payment.id)
+                                                .then(response =>
+                                                    checkandcapturePayments(
+                                                        response.id,
+                                                        response.amount / 100,
+                                                        cal_amount,
+                                                        response.status
+                                                    )
+                                                )
+                                                .catch(error =>
+                                                    console.log(error)
+                                                );
+                                        }
+                                        await cart
+                                            .deleteMany({ "User.id": userId })
+                                            .then(() => {
+                                                console.log("Deleted");
+                                                // return { status: true };
+                                            })
+                                            .catch(err => {
+                                                console.log(err);
+                                            });
+                                    }
+                                    await createCupidLove(
+                                        element.sale.id,
+                                        true,
+                                        userId,
+                                        element.cupidCoins * element.quantity
+                                    );
+                                    await createCupidLove(
+                                        element.sale.id,
+                                        false,
+                                        userId,
+                                        element.cupidCoins * element.quantity
+                                    );
+                                })
+                                .catch(err => {
+                                    console.log(err);
+                                });
                         })
                         .catch(err => {
                             console.log(err);
@@ -504,44 +532,55 @@ const createCommitOrOrder = async (
                 element.quantity
             )
                 .then(async order => {
-                    updateSaleOrder(element.sale.id, element.quantity)
+                    await updateSaleOrder(element.sale.id, element.quantity)
                         .then(async sale => {
-                            if (itemsProcessed == wholeCart.length) {
-                                if (!cash) {
-                                    instance.payments
-                                        .fetch(payment.id)
-                                        .then(response =>
-                                            checkandcapturePayments(
-                                                response.id,
-                                                response.amount / 100,
-                                                cal_amount,
-                                                response.status
-                                            )
-                                        )
-                                        .catch(error => console.log(error));
-                                }
-                                await cart
-                                    .deleteMany({ "User.id": userId })
-                                    .then(() => {
-                                        console.log("Deleted");
-                                        return { status: true };
-                                    })
-                                    .catch(err => {
-                                        console.log(err);
-                                    });
-                            }
-                            await createCupidLove(
-                                element.sale.id,
-                                true,
-                                userId,
-                                element.cupidCoins * element.quantity
-                            );
-                            await createCupidLove(
-                                element.sale.id,
-                                false,
-                                userId,
-                                element.cupidCoins * element.quantity
-                            );
+                            await updateProductOrder(
+                                element.Product.id,
+                                element.quantity
+                            )
+                                .then(async product => {
+                                    if (itemsProcessed == wholeCart.length) {
+                                        if (!cash) {
+                                            instance.payments
+                                                .fetch(payment.id)
+                                                .then(response =>
+                                                    checkandcapturePayments(
+                                                        response.id,
+                                                        response.amount / 100,
+                                                        cal_amount,
+                                                        response.status
+                                                    )
+                                                )
+                                                .catch(error =>
+                                                    console.log(error)
+                                                );
+                                        }
+                                        await cart
+                                            .deleteMany({ "User.id": userId })
+                                            .then(() => {
+                                                console.log("Deleted");
+                                                return { status: true };
+                                            })
+                                            .catch(err => {
+                                                console.log(err);
+                                            });
+                                    }
+                                    await createCupidLove(
+                                        element.sale.id,
+                                        true,
+                                        userId,
+                                        element.cupidCoins * element.quantity
+                                    );
+                                    await createCupidLove(
+                                        element.sale.id,
+                                        false,
+                                        userId,
+                                        element.cupidCoins * element.quantity
+                                    );
+                                })
+                                .catch(err => {
+                                    console.log(err);
+                                });
                         })
                         .catch(err => {
                             console.log(err);
@@ -551,13 +590,13 @@ const createCommitOrOrder = async (
                     console.log(err);
                 });
         }
-        // if (element.referralList.length > 0) {
-        //     await createCouponReward(
-        //         element.referralList,
-        //         element.sale.id,
-        //         userId
-        //     );
-        // }
+        if (element.referralList.length > 0) {
+            await createCouponReward(
+                element.referralList,
+                element.sale.id,
+                userId
+            );
+        }
     });
     console.log("Finished");
     return { status: true };
