@@ -26,7 +26,7 @@ async function asyncForEach(array, callback) {
 }
 
 agenda.define("Converting commits to orders v3.0", function(job, done) {
-    console.log("hello");
+    console.log("hello1");
     Sales.find({
         $expr: { $gte: ["$quantity_committed", "$cupidLove.quantity"] }
     })
@@ -128,6 +128,49 @@ agenda.define("Converting commits to orders v3.0", function(job, done) {
     //done();
 });
 
+agenda.define("refresh", function(job, done) {
+    const lastDay = moment()
+        .add(-24, "h")
+        .toDate();
+    console.log("hello2");
+    Sales.find({
+        $or: [
+            { $expr: { $lte: ["$endtime", lastDay] } },
+            {
+                $expr: {
+                    $lte: [
+                        "$cupidLove.quantity",
+                        "$quantity_committed" + "$quantity_sold"
+                    ]
+                }
+            }
+        ]
+    }).then(sales => {
+        asyncForEach(sales, async sale => {
+            var randomNumbers = Math.floor(Math.random() * 10);
+            const newDay = moment()
+                .add(randomNumbers, "d")
+                .toDate();
+            Sales.findOneAndUpdate(
+                { _id: sale._id },
+                {
+                    endtime: newDay,
+                    quantity_sold: 0,
+                    quantity_committed: 0
+                },
+                {
+                    useFindAndModify: false
+                }
+            );
+        })
+            .then(sale => {
+                console.log("Sale Updated");
+            })
+            .catch(err => {
+                console.log("Scheduler Error sale update");
+            });
+    });
+});
 // agenda.define("XYZ", (job, done) => {
 //     console.log("Hello with schedule");
 //     done();
@@ -139,6 +182,7 @@ agenda.on("ready", function() {
         "2 seconds",
         agenda.every("30 minutes", "Converting commits to orders v3.0")
     );
+    agenda.schedule("2 seconds", agenda.every("24 hours", "refresh"));
     agenda.start();
 });
 

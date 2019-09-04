@@ -240,7 +240,8 @@ router.get("/myprofile", (req, res, next) => {
             cupidCoins: 1,
             myaddresses: 1,
             gender: 1,
-            lastActive: 1
+            lastActive: 1,
+            profilePic:1
         }
     ).then(user => {
         return res.send(user);
@@ -248,5 +249,3 @@ router.get("/myprofile", (req, res, next) => {
 });
 
 module.exports = router;
-//https://play.google.com/store/apps/details?id=com.cupido.cupidorn
-//https://docs.google.com/spreadsheets/d/1YwxW6EeIiQRS_l0-aUNmjV-VthoLYYlNcd5CEZnnZBI/edit#gid=0

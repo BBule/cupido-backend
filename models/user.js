@@ -50,7 +50,8 @@ var UserSchema = new mongoose.Schema(
         //     code: String
         // },
         // my_referrals: [Schema.Types.ObjectId],
-        lastActive: { type: Date, default: Date.now }
+        lastActive: { type: Date, default: Date.now },
+        profilePic:String
     },
     {
         timestamps: true
