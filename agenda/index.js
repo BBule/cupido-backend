@@ -191,7 +191,7 @@ agenda.on("ready", function() {
     );
     agenda.schedule(
         "2 seconds",
-        agenda.every("2 minutes", "Refreshing Sales last 24h")
+        agenda.every("24 hours", "Refreshing Sales last 24h")
     );
     agenda.start();
 });
