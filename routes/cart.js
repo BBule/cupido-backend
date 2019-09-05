@@ -213,24 +213,26 @@ router.get("/view", (req, res, next) => {
                     element.referralList = referralList;
                     //if user is creator of referrals
                     if (referralList.length == 0) {
-                        console.log("saleid", element.sale.id);
+                        // console.log("saleid", element.sale.id);
                         await Referral.findOne({
                             createdBy: req.user._id,
                             sale: element.sale.id
                         }).then(async referral => {
-                            console.log(referral, "referral");
+                            // console.log(referral, "referral");
                             if (referral) {
+                                let CupidList;
                                 try {
                                     CupidList = await cupidLove.aggregate([
                                         {
                                             $match: {
-                                                sale: element.sale.id,
-                                                referralId: referral._id
+                                                referralId:referral._id,
+                                                earned:true,
+                                                source:"referral"
                                             }
                                         },
                                         {
                                             $group: {
-                                                _id: "$_id",
+                                                _id: "$referralId",
                                                 amount: { $sum: "$amount" }
                                             }
                                         }
@@ -238,10 +240,11 @@ router.get("/view", (req, res, next) => {
                                 } catch (err) {
                                     console.log(err);
                                 }
+                                // console.log(CupidList);
                                 referralList_sub = [
                                     {
                                         _id: referral._id,
-                                        amount: CupidList.amount
+                                        amount: CupidList[0].amount
                                     }
                                 ];
                                 element.referralList = referralList_sub;
