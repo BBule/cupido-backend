@@ -220,10 +220,28 @@ router.get("/view", (req, res, next) => {
                         }).then(async referral => {
                             console.log(referral, "referral");
                             if (referral) {
+                                try {
+                                    CupidList = await cupidLove.aggregate([
+                                        {
+                                            $match: {
+                                                sale: element.sale.id,
+                                                referralId: referral._id
+                                            }
+                                        },
+                                        {
+                                            $group: {
+                                                _id: "$_id",
+                                                amount: { $sum: "$amount" }
+                                            }
+                                        }
+                                    ]);
+                                } catch (err) {
+                                    console.log(err);
+                                }
                                 referralList_sub = [
                                     {
                                         _id: referral._id,
-                                        amount: referral.amount
+                                        amount: CupidList.amount
                                     }
                                 ];
                                 element.referralList = referralList_sub;
@@ -287,9 +305,7 @@ router.get("/track/:orderId", (req, res, next) => {
     const orderId = req.params.orderId;
     myorders.findOne({ _id: orderId }).then(order => {
         Request.get(
-            `https://app.shiprocket.in/v1/external/track/awb/${
-                order.shipping_awb
-            }`,
+            `https://app.shiprocket.in/v1/external/track/awb/${order.shipping_awb}`,
             (error, response, body) => {
                 if (error) {
                     return console.dir(error);
