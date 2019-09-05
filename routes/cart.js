@@ -218,9 +218,9 @@ router.get("/view", (req, res, next) => {
                             createdBy: req.user._id,
                             sale: element.sale.id
                         }).then(async referral => {
-                            // console.log(referral, "referral");
+                            console.log(referral, "referral");
                             if (referral) {
-                                let CupidList;
+                                let CupidList=[];
                                 try {
                                     CupidList = await cupidLove.aggregate([
                                         {
@@ -239,6 +239,9 @@ router.get("/view", (req, res, next) => {
                                     ]);
                                 } catch (err) {
                                     console.log(err);
+                                }
+                                if(CupidList.length==0){
+                                    CupidList.push({amount:0})
                                 }
                                 // console.log(CupidList);
                                 referralList_sub = [
