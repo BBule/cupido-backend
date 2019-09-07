@@ -76,9 +76,7 @@ async function sendOrderDetailsToAdmin(
     message = "New%20Order%20arrived%20in%20list"
 ) {
     request.post(
-        `https://api.msg91.com/api/sendhttp.php?authkey=${
-            config.SMS.AUTH_KEY
-        }&mobiles=9641222292&message=${message}&route=4&sender=CUPIDO&country=91`,
+        `https://api.msg91.com/api/sendhttp.php?authkey=${config.SMS.AUTH_KEY}&mobiles=9641222292&message=${message}&route=4&sender=CUPIDO&country=91`,
         { json: true },
         async function(error, response, body) {
             if (!error) {
@@ -97,11 +95,7 @@ async function sendOrderDetailsToUser(
 ) {
     User.findOne({ _id: userId }).then(user => {
         request.post(
-            `https://api.msg91.com/api/sendhttp.php?authkey=${
-                config.SMS.AUTH_KEY
-            }&mobiles=${
-                user.contact.contact
-            }&message=${message}&route=4&sender=CUPIDO&country=91`,
+            `https://api.msg91.com/api/sendhttp.php?authkey=${config.SMS.AUTH_KEY}&mobiles=${user.contact.contact}&message=${message}&route=4&sender=CUPIDO&country=91`,
             { json: true },
             async function(error, response, body) {
                 if (!error) {
@@ -443,6 +437,9 @@ const createCommitOrOrder = async (
         cal_amount += sale.salePrice * element.quantity;
         if (element.is_commit) {
             cal_amount -= element.quantity * sale.cupidLove.cupidLove;
+        }
+        if (referralList.length > 0) {
+            cal_amount -= element.referralList[0].amount;
         }
         console.log(sale.cupidLove.quantity);
         if (
