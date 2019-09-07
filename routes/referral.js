@@ -9,11 +9,10 @@ const Saleslist = require("../models/saleslist");
 const Cupidlove = require("../models/CupidLove.js");
 
 router.post("/send", async (req, res, next) => {
-    Referral.findOne({sale:req.body.sale}).then(async referral=>{
-        if(referral){
-            return res.send({code:referral.code});
-        }
-        else{
+    Referral.findOne({ sale: req.body.sale }).then(async referral => {
+        if (referral) {
+            return res.send({ code: referral.code });
+        } else {
             await Saleslist.findOne({ _id: req.body.sale }).then(async sale => {
                 const salePrice = sale.salePrice;
                 const referralPercent = sale.referralPercent;
@@ -22,7 +21,9 @@ router.post("/send", async (req, res, next) => {
                     var tokens = await Referral.find()
                         .select("code")
                         .then(async referral => {
-                            var token = randomize("Aa0", 5, { exclude: tokens });
+                            var token = randomize("Aa0", 5, {
+                                exclude: tokens
+                            });
                             var referral = new Referral({
                                 code: token,
                                 createdBy: req.user._id,
@@ -52,13 +53,13 @@ router.post("/send", async (req, res, next) => {
                 }
             });
         }
-    })
+    });
 });
 
 router.post("/apply", async (req, res, next) => {
     await Referral.findOne({
         code: req.body.code,
-        cart:{$nin:[req.user._id]},
+        cart: { $nin: [req.user._id] },
         sale: req.body.sale,
         createdBy: { $ne: req.user._id }
     })
@@ -68,7 +69,7 @@ router.post("/apply", async (req, res, next) => {
                 let referral1;
                 try {
                     referral1 = await Referral.findOne({
-                        usedBy:{$in:[req.user._id]},
+                        usedBy: { $in: [req.user._id] },
                         sale: req.body.sale
                     });
                 } catch (err) {
@@ -95,7 +96,7 @@ router.post("/apply", async (req, res, next) => {
                 let referral3;
                 try {
                     referral3 = await Referral.findOne({
-                        cart:req.user._id,
+                        cart: req.user._id,
                         sale: req.body.sale
                     });
                 } catch (err) {
@@ -141,7 +142,26 @@ router.post("/apply", async (req, res, next) => {
         });
 });
 
-router.get("myReferralsOnThisSale", (req, res, next) => {
+router.post("/remove/:referralId", async (req, res, next) => {
+    const referralId = req.params.referralId;
+    await Referral.findByIdAndUpdate(
+        { 
+            _id: referralId 
+        },
+        {
+            $pull: { cart: req.user._id }
+        },
+        { new: true }
+    )
+        .then(referral => {
+            res.send(referral);
+        })
+        .catch(err => {
+            console.log(err);
+        });
+});
+
+router.get("/myReferralsOnThisSale", (req, res, next) => {
     Referral.find({ saleId: req.query.saleId, used: false })
         .then(referrals => {
             return res.send(referrals);
