@@ -188,141 +188,75 @@ router.get("/view", (req, res, next) => {
         .populate("Product.id", "images")
         .then(async result => {
             if (result && result.length) {
-                // var startpoint = req.query.offset || 0; // zero
-                // var howmany = req.query.limit || 10; // ten
-                // console.log("carts is found and it's product marketprice: ");
-                // console.log(result[0].Product.salePrice);
-                // let cupidLove = null;
-                // if (typeofcart == "commit") {
-                //     cupidLove = await getEstimateCupidLove(cartsholder);
-                // }
-                // return res.json({
-                //     cartsdata: result //.splice(startpoint, howmany)
-                // });
-                // var itemprocessed=0;
-                // result1=[];
-                // asyncForEach(result,async element=>{
-                //     itemprocessed++;
-                //     element["image"]="";
-                //     Products.findOne({_id:element.Product.id}).then((product)=>{
-                //         element.image=product.images[0];
-                //         console.log(element)
-                //         result1.push(element);
-                //         if(itemprocessed==result.length){
-                //             console.log("hurray")
-                //             return res.send({cartsdata:result1});
-                //         }
-                //     }).catch(err=>console.log(err))
-                // })
                 var itemsProcessed = 0;
                 asyncForEach(result, async element => {
                     itemsProcessed++;
-                    // let result1;
-                    // try {
-                    //     result1 = await Referral.aggregate([
-                    //         {
-                    //             $match: {
-                    //                 sale: element.sale.id,
-                    //                 // createdBy: { $ne: req.user._id },
-                    //                 // usedBy: { $ne: req.user._id },
-                    //                 cart: req.user._id
-                    //             }
-                    //         },
-                    //         {
-                    //             $group: {
-                    //                 _id: "$sale",
-                    //                 amount: { $sum: "$amount" }
-                    //             }
-                    //         }
-                    //     ]);
-                    // } catch (err) {
-                    //     console.log(err);
-                    // }
-                    // let referralList;
-                    // try {
-                    //     referralList = await Referral.aggregate([
-                    //         {
-                    //             $match: {
-                    //                 sale: element.sale.id,
-                    //                 // createdBy: { $ne: req.user._id },
-                    //                 // usedBy: { $ne: req.user._id },
-                    //                 cart: req.user._id
-                    //             }
-                    //         },
-                    //         {
-                    //             $group: {
-                    //                 _id: "$_id",
-                    //                 // code: { $sum: "$code" },
-                    //                 amount: { $sum: "$amount" }
-                    //             }
-                    //         }
-                    //     ]);
-                    // } catch (err) {
-                    //     console.log(err);
-                    // }
-                    // element.referralList = referralList;
-                    // //if user is creater of referrals
-                    // if (result1.length == 0 && referralList.length == 0) {
-                    //     console.log("saleid", element.sale.id);
-                    //     await Referral.findOne({
-                    //         createdBy: req.user._id,
-                    //         sale: element.sale.id
-                    //     }).then(async referral => {
-                    //         console.log(referral, "referral");
-                    //         if (referral) {
-                    //             try {
-                    //                 result_sub = await cupidLove.aggregate([
-                    //                     {
-                    //                         $match: {
-                    //                             "Sale.id": element.sale.id,
-                    //                             referralId: referral._id,
-                    //                             "User.id": req.user._id,
-                    //                             earned: true
-                    //                         }
-                    //                     },
-                    //                     {
-                    //                         $group: {
-                    //                             _id: "$referralId",
-                    //                             amount: { $sum: "$amount" }
-                    //                         }
-                    //                     }
-                    //                 ]);
-                    //             } catch (err) {
-                    //                 console.log(err);
-                    //             }
-                    //             referralList_sub = [
-                    //                 {
-                    //                     _id: referral._id,
-                    //                     amount: referral.amount
-                    //                 }
-                    //             ];
-                    //             console.log("result_sub", result_sub);
-                    //             element.referralList = referralList_sub;
-                    //             if (
-                    //                 result_sub.length == 0 &&
-                    //                 referralList.length == 0
-                    //             ) {
-                    //                 result_sub.push({ amount: 0 });
-                    //                 result1.push({ amount: 0 });
-                    //                 //element.referralList = [];
-                    //             }
-                    //         } else {
-                    //             result1.push({ amount: 0 });
-                    //             referralList = [];
-                    //             element.referralList = referralList;
-                    //         }
-                    //     });
-                    // }
-                    // if (
-                    //     result1[0].amount >=
-                    //     element.Product.salePrice - element.cupidCoins
-                    // ) {
-                    //     element.referralAmount =
-                    //         element.Product.salePrice - element.cupidCoins;
-                    // } else {
-                    //     element.referralAmount = result1[0].amount;
-                    // }
-
+                    let referralList;
+                    try {
+                        referralList = await Referral.aggregate([
+                            {
+                                $match: {
+                                    sale: element.sale.id,
+                                    cart: req.user._id
+                                }
+                            },
+                            {
+                                $group: {
+                                    _id: "$_id",
+                                    amount: { $sum: "$amount" }
+                                }
+                            }
+                        ]);
+                    } catch (err) {
+                        console.log(err);
+                    }
+                    element.referralList = referralList;
+                    //if user is creator of referrals
+                    if (referralList.length == 0) {
+                        // console.log("saleid", element.sale.id);
+                        await Referral.findOne({
+                            createdBy: req.user._id,
+                            sale: element.sale.id
+                        }).then(async referral => {
+                            console.log(referral, "referral");
+                            if (referral) {
+                                let CupidList=[];
+                                try {
+                                    CupidList = await cupidLove.aggregate([
+                                        {
+                                            $match: {
+                                                referralId:referral._id,
+                                                earned:true,
+                                                source:"referral"
+                                            }
+                                        },
+                                        {
+                                            $group: {
+                                                _id: "$referralId",
+                                                amount: { $sum: "$amount" }
+                                            }
+                                        }
+                                    ]);
+                                } catch (err) {
+                                    console.log(err);
+                                }
+                                if(CupidList.length==0){
+                                    CupidList.push({amount:0})
+                                }
+                                // console.log(CupidList);
+                                referralList_sub = [
+                                    {
+                                        _id: referral._id,
+                                        amount: CupidList[0].amount
+                                    }
+                                ];
+                                element.referralList = referralList_sub;
+                            } else {
+                                referralList = [];
+                                element.referralList = referralList;
+                            }
+                        });
+                    }
                     console.log(itemsProcessed, result.length);
                     if (itemsProcessed == result.length) {
                         return res.send({ cartsdata: result });
@@ -377,9 +311,7 @@ router.get("/track/:orderId", (req, res, next) => {
     const orderId = req.params.orderId;
     myorders.findOne({ _id: orderId }).then(order => {
         Request.get(
-            `https://app.shiprocket.in/v1/external/track/awb/${
-                order.shipping_awb
-            }`,
+            `https://app.shiprocket.in/v1/external/track/awb/${order.shipping_awb}`,
             (error, response, body) => {
                 if (error) {
                     return console.dir(error);

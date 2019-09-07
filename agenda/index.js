@@ -26,7 +26,7 @@ async function asyncForEach(array, callback) {
 }
 
 agenda.define("Converting commits to orders v3.0", function(job, done) {
-    console.log("hello");
+    console.log("hello1");
     Sales.find({
         $expr: { $gte: ["$quantity_committed", "$cupidLove.quantity"] }
     })
@@ -128,6 +128,56 @@ agenda.define("Converting commits to orders v3.0", function(job, done) {
     //done();
 });
 
+agenda.define("Refreshing Sales last 24h", function(job, done) {
+    const lastDay = moment()
+        .add(-24, "h")
+        .toDate();
+    console.log("hello2");
+    Sales.find({
+        $or: [
+            { $expr: { $lte: ["$endtime", lastDay] } },
+            {
+                $expr: {
+                    $lte: [
+                        "$cupidLove.quantity",
+                        "$quantity_committed" + "$quantity_sold"
+                    ]
+                }
+            }
+        ]
+    })
+        .then(sales => {
+            asyncForEach(sales, async sale => {
+                var randomNumbers = Math.floor(Math.random() * (11 - 5)) + 5;
+                const newDay = moment()
+                    .add(randomNumbers, "d")
+                    .toDate();
+                Sales.findOneAndUpdate(
+                    { _id: sale._id },
+                    {
+                        endtime: newDay,
+                        quantity_sold: 0,
+                        quantity_committed: 0
+                    },
+                    {
+                        useFindAndModify: false
+                    }
+                )
+                    .then(sale => {
+                        console.log("sale", sale._id);
+                        console.log("Sale Updated");
+                    })
+                    .catch(err => {
+                        console.log("Scheduler Error sale update");
+                    });
+            });
+            done();
+        })
+        .catch(err => {
+            console.log("Error! No Sale Found");
+            done();
+        });
+});
 // agenda.define("XYZ", (job, done) => {
 //     console.log("Hello with schedule");
 //     done();
@@ -138,6 +188,10 @@ agenda.on("ready", function() {
     agenda.schedule(
         "2 seconds",
         agenda.every("30 minutes", "Converting commits to orders v3.0")
+    );
+    agenda.schedule(
+        "2 seconds",
+        agenda.every("24 hours", "Refreshing Sales last 24h")
     );
     agenda.start();
 });

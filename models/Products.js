@@ -16,8 +16,8 @@ let ProductsSchema = new Schema(
         // returnTime: Number,
         // ShippingPrice: Number,
         images: [String],
-        productCatalogImage:String,
-        highlights:[String],
+        productCatalogImage: String,
+        highlights: [String],
         backdrop_image: Array,
         backdrop_title: String,
         backdrop_content: String,
@@ -25,8 +25,10 @@ let ProductsSchema = new Schema(
         whyweloveit_title: String,
         whyweloveit_content: String,
         brand_image: Array,
-        size:[String],
-        sizeChart:String,
+        size: [String],
+        sizeChart: String,
+        quantity_sold: { type: Number, default: 0 },
+        // quantity_committed: { type: Number, default: 0 },
         // specifications_title: String,
         // specifications_content: String,
         brand_title: String,
@@ -37,9 +39,9 @@ let ProductsSchema = new Schema(
         featuresAtGlance: [{ title: String, icon: String }],
         avrg_rating: { type: Number, default: 2.5 },
         video: String,
-        subCategory:String,
-        productModel:Number,
-        productVariant:String,
+        subCategory: String,
+        productModel: Number,
+        productVariant: String,
         // Relevent Details
         // addedBy: {
         //     type: mongoose.Schema.Types.ObjectId,
@@ -48,7 +50,7 @@ let ProductsSchema = new Schema(
         // },
         filters: Schema.Types.Mixed,
         timecreated: { type: Date, default: Date.now },
-        title: String, // Primary Key
+        title: String // Primary Key
         // likedlist: {
         //     meta: [Schema.Types.ObjectId],
         //     count: Number

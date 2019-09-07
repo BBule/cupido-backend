@@ -8,40 +8,47 @@ const config = require("../config/config");
 const nodemailer = require("nodemailer");
 const { SendMail, getEJSTemplate } = require("../helpers/mailHelper");
 
-router.patch("/update",async (req,res,next)=>{
-    console.log("Hello")
-    const userId=req.user._id;
-    let updateObj={};
-    if(req.body.hasOwnProperty("email")){
-        updateObj["email.email"]=req.body.email;
+router.patch("/update", async (req, res, next) => {
+    console.log("Hello");
+    const userId = req.user._id;
+    let updateObj = {};
+    if (req.body.hasOwnProperty("email")) {
+        updateObj["email.email"] = req.body.email;
     }
-    if(req.body.hasOwnProperty("mobile")){
-        const user=await User.findOne({"contact.contact":req.body.mobile})
-        if(user){
-            return res.json({msg:"Mobile number already in use."})
-        }else{
-        updateObj["contact.contact"]=req.body.mobile;
+    if (req.body.hasOwnProperty("mobile")) {
+        const user = await User.findOne({ "contact.contact": req.body.mobile });
+        if (user) {
+            return res.json({ msg: "Mobile number already in use." });
+        } else {
+            updateObj["contact.contact"] = req.body.mobile;
         }
     }
     delete req.body.mobile;
     delete req.body.email;
-    for(var item in req.body){
-        updateObj[item]=req.body[item];
+    for (var item in req.body) {
+        updateObj[item] = req.body[item];
     }
     console.log(updateObj);
-    User.updateOne({
-        _id:userId
-    },{$set:updateObj},{new:false}).exec().then((user)=>{
-        return res.send(user)
-    }).catch(err=>{
-        console.log(err);
-    })
+    User.updateOne(
+        {
+            _id: userId
+        },
+        { $set: updateObj },
+        { new: false }
+    )
+        .exec()
+        .then(user => {
+            return res.send(user);
+        })
+        .catch(err => {
+            console.log(err);
+        });
 });
 
 router.post("/edit", async function(req, res, next) {
     let query = { $set: {} };
     if (req.body.hasOwnProperty("mobile")) {
-        query.$set = { contact: req.body.mobile,verified:true};
+        query.$set = { contact: req.body.mobile, verified: true };
     }
     // if (req.body.hasOwnProperty("email")) {
     //     var email_token = jwt
@@ -222,11 +229,23 @@ router.post("/add_referral_code", (req, res, next) => {
     });
 });
 
-router.get("/myprofile",(req,res,next)=>{
-    const userId=req.user._id;
-    User.findOne({_id:userId},{username:1,email:1,contact:1,cupidCoins:1,myaddresses:1,gender:1}).then(user=>{
+router.get("/myprofile", (req, res, next) => {
+    const userId = req.user._id;
+    User.findOne(
+        { _id: userId },
+        {
+            username: 1,
+            email: 1,
+            contact: 1,
+            cupidCoins: 1,
+            myaddresses: 1,
+            gender: 1,
+            lastActive: 1,
+            profilePic:1
+        }
+    ).then(user => {
         return res.send(user);
-    })
-})
+    });
+});
 
 module.exports = router;
