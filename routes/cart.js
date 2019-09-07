@@ -225,13 +225,17 @@ router.get("/view", (req, res, next) => {
                                     CupidList = await cupidLove.aggregate([
                                         {
                                             $match: {
+                                                "User.id": mongoose.Types.ObjectId(
+                                                    req.user._id
+                                                ),
+                                                source: "referral",
                                                 referralId: referral._id,
                                                 earned: true
                                             }
                                         },
                                         {
                                             $group: {
-                                                _id: "$_id",
+                                                _id: "$referralId",
                                                 amount: { $sum: "$amount" }
                                             }
                                         }
