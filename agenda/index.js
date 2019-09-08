@@ -128,7 +128,10 @@ agenda.define("Converting commits to orders v3.0", function(job, done) {
     //done();
 });
 
-agenda.define("Refreshing Sales last 24h", function(job, done) {
+agenda.define("Refreshing Sales which expired in last 24h", function(
+    job,
+    done
+) {
     console.log("hello2");
     const currDay = moment().toDate();
     const lastDay = moment()
@@ -144,10 +147,7 @@ agenda.define("Refreshing Sales last 24h", function(job, done) {
             },
             {
                 $expr: {
-                    $gte: [
-                        "$quantity_sold",
-                        "$cupidLove.quantity"
-                    ]
+                    $gte: ["$quantity_sold", "$cupidLove.quantity"]
                 }
             }
         ]
@@ -170,7 +170,6 @@ agenda.define("Refreshing Sales last 24h", function(job, done) {
                     }
                 )
                     .then(sale => {
-                        console.log("sale", sale._id);
                         console.log("Sale Updated");
                     })
                     .catch(err => {
@@ -193,11 +192,11 @@ agenda.on("ready", function() {
     console.log("Agenda Started");
     agenda.schedule(
         "2 seconds",
-        agenda.every("2 seconds", "Converting commits to orders v3.0")
+        agenda.every("2 hours", "Converting commits to orders v4.0")
     );
     agenda.schedule(
         "2 seconds",
-        agenda.every("2 seconds", "Refreshing Sales last 24h")
+        agenda.every("24 hours", "Refreshing Sales which expired in last 24h")
     );
     agenda.start();
 });
