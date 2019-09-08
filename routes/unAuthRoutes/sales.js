@@ -3,6 +3,7 @@ const router = express.Router();
 const lodash = require("lodash");
 var jwt = require("jsonwebtoken");
 const csv = require("csvtojson");
+const moment = require("moment");
 // Models
 const config = require("../../config/config");
 const Saleslist = require("../../models/saleslist");
@@ -26,6 +27,62 @@ function newIndDate() {
 //         })
 //         .catch(err => {
 //             console.log(err);
+//         });
+// });
+
+// router.get("/agenda", (req, res, next) => {
+//     console.log("hello2");
+//     var currDay = moment().toDate();
+//     var lastDay = moment().add(-24, "h").toDate();
+//     Saleslist.find({
+//         $or: [
+//             {
+//                 $and: [
+//                     { $expr: { $gte: ["$endtime", lastDay] } },
+//                     { $expr: { $lte: ["$endtime", currDay] } }
+//                 ]
+//             },
+//             {
+//                 $expr: {
+//                     $gte: [
+//                         "$quantity_sold",
+//                         "$cupidLove.quantity"
+//                     ]
+//                 }
+//             }
+//         ]
+//     })
+//         .then(async sales => {
+//             return res.send(sales);
+//             // asyncForEach(sales, async sale => {
+//             //     var randomNumbers = Math.floor(Math.random() * (11 - 5)) + 5;
+//             //     const newDay = moment()
+//             //         .add(randomNumbers, "d")
+//             //         .toDate();
+//             //     Sales.findOneAndUpdate(
+//             //         { _id: sale._id },
+//             //         {
+//             //             endtime: newDay,
+//             //             quantity_sold: 0,
+//             //             quantity_committed: 0
+//             //         },
+//             //         {
+//             //             useFindAndModify: false
+//             //         }
+//             //     )
+//             //         .then(sale => {
+//             //             console.log("sale", sale._id);
+//             //             console.log("Sale Updated");
+//             //         })
+//             //         .catch(err => {
+//             //             console.log("Scheduler Error sale update");
+//             //         });
+//             // });
+//             // done();
+//         })
+//         .catch(err => {
+//             console.log("Error! No Sale Found");
+//             done();
 //         });
 // });
 

@@ -128,25 +128,31 @@ agenda.define("Converting commits to orders v3.0", function(job, done) {
     //done();
 });
 
-agenda.define("Refreshing Sales last 24h", function(job, done) {
+agenda.define("Refreshing Sales which expired in last 24h", function(
+    job,
+    done
+) {
+    console.log("hello2");
+    const currDay = moment().toDate();
     const lastDay = moment()
         .add(-24, "h")
         .toDate();
-    console.log("hello2");
     Sales.find({
         $or: [
-            { $expr: { $lte: ["$endtime", lastDay] } },
+            {
+                $and: [
+                    { $expr: { $gte: ["$endtime", lastDay] } },
+                    { $expr: { $lte: ["$endtime", currDay] } }
+                ]
+            },
             {
                 $expr: {
-                    $lte: [
-                        "$cupidLove.quantity",
-                        "$quantity_committed" + "$quantity_sold"
-                    ]
+                    $gte: ["$quantity_sold", "$cupidLove.quantity"]
                 }
             }
         ]
     })
-        .then(sales => {
+        .then(async sales => {
             asyncForEach(sales, async sale => {
                 var randomNumbers = Math.floor(Math.random() * (11 - 5)) + 5;
                 const newDay = moment()
@@ -164,7 +170,6 @@ agenda.define("Refreshing Sales last 24h", function(job, done) {
                     }
                 )
                     .then(sale => {
-                        console.log("sale", sale._id);
                         console.log("Sale Updated");
                     })
                     .catch(err => {
@@ -187,11 +192,11 @@ agenda.on("ready", function() {
     console.log("Agenda Started");
     agenda.schedule(
         "2 seconds",
-        agenda.every("30 minutes", "Converting commits to orders v3.0")
+        agenda.every("2 hours", "Converting commits to orders v4.0")
     );
     agenda.schedule(
         "2 seconds",
-        agenda.every("24 hours", "Refreshing Sales last 24h")
+        agenda.every("24 hours", "Refreshing Sales which expired in last 24h")
     );
     agenda.start();
 });
