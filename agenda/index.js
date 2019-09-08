@@ -130,19 +130,23 @@ agenda.define("Converting commits to orders v3.0", function(job, done) {
 
 agenda.define("Refreshing Sales last 24h", function(job, done) {
     console.log("hello2");
-    const currDay = moment()
-    .toDate();
+    const currDay = moment().toDate();
     const lastDay = moment()
         .add(-24, "h")
         .toDate();
     Sales.find({
         $or: [
-            { $and: [{ $expr: { $gte: { $endtime, lastday } } }, { $expr : { $lte: { $endtime, currDay } } } ] },
+            {
+                $and: [
+                    { $expr: { $gte: ["$endtime", lastDay] } },
+                    { $expr: { $lte: ["$endtime", currDay] } }
+                ]
+            },
             {
                 $expr: {
-                    $lte: [
-                        "$cupidLove.quantity",
-                        "$quantity_committed" + "$quantity_sold"
+                    $gte: [
+                        "$quantity_sold",
+                        "$cupidLove.quantity"
                     ]
                 }
             }
