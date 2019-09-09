@@ -25,14 +25,11 @@ const getUserCommits = async userId => {
                     timecreated: 1,
                     referralAmount: 1,
                     size: 1,
-                    color:1,
+                    color: 1,
                     quantity: 1
                 }
             )
-            .populate(
-                "Product.id",
-                "images brandName title marketPrice size sizeChart colors color_images"
-            )
+            .populate("Product.id", "images brandName title marketPrice")
             .populate("sale.id", "quantity_sold quantity_committed cupidLove")
             .sort({ timecreated: -1 })
             // .limit(limit)
@@ -58,14 +55,11 @@ const getUserOrders = async userId => {
                     timecreated: 1,
                     referralAmount: 1,
                     size: 1,
-                    color:1,
+                    color: 1,
                     quantity: 1
                 }
             )
-            .populate(
-                "Product.id",
-                "images brandName title marketPrice size sizeChart colors color_images"
-            )
+            .populate("Product.id", "images brandName title marketPrice")
             .populate("sale.id", "salePrice")
             .sort({ timecreated: -1 })
             // .limit(limit)
@@ -205,7 +199,7 @@ const createCommit = async (
         commit_amount: amount,
         referralAmount: referralAmount,
         size: size,
-        color:color,
+        color: color,
         quantity: quantity
     });
     return commit1.save();
@@ -234,7 +228,7 @@ const createOrder = async (
         order_status: orderStatus,
         referralAmount: referralAmount,
         size: size,
-        color:color,
+        color: color,
         quantity: quantity
     });
     await sendOrderDetailsToAdmin();
