@@ -444,7 +444,7 @@ const createCommitOrOrder = async (
         if (element.is_commit) {
             cal_amount -= element.quantity * sale.cupidLove.cupidLove;
         }
-        if (referralList.length > 0) {
+        if (element.referralList.length > 0) {
             cal_amount -= element.referralList[0].amount;
         }
         console.log(sale.cupidLove.quantity);
