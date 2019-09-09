@@ -27,6 +27,8 @@ let ProductsSchema = new Schema(
         brand_image: Array,
         size: [String],
         sizeChart: String,
+        colors:[String],
+        color_images:[String],
         quantity_sold: { type: Number, default: 0 },
         // quantity_committed: { type: Number, default: 0 },
         // specifications_title: String,

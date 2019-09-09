@@ -45,7 +45,7 @@ router.get("/myorders", async (req, res, next) => {
 
 router.post("/orderOrCommit", async (req, res, next) => {
     console.log("API Called");
-    if (req.body.payment || cash) {
+    if (req.body.payment || req.body.cash) {
         const {
             wholeCart,
             addressId,

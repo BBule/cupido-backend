@@ -31,6 +31,7 @@ let mycartSchema = new Schema({
     timecreated: { type: Date, default: Date.now },
     is_commit: Boolean,
     size: { type: String, default: null },
+    color:{ type: String, default: null },
     // referral_code:String,
     cupidCoins: { type: Number, default: 0 },
     referralAmount: { type: Number, default: 0 },
