@@ -25,12 +25,13 @@ const getUserCommits = async userId => {
                     timecreated: 1,
                     referralAmount: 1,
                     size: 1,
+                    color:1,
                     quantity: 1
                 }
             )
             .populate(
                 "Product.id",
-                "images brandName title marketPrice size sizeChart"
+                "images brandName title marketPrice size sizeChart colors color_images"
             )
             .populate("sale.id", "quantity_sold quantity_committed cupidLove")
             .sort({ timecreated: -1 })
@@ -57,12 +58,13 @@ const getUserOrders = async userId => {
                     timecreated: 1,
                     referralAmount: 1,
                     size: 1,
+                    color:1,
                     quantity: 1
                 }
             )
             .populate(
                 "Product.id",
-                "images brandName title marketPrice size sizeChart"
+                "images brandName title marketPrice size sizeChart colors color_images"
             )
             .populate("sale.id", "salePrice")
             .sort({ timecreated: -1 })
@@ -191,6 +193,7 @@ const createCommit = async (
     amount,
     referralAmount,
     size,
+    color,
     quantity
 ) => {
     commit1 = new mycommits({
@@ -202,6 +205,7 @@ const createCommit = async (
         commit_amount: amount,
         referralAmount: referralAmount,
         size: size,
+        color:color,
         quantity: quantity
     });
     return commit1.save();
@@ -217,6 +221,7 @@ const createOrder = async (
     amount,
     referralAmount,
     size,
+    color,
     quantity
 ) => {
     order1 = new myOrders({
@@ -229,6 +234,7 @@ const createOrder = async (
         order_status: orderStatus,
         referralAmount: referralAmount,
         size: size,
+        color:color,
         quantity: quantity
     });
     await sendOrderDetailsToAdmin();
@@ -455,6 +461,7 @@ const createCommitOrOrder = async (
                 (sale.salePrice - element.cupidCoins) * element.quantity,
                 element.referralAmount,
                 element.size,
+                element.color,
                 element.quantity
             )
                 .then(async commit => {
@@ -526,6 +533,7 @@ const createCommitOrOrder = async (
                 (sale.salePrice - element.cupidCoins) * element.quantity,
                 element.referralAmount,
                 element.size,
+                element.color,
                 element.quantity
             )
                 .then(async order => {

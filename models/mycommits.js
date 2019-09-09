@@ -43,6 +43,7 @@ let mycommitsSchema = new Schema({
         email: String
     },
     size:String,
+    color:String,
     payment_details: [Schema.Types.Mixed],
     timecreated: { type: Date, default: Date.now },
     // commit_time: Date, // when payment portal sends positive ack

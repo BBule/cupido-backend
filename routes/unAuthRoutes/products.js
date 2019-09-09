@@ -139,7 +139,7 @@ router.get("/allOrders", (req, res, next) => {
     )
         .populate(
             "Product.id",
-            "images brandName title marketPrice size sizeChart"
+            "images brandName title marketPrice size color"
         )
         .populate("User.id", "email.email contact.contact username gender")
         .populate("sale.id", "salePrice")
@@ -182,7 +182,7 @@ router.get("/allCommits", (req, res, next) => {
     )
         .populate(
             "Product.id",
-            "images brandName title marketPrice size sizeChart"
+            "images brandName title marketPrice size color"
         )
         .populate("User.id", "email.email contact.contact username gender")
         .populate("sale.id", "salePrice")
@@ -213,7 +213,7 @@ router.get("/allOrders", (req, res, next) => {
     )
         .populate(
             "Product.id",
-            "images brandName title marketPrice size sizeChart"
+            "images brandName title marketPrice size color"
         )
         .populate("sale.id", "salePrice")
         .sort({ timecreated: -1 })

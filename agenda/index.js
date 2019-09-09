@@ -55,6 +55,7 @@ agenda.define("Converting commits to orders v3.0", function(job, done) {
                                         order_status: "Processed",
                                         referralAmount: commit.referralAmount,
                                         size: commit.size,
+                                        color:commit.color,
                                         quantity: commit.quantity
                                     });
                                     //console.log(order1);

@@ -56,7 +56,8 @@ router.post("/add", async (req, res, next) => {
                     total_expected_price:
                         req.body.salePrice * req.body.quantity -
                         req.body.cupidCoins * req.body.quantity,
-                    size: req.body.size
+                    size: req.body.size,
+                    color:req.body.color
                 });
 
                 // if (req.body.referral_code) {
