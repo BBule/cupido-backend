@@ -438,7 +438,7 @@ const createCommitOrOrder = async (
         if (element.is_commit) {
             cal_amount -= element.quantity * sale.cupidLove.cupidLove;
         }
-        if (referralList.length > 0) {
+        if (element.referralList.length > 0) {
             cal_amount -= element.referralList[0].amount;
         }
         console.log(sale.cupidLove.quantity);
@@ -458,13 +458,16 @@ const createCommitOrOrder = async (
                 element.quantity
             )
                 .then(async commit => {
+                    console.log("commit added");
                     await updateSaleCommit(element.sale.id, element.quantity)
                         .then(async sale => {
+                            console.log("sale updated");
                             await updateProductOrder(
                                 element.Product.id,
                                 element.quantity
                             )
                                 .then(async product => {
+                                    console.log("product updated");
                                     if (itemsProcessed == wholeCart.length) {
                                         if (!cash) {
                                             instance.payments
