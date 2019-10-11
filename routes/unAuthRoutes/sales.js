@@ -163,10 +163,10 @@ router.get("/bestSellers", (req, res, next) => {
     // console.log(query)
     Saleslist.find(query)
         .populate("product.id")
+        .limit(Number(16))
         .sort({ timecreated: -1 })
         .lean()
         .exec()
-        .limit(16)
         .then(sales => {
             return res.send(sales);
         })
