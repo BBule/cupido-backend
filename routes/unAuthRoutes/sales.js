@@ -166,6 +166,7 @@ router.get("/bestSellers", (req, res, next) => {
         .sort({ timecreated: -1 })
         .lean()
         .exec()
+        .limit(16)
         .then(sales => {
             return res.send(sales);
         })
