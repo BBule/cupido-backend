@@ -57,7 +57,7 @@ router.post("/add", async (req, res, next) => {
                         req.body.salePrice * req.body.quantity -
                         req.body.cupidCoins * req.body.quantity,
                     size: req.body.size,
-                    color:req.body.color
+                    color: req.body.color
                 });
 
                 // if (req.body.referral_code) {
@@ -212,6 +212,13 @@ router.get("/view", (req, res, next) => {
                         console.log(err);
                     }
                     element.referralList = referralList;
+                    element.referralAmount = referralList.reduce(function(
+                        cnt,
+                        o
+                    ) {
+                        return cnt + o.amount;
+                    },
+                    0);
                     //if user is creator of referrals
                     if (referralList.length == 0) {
                         // console.log("saleid", element.sale.id);
@@ -255,9 +262,12 @@ router.get("/view", (req, res, next) => {
                                     }
                                 ];
                                 element.referralList = referralList_sub;
+                                element.referralAmount =
+                                    referralList_sub.amount;
                             } else {
                                 referralList = [];
                                 element.referralList = referralList;
+                                element.referralAmount = 0;
                             }
                         });
                     }
