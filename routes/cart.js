@@ -221,12 +221,10 @@ router.get("/view", (req, res, next) => {
                     0);
                     //if user is creator of referrals
                     if (referralList.length == 0) {
-                        // console.log("saleid", element.sale.id);
                         await Referral.findOne({
                             createdBy: req.user._id,
                             sale: element.sale.id
                         }).then(async referral => {
-                            // console.log(referral, "referral");
                             if (referral) {
                                 let CupidList = [];
                                 try {
@@ -263,7 +261,7 @@ router.get("/view", (req, res, next) => {
                                 ];
                                 element.referralList = referralList_sub;
                                 element.referralAmount =
-                                    referralList_sub.amount;
+                                    referralList_sub[0].amount;
                             } else {
                                 referralList = [];
                                 element.referralList = referralList;
