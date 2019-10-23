@@ -31,12 +31,6 @@ const categories = [
             "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/bedroom.jpg"
     },
     {
-        label: "Mattresses",
-        apiCat: "mattress",
-        icon:
-            "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/mattress.jpg"
-    },
-    {
         label: "Men's Clothing",
         apiCat: "mensclothing",
         icon:
@@ -49,7 +43,25 @@ const categories = [
             "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/sexy-feminine-dress-in-black.jpg"
     },
     {
-        label: "College Stationary",
+        label: "Home & Kitchen",
+        apiCat: "kitchenappliances",
+        icon:
+            "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/appliances.jpg"
+    },
+    {
+        label: "Automobile Accessories",
+        apiCat: "automobile",
+        icon:
+            "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/automobile.jpg"
+    },
+    {
+        label: "Health and Beauty",
+        apiCat: "healthandbeauty",
+        icon:
+            "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/health.jpg"
+    },
+    {
+        label: "Stationary",
         apiCat: "collegestationary",
         icon:
             "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/stationery.jpg"
@@ -67,8 +79,8 @@ const categories = [
             "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/laptop.jpg"
     },
     {
-        label: "Backpacks",
-        apiCat: "backpack",
+        label: "Hand Bags & Luggages",
+        apiCat: "bags",
         icon:
             "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/school-book-bag.jpg"
     },
@@ -107,6 +119,12 @@ const categories = [
         apiCat: "womensfootwear",
         icon:
             "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/high-heel.jpg"
+    },
+    {
+        label: "Mattresses",
+        apiCat: "mattress",
+        icon:
+            "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/mattress.jpg"
     }
 ];
 
