@@ -25,7 +25,7 @@ async function asyncForEach(array, callback) {
     }
 }
 
-agenda.define("Converting commits to orders v3.3-", function(job, done) {
+agenda.define("Converting commits to orders v3.4-", function(job, done) {
     console.log("hello1");
     Sales.find({
         $expr: {
@@ -134,7 +134,7 @@ agenda.define("Converting commits to orders v3.3-", function(job, done) {
     //done();
 });
 
-agenda.define("Refreshing Sales which expired in last 24h v1.2", function(
+agenda.define("Refreshing Sales which expired in last 24h v1.3", function(
     job,
     done
 ) {
@@ -198,13 +198,13 @@ agenda.on("ready", function() {
     console.log("Agenda Started");
     agenda.schedule(
         "2 seconds",
-        agenda.every("2 hours", "Converting commits to orders v3.3-")
+        agenda.every("2 hours", "Converting commits to orders v3.4-")
     );
     agenda.schedule(
         "2 seconds",
         agenda.every(
             "24 hours",
-            "Refreshing Sales which expired in last 24h v1.2"
+            "Refreshing Sales which expired in last 24h v1.3"
         )
     );
     agenda.start();
