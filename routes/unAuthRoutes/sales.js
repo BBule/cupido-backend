@@ -334,7 +334,7 @@ router.get("/presentsales", (req, res, next) => {
         "product.subCategory": 0
     })
         .populate("product.id")
-        .limit(Number(limit))
+        .limit(Number(10000))
         .skip(Number(skip))
         .sort({ timecreated: -1 })
         .lean()
