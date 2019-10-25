@@ -116,7 +116,7 @@ const categories = [
     },
     {
         label: "Baby Care",
-        apiCat: "watches",
+        apiCat: "babycare",
         icon:
             "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/baby+care.jpg"
     },
