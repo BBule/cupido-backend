@@ -25,24 +25,6 @@ router.get("/filters/:id", async (req, res, next) => {
 
 const categories = [
     {
-        label: "Home Furnitures",
-        apiCat: "furnitures",
-        icon:
-            "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/bedroom.jpg"
-    },
-    {
-        label: "Men's Clothing",
-        apiCat: "mensclothing",
-        icon:
-            "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/Shape.jpg"
-    },
-    {
-        label: "Women's Clothing",
-        apiCat: "womensclothing",
-        icon:
-            "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/sexy-feminine-dress-in-black.jpg"
-    },
-    {
         label: "Home & Kitchen",
         apiCat: "kitchenappliances",
         icon:
@@ -91,6 +73,54 @@ const categories = [
             "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/headphone-symbol.jpg"
     },
     {
+        label: "Hardware Tools",
+        apiCat: "hardwaretools",
+        icon:
+            "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/hardware+tools.jpg"
+    },
+    {
+        label: "Home Decor",
+        apiCat: "homedecor",
+        icon:
+            "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/home+decor.jpg"
+    },
+    {
+        label: "Jewellery",
+        apiCat: "jewellery",
+        icon:
+            "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/jewellery.jpg"
+    },
+    {
+        label: "Mobile Accessories",
+        apiCat: "mobileaccessories",
+        icon:
+            "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/phone+accessories.jpg"
+    },
+    {
+        label: "Toys & Sports",
+        apiCat: "toysandsports",
+        icon:
+            "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/toy.jpg"
+    },
+    {
+        label: "Travel",
+        apiCat: "travel",
+        icon:
+            "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/travel.jpg"
+    },
+    {
+        label: "Watches",
+        apiCat: "watches",
+        icon:
+            "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/wrist-watch.jpg"
+    },
+    {
+        label: "Baby Care",
+        apiCat: "watches",
+        icon:
+            "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/baby+care.jpg"
+    },
+    {
         label: "Men's Grooming",
         apiCat: "mensgrooming",
         icon:
@@ -101,12 +131,6 @@ const categories = [
         apiCat: "womensbeauty",
         icon:
             "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/make-up.jpg"
-    },
-    {
-        label: "Bicycles",
-        apiCat: "bicycle",
-        icon:
-            "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/man-cycling.jpg"
     },
     {
         label: "Men's Footwear",
@@ -121,10 +145,22 @@ const categories = [
             "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/high-heel.jpg"
     },
     {
-        label: "Mattresses",
-        apiCat: "mattress",
+        label: "Home Furnitures",
+        apiCat: "furnitures",
         icon:
-            "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/mattress.jpg"
+            "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/bedroom.jpg"
+    },
+    {
+        label: "Men's Clothing",
+        apiCat: "mensclothing",
+        icon:
+            "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/Shape.jpg"
+    },
+    {
+        label: "Women's Clothing",
+        apiCat: "womensclothing",
+        icon:
+            "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/sexy-feminine-dress-in-black.jpg"
     }
 ];
 
