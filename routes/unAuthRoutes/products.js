@@ -93,7 +93,7 @@ router.get("/brandNames", (req, res, next) => {
     const category = req.query.category;
     Products.distinct("brandName", { category: category })
         .then(result => {
-            if(!result){
+            if (!result) {
                 return res.send([]);
             }
             return res.send(result);
@@ -111,7 +111,7 @@ router.get("/subCategories", (req, res, next) => {
     const category = req.query.category;
     Products.distinct("subCategory", { category: category })
         .then(result => {
-            if(!result){
+            if (!result) {
                 return res.send([]);
             }
             return res.send(result);
@@ -134,13 +134,14 @@ router.get("/allOrders", (req, res, next) => {
             shipping_awb: 1,
             order_status: 1,
             shipping_address: 1,
+            referralAmount: 1,
+            size: 1,
+            color: 1,
+            quantity: 1,
             timecreated: 1
         }
     )
-        .populate(
-            "Product.id",
-            "images brandName title marketPrice size color"
-        )
+        .populate("Product.id", "images brandName title marketPrice size color")
         .populate("User.id", "email.email contact.contact username gender")
         .populate("sale.id", "salePrice")
         .sort({ timecreated: -1 })
@@ -176,14 +177,15 @@ router.get("/allCommits", (req, res, next) => {
         {
             commit_amount: 1,
             "sale.id": 1,
-            timecreated: 1,
-            shipping_address: 1
+            shipping_address: 1,
+            referralAmount: 1,
+            size: 1,
+            color: 1,
+            quantity: 1,
+            timecreated: 1
         }
     )
-        .populate(
-            "Product.id",
-            "images brandName title marketPrice size color"
-        )
+        .populate("Product.id", "images brandName title marketPrice size color")
         .populate("User.id", "email.email contact.contact username gender")
         .populate("sale.id", "salePrice")
         .sort({ timecreated: -1 })
@@ -208,13 +210,14 @@ router.get("/allOrders", (req, res, next) => {
             shipping_awb: 1,
             order_status: 1,
             shipping_address: 1,
+            referralAmount: 1,
+            size: 1,
+            color: 1,
+            quantity: 1,
             timecreated: 1
         }
     )
-        .populate(
-            "Product.id",
-            "images brandName title marketPrice size color"
-        )
+        .populate("Product.id", "images brandName title marketPrice size color")
         .populate("sale.id", "salePrice")
         .sort({ timecreated: -1 })
         .then(orders => {
