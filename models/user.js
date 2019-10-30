@@ -51,7 +51,8 @@ var UserSchema = new mongoose.Schema(
         // },
         // my_referrals: [Schema.Types.ObjectId],
         lastActive: { type: Date, default: Date.now },
-        profilePic:String
+        profilePic:String,
+        onesignalID: [{ type: String, unique: true }]
     },
     {
         timestamps: true
