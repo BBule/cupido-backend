@@ -241,10 +241,27 @@ router.get("/myprofile", (req, res, next) => {
             myaddresses: 1,
             gender: 1,
             lastActive: 1,
-            profilePic:1
+            profilePic:1,
+            onesignalID: 1
         }
     ).then(user => {
         return res.send(user);
+    });
+});
+
+router.post("/onesignal", (req, res) => {
+    const userId = req.user._id;
+    const { isSubscribed, deviceID } = req.body;
+    User.findOne({ _id: userId })
+    .then(user => {
+        if(deviceID.length > 0 && isSubscribed) {
+            user.onesignalID.push(deviceID);
+            user.save();
+            res.status(201).send();
+        }
+    })
+    .catch((err) => {
+        res.status(400).send('Invalid request');
     });
 });
 
