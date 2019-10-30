@@ -3,6 +3,7 @@ const router = express.Router();
 const myorders = require("../models/myorders.js");
 const mycommits = require("../models/mycommits.js");
 const Saleslist = require("../models/saleslist.js");
+const onesignal = require('../helpers/onesignal');
 
 const {
     createCommitOrOrder,
@@ -44,7 +45,6 @@ router.get("/myorders", async (req, res, next) => {
 });
 
 router.post("/orderOrCommit", async (req, res, next) => {
-    console.log("API Called");
     if (req.body.payment || req.body.cash) {
         const {
             wholeCart,
@@ -66,6 +66,10 @@ router.post("/orderOrCommit", async (req, res, next) => {
             cash
         )
             .then(data => {
+                // SEND ORDER NOTIFICATION
+                onesignal.onesignalPost(req.user._id);
+
+                // SEND SUCCESS RES
                 return res.status(200).json(data);
             })
             .catch(error => {
