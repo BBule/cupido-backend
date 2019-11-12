@@ -25,10 +25,16 @@ router.get("/filters/:id", async (req, res, next) => {
 
 const categories = [
     {
-        label: "Home & Kitchen",
-        apiCat: "kitchenappliances",
+        label: "Robotics",
+        apiCat: "robotics",
         icon:
-            "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/appliances.jpg"
+            "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/ai+1-min.jpg"
+    },
+    {
+        label: "Electronics",
+        apiCat: "electronics",
+        icon:
+            "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/laptop.jpg"
     },
     {
         label: "Automobile Accessories",
@@ -55,12 +61,6 @@ const categories = [
             "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/socks.jpg"
     },
     {
-        label: "Electronics",
-        apiCat: "electronics",
-        icon:
-            "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/laptop.jpg"
-    },
-    {
         label: "Hand Bags & Luggages",
         apiCat: "bags",
         icon:
@@ -73,7 +73,7 @@ const categories = [
             "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/headphone-symbol.jpg"
     },
     {
-        label: "Hardware Tools",
+        label: "Mechanical Tools",
         apiCat: "hardwaretools",
         icon:
             "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/hardware+tools.jpg"
@@ -89,6 +89,12 @@ const categories = [
         apiCat: "jewellery",
         icon:
             "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/jewellery.jpg"
+    },
+    {
+        label: "Home & Kitchen",
+        apiCat: "kitchenappliances",
+        icon:
+            "https://lecp-product-images.s3.ap-south-1.amazonaws.com/communityicons/appliances.jpg"
     },
     {
         label: "Mobile Accessories",
